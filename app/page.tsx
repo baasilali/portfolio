@@ -180,7 +180,7 @@ Node.js, Angular, Golang, HTML/CSS/JS
             <Link href="mailto:baasil.ali@gmail.com" className="hover:text-green-300">
               <Mail className="h-5 w-5" />
             </Link>
-            <Link href="https://drive.google.com/file/d/1a16GmZ3Y52TP687In0GvDJB0Szy-iQks/view?usp=sharing" className="hover:text-green-300">
+            <Link href="https://drive.google.com/file/d/1uO7cDSyq9zHykewBZKtcgqyrvOpwhsss/view?usp=sharing" className="hover:text-green-300">
               <File className="h-5 w-5" />
             </Link>
           </div>
