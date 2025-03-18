@@ -1,6 +1,6 @@
 # baasilali
 
-A terminal-style portfolio that showcases my journey in software engineering.
+A terminal bash-shell style portfolio.
 
 ## Overview
 
@@ -15,7 +15,7 @@ npm install
 npm run dev
 ```
 
-Visit [baasilali.com](https://baasilali.com) to see it live.
+Visit [baasil.me](https://baasil.me)
 
 ## Commands
 
