@@ -2,7 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  background-color: #000000;
+}
+
+html {
+  background-color: #000000;
+}
+
 body {
+  background-color: #000000;
+  color: #4ade80;
   font-family: Arial, Helvetica, sans-serif;
 }
 

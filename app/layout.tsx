@@ -17,6 +17,8 @@ const geistMono = localFont({
 export const metadata: Metadata = {
   title: "baasilali",
   description: "personalportfolio",
+  viewport: "width=device-width, initial-scale=1, maximum-scale=1",
+  themeColor: "#000000",
 };
 
 export default function RootLayout({
@@ -25,9 +27,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <meta name="color-scheme" content="dark" />
+      </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-green-400 min-h-screen`}
+        style={{ backgroundColor: '#000000' }}
       >
         {children}
         <Analytics />
