@@ -118,7 +118,7 @@ Python, Next.js, Node.js, HTML/CS/JS
 2m
 Node.js, Angular, Golang, HTML/CSS/JS
 
-    - Coming Soon! (Stealth Startup)
+    - Coming Soon!
 
 `,
     },
@@ -190,30 +190,7 @@ Node.js, Angular, Golang, HTML/CSS/JS
           </div>
         </div>
 
-        <div ref={outputRef} className="mb-4 h-[60vh] overflow-y-auto rounded border border-green-400 bg-black p-4 relative">
-          {/* Top gradient overlay */}
-          <div className="absolute top-0 left-0 right-0 h-4 bg-gradient-to-b from-black to-transparent pointer-events-none" />
-          
-          {/* Bottom gradient overlay */}
-          <div className="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-black to-transparent pointer-events-none" />
-          
-          {/* Scrollbar styling */}
-          <style jsx global>{`
-            ::-webkit-scrollbar {
-              width: 8px;
-            }
-            ::-webkit-scrollbar-track {
-              background: transparent;
-            }
-            ::-webkit-scrollbar-thumb {
-              background: rgba(74, 222, 128, 0.3);
-              border-radius: 4px;
-            }
-            ::-webkit-scrollbar-thumb:hover {
-              background: rgba(74, 222, 128, 0.5);
-            }
-          `}</style>
-
+        <div ref={outputRef} className="mb-4 h-[60vh] overflow-y-auto rounded border border-green-400 bg-black p-4">
           {output.map((line, i) => (
             <div key={i} className="whitespace-pre-wrap">
               {line}
