@@ -176,9 +176,9 @@ Node.js, Angular, Golang, HTML/CSS/JS
       setOutput((prev) => [...prev, `[root@localhost ~]# ${cmd}`, `No directories. Type "help" for available commands.`])
     } else if (trimmedCmd === "cd") {
       setOutput((prev) => [...prev, `[root@localhost ~]# ${cmd}`, `No directories. Type "help" for available commands.`])
-    } else if (trimmedCmd === "light mode") {
+    } else if (trimmedCmd === "flashbang") {
       setTheme('light')
-      setOutput((prev) => [...prev, `[root@localhost ~]# ${cmd}`, `Switched to light mode.`])
+      setOutput((prev) => [...prev, `[root@localhost ~]# ${cmd}`, `FLASHBANG! 💥`])
     } else if (trimmedCmd === "dark mode") {
       setTheme('dark')
       setOutput((prev) => [...prev, `[root@localhost ~]# ${cmd}`, `Switched to dark mode.`])
@@ -197,7 +197,7 @@ Node.js, Angular, Golang, HTML/CSS/JS
       // Find all commands that start with the current input
       const matches = [
         ...commands.map(cmd => cmd.name),
-        "ls", "cd", "light mode", "dark mode" // Add secret commands to tab completion
+        "ls", "cd", "flashbang", "dark mode" // Add secret commands to tab completion
       ].filter(cmd => cmd.startsWith(currentInput))
       
       if (matches.length === 0) {
