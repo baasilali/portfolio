@@ -27,10 +27,6 @@ Visit [baasil.me](https://baasil.me)
 - `flashbang` - Switch to light theme (with a bang!)
 - `dark mode` - Switch to dark theme
 
-### Secret Commands
-- `ls` - Try it out! 
-- `cd` - Try it out!
-
 ## Features
 
 - Interactive terminal interface
