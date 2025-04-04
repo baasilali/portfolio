@@ -104,9 +104,12 @@ Python
 
 Ultrasonic Measuring Intrument 
 C, C++
-    - Using an Arduino IDE and a RasberryPi5, developed multi-layered functions in C/C# to read data from an Ultrasonic
-      Sensor to accurately measure exact distances (in cm/in/ft) up to 15 ft with a 4% error margin (laser-measuring
-      instrument as control) Presented at SJSU StartUp and SJSU IdeasLab - Earned 2 Awards for Innovation
+    - Using an Arduino IDE and a RasberryPi5, developed multi-layered
+      functions in C/C# to read data from an Ultrasonic Sensor to 
+      accurately measure exact distances (in cm/in/ft) up to 15 ft 
+      with a 4% error margin (laser-measuring instrument as control) 
+    - Presented at SJSU StartUp and SJSU IdeasLab - Earned 2 Awards 
+      for Innovation
       
 Rhythmic Ai - Find music you actually like.
 Tensorflow, PyTorch
