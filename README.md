@@ -24,7 +24,7 @@ Visit [baasil.me](https://baasil.me)
 - `experience` - See work experience
 - `projects` - Browse projects
 - `clear` - Clear terminal
-- `flashbang` - Switch to light theme (with a bang! 💥)
+- `flashbang` - Switch to light theme (with a bang!)
 - `dark mode` - Switch to dark theme
 
 ### Secret Commands

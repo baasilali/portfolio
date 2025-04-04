@@ -178,7 +178,7 @@ Node.js, Angular, Golang, HTML/CSS/JS
       setOutput((prev) => [...prev, `[root@localhost ~]# ${cmd}`, `No directories. Type "help" for available commands.`])
     } else if (trimmedCmd === "flashbang") {
       setTheme('light')
-      setOutput((prev) => [...prev, `[root@localhost ~]# ${cmd}`, `FLASHBANG! 💥`])
+      setOutput((prev) => [...prev, `[root@localhost ~]# ${cmd}`, `FLASHBANG!`])
     } else if (trimmedCmd === "dark mode") {
       setTheme('dark')
       setOutput((prev) => [...prev, `[root@localhost ~]# ${cmd}`, `Switched to dark mode.`])
