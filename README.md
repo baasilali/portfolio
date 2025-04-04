@@ -24,6 +24,20 @@ Visit [baasil.me](https://baasil.me)
 - `experience` - See work experience
 - `projects` - Browse projects
 - `clear` - Clear terminal
+- `light mode` - Switch to light theme
+- `dark mode` - Switch to dark theme
+
+### Secret Commands
+- `ls` - Try it out! 
+- `cd` - Try it out!
+
+## Features
+
+- Interactive terminal interface
+- Command history navigation (↑/↓ arrows)
+- Tab completion for commands
+- Theme switching (light/dark mode)
+- Responsive design
 
 ## Contact
 
