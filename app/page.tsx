@@ -22,6 +22,11 @@ interface Command {
 export default function Terminal() {
   const [input, setInput] = useState("")
   const [output, setOutput] = useState<string[]>(['Type "help" for available commands.'])
+  const [commandHistory, setCommandHistory] = useState<string[]>([])
+  const [historyIndex, setHistoryIndex] = useState(-1)
+  const [showTabSuggestions, setShowTabSuggestions] = useState(false)
+  const [tabSuggestions, setTabSuggestions] = useState<string[]>([])
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark')
   const inputRef = useRef<HTMLInputElement>(null)
   const outputRef = useRef<HTMLDivElement>(null)
 
@@ -36,6 +41,7 @@ Type 'help' to see this list.
 - "education": Show education details
 - "experience": Show work experience
 - "projects": Show project portfolio
+- "certifications": Show certifications
 - "clear": Clear the terminal
 
 `,
@@ -46,7 +52,7 @@ Type 'help' to see this list.
       action: () => `
 San Jose State University - Bachelor's in Engineering in Software Engineering
 - Minor in Buisness Administration
-- Graduation Year: 2025
+- Graduation Year: 2026
 - GPA: 3.86
 
 - Relevant Course Material: 
@@ -95,6 +101,12 @@ Python
       name: "projects",
       description: "Show project portfolio",
       action: () => `
+
+Ultrasonic Measuring Intrument 
+C, C++
+    - Using an Arduino IDE and a RasberryPi5, developed multi-layered functions in C/C# to read data from an Ultrasonic
+      Sensor to accurately measure exact distances (in cm/in/ft) up to 15 ft with a 4% error margin (laser-measuring
+      instrument as control) Presented at SJSU StartUp and SJSU IdeasLab - Earned 2 Awards for Innovation
       
 Rhythmic Ai - Find music you actually like.
 Tensorflow, PyTorch
@@ -123,6 +135,21 @@ Node.js, Angular, Golang, HTML/CSS/JS
 `,
     },
     {
+      name: "certifications",
+      description: "Show certifications",
+      action: () => `
+      
+- AWS Certified Cloud Practitioner
+- IBM Exploratory Data Analysis for Machine Learning
+- Stanford Machine Learning: Regression and Classification
+- Palo Alto Networks Cybersecurity Certification
+- Cisco CCNA Switching, Routing, and Wireless Essentials
+- Cisco CCNA: Introduction to Networks
+
+
+`,
+    },
+    {
       name: "clear",
       description: "Clear the terminal",
       action: () => "",
@@ -145,15 +172,98 @@ Node.js, Angular, Golang, HTML/CSS/JS
       } else {
         setOutput((prev) => [...prev, `[root@localhost ~]# ${cmd}`, command.action()])
       }
+    } else if (trimmedCmd === "ls") {
+      setOutput((prev) => [...prev, `[root@localhost ~]# ${cmd}`, `No directories. Type "help" for available commands.`])
+    } else if (trimmedCmd === "cd") {
+      setOutput((prev) => [...prev, `[root@localhost ~]# ${cmd}`, `No directories. Type "help" for available commands.`])
+    } else if (trimmedCmd === "light mode") {
+      setTheme('light')
+      setOutput((prev) => [...prev, `[root@localhost ~]# ${cmd}`, `Switched to light mode.`])
+    } else if (trimmedCmd === "dark mode") {
+      setTheme('dark')
+      setOutput((prev) => [...prev, `[root@localhost ~]# ${cmd}`, `Switched to dark mode.`])
     } else if (trimmedCmd) {
       setOutput((prev) => [...prev, `[root@localhost ~]# ${cmd}`, `Command not found: ${cmd}`])
     }
+  }
+
+  const handleTabCompletion = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Tab') {
+      e.preventDefault()
+      
+      // Get the current input
+      const currentInput = input.trim().toLowerCase()
+      
+      // Find all commands that start with the current input
+      const matches = [
+        ...commands.map(cmd => cmd.name),
+        "ls", "cd", "light mode", "dark mode" // Add secret commands to tab completion
+      ].filter(cmd => cmd.startsWith(currentInput))
+      
+      if (matches.length === 0) {
+        // No matches, do nothing
+        return
+      } else if (matches.length === 1) {
+        // Exactly one match, auto-complete it
+        setInput(matches[0])
+        setShowTabSuggestions(false)
+      } else {
+        // Multiple matches, show suggestions
+        setTabSuggestions(matches)
+        setShowTabSuggestions(true)
+        
+        // If this is the second tab press with the same input, complete with the first suggestion
+        if (tabSuggestions.length > 0 && 
+            JSON.stringify(tabSuggestions) === JSON.stringify(matches) && 
+            input === currentInput) {
+          setInput(matches[0])
+          setShowTabSuggestions(false)
+        }
+      }
+    } else if (e.key === 'Escape') {
+      // Hide suggestions when Escape is pressed
+      setShowTabSuggestions(false)
+    }
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'ArrowUp') {
+      e.preventDefault()
+      setShowTabSuggestions(false) // Hide suggestions when navigating history
+      if (historyIndex < commandHistory.length - 1) {
+        const newIndex = historyIndex + 1
+        setHistoryIndex(newIndex)
+        setInput(commandHistory[commandHistory.length - 1 - newIndex])
+      }
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault()
+      setShowTabSuggestions(false) // Hide suggestions when navigating history
+      if (historyIndex > 0) {
+        const newIndex = historyIndex - 1
+        setHistoryIndex(newIndex)
+        setInput(commandHistory[commandHistory.length - 1 - newIndex])
+      } else {
+        setHistoryIndex(-1)
+        setInput("")
+      }
+    } else if (e.key === 'Tab') {
+      handleTabCompletion(e)
+    } else if (e.key === 'Escape') {
+      setShowTabSuggestions(false)
+    }
+  }
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInput(e.target.value)
+    setShowTabSuggestions(false) // Hide suggestions when typing
   }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (input.trim()) {
       handleCommand(input)
+      setCommandHistory(prev => [...prev, input])
+      setHistoryIndex(-1)
       setInput("")
     }
   }
@@ -163,7 +273,7 @@ Node.js, Angular, Golang, HTML/CSS/JS
   }
 
   return (
-    <div className="min-h-screen bg-black p-4 font-mono text-green-400" onClick={handleClick}>
+    <div className={`min-h-screen p-4 font-mono ${theme === 'dark' ? 'bg-black text-green-400' : 'bg-gray-200 text-green-800'}`} onClick={handleClick}>
       <div className="mx-auto max-w-3xl">
         <pre className="mb-4 text-xs leading-none md:text-sm">{ASCII_NAME}</pre>
 
@@ -171,38 +281,52 @@ Node.js, Angular, Golang, HTML/CSS/JS
           <p className="mb-1">B.E. Software Engineering + Minor Buisness Adminstration</p>
           <p className="mb-3">San Jose State University</p>
           <div className="flex space-x-4">
-            <Link href="https://github.com/baasilali" className="flex items-center space-x-1 hover:text-green-300">
+            <Link href="https://github.com/baasilali" className={`flex items-center space-x-1 ${theme === 'dark' ? 'hover:text-green-300' : 'hover:text-green-600'}`}>
               <Github className="h-5 w-5" />
               <span>GitHub</span>
             </Link>
-            <Link href="https://linkedin.com/in/baasilali" className="flex items-center space-x-1 hover:text-green-300">
+            <Link href="https://linkedin.com/in/baasilali" className={`flex items-center space-x-1 ${theme === 'dark' ? 'hover:text-green-300' : 'hover:text-green-600'}`}>
               <Linkedin className="h-5 w-5" />
               <span>LinkedIn</span>
             </Link>
-            <Link href="mailto:baasil.ali@gmail.com" className="flex items-center space-x-1 hover:text-green-300">
+            <Link href="mailto:baasil.ali@gmail.com" className={`flex items-center space-x-1 ${theme === 'dark' ? 'hover:text-green-300' : 'hover:text-green-600'}`}>
               <Mail className="h-5 w-5" />
               <span>Email</span>
             </Link>
-            <Link href="https://drive.google.com/file/d/1uO7cDSyq9zHykewBZKtcgqyrvOpwhsss/view?usp=sharing" className="flex items-center space-x-1 hover:text-green-300">
+            <Link href="https://drive.google.com/file/d/1uO7cDSyq9zHykewBZKtcgqyrvOpwhsss/view?usp=sharing" className={`flex items-center space-x-1 ${theme === 'dark' ? 'hover:text-green-300' : 'hover:text-green-600'}`}>
               <File className="h-5 w-5" />
               <span>Resume</span>
             </Link>
           </div>
         </div>
 
-        <div ref={outputRef} className="mb-4 h-[60vh] overflow-y-auto rounded border border-green-400 bg-black p-4">
+        <div ref={outputRef} className={`mb-4 h-[60vh] overflow-y-auto rounded border ${theme === 'dark' ? 'border-green-400 bg-black' : 'border-green-800 bg-gray-100'} p-4 relative`}>
           {output.map((line, i) => (
             <div key={i} className="whitespace-pre-wrap">
               {line}
             </div>
           ))}
+          
+          {/* Tab suggestions */}
+          {showTabSuggestions && tabSuggestions.length > 0 && (
+            <div className={`absolute bottom-12 left-4 right-4 ${theme === 'dark' ? 'bg-black border-green-400' : 'bg-gray-100 border-green-800'} border p-2 rounded`}>
+              <div className={`text-sm ${theme === 'dark' ? 'text-green-400' : 'text-green-800'}`}>Available commands:</div>
+              <div className="grid grid-cols-2 gap-2 mt-1">
+                {tabSuggestions.map((cmd, i) => (
+                  <div key={i} className={theme === 'dark' ? 'text-green-400' : 'text-green-800'}>{cmd}</div>
+                ))}
+              </div>
+            </div>
+          )}
+          
           <form onSubmit={handleSubmit} className="flex">
             <span className="mr-2">[root@localhost ~]#</span>
             <input
               ref={inputRef}
               type="text"
               value={input}
-              onChange={(e) => setInput(e.target.value)}
+              onChange={handleInputChange}
+              onKeyDown={handleKeyDown}
               className="flex-1 bg-transparent outline-none"
               autoFocus
             />
