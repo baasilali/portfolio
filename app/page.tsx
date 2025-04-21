@@ -94,7 +94,6 @@ Python
     - Created documentation for over 50+ classes and programs, used 
       feedback from Sr. Engineers to uphold relevancy and use-cases
 
-
 `,
     },
     {
@@ -119,6 +118,19 @@ Tensorflow, PyTorch
     - Algorithm was focused on summarization and trained on a 
       transformer model Neural Network
 
+Explosions - Physics-Based Particle Simulation
+Python, Tkinter
+
+    - Engineered a real-time physics engine simulating gravity effects, 
+      elastic collisions, and particle-to-particle interactions with 
+      velocity-based explosion mechanics
+    - Implemented comprehensive collision detection system handling 
+      ball-to-ball and wall collisions with energy loss calculations 
+      and bounce damping
+    - Developed an interactive UI for velocity control and simulation 
+      management, featuring real-time parameter adjustments and 
+      state reset functionality
+
 Resumate.dev - visibilty.
 Python, Next.js, Node.js, HTML/CS/JS
 
@@ -130,10 +142,35 @@ Python, Next.js, Node.js, HTML/CS/JS
     - Calculated 90% efficiency in data allocation, 98% accuracy in created 
       word-clouds and calculated a 18% increase in interviews
 
-2m
-Node.js, Angular, Golang, HTML/CSS/JS
+Ray Tracer Visualizer - Interactive Light Simulation
+React, Three.js, TypeScript, Tailwind CSS
 
-    - Coming Soon!
+    - Engineered a real-time 3D light simulation system with dual 
+      visualization modes (Technical/Realistic), implementing physical-based 
+      rendering and dynamic ray tracing
+    - Developed an interactive environment featuring configurable objects 
+      (metallic sphere, matte cube, glass dodecahedron) with realistic 
+      material properties and transformations
+    - Optimized performance through conditional ray visualization and 
+      efficient geometry updates, achieving smooth real-time rendering 
+      with up to 50 concurrent light rays
+    - Implemented comprehensive controls for camera manipulation, object 
+      transformation, and ray parameter adjustments using React Three 
+      Fiber and Drei
+
+2m
+Node.js, React, AWS, HTML/CSS/JS
+
+    - Coming Soon! (2m.trading)
+    - Designed and integrated an AI-driven chatbot tailored for the CS:GO 
+      Skin economy, leveraging a customized Llama3 model on a RAG to 
+      real-time data on prices, market-trends, and pattern-identification
+    - Developed a marketplace to buy and trade digital assets, and efficient 
+      handling of querying multi-billion row databases, thousands of API 
+      requests, and transactional sales from over 10,000 MAU
+      (integrated with Stripe)
+    - Data Collection was done by aggregating data from all popular CS2 
+      sites, parsed and organized JSON format
 
 `,
     },
