@@ -109,14 +109,22 @@ C, C++
       with a 4% error margin (laser-measuring instrument as control) 
     - Presented at SJSU StartUp and SJSU IdeasLab - Earned 2 Awards 
       for Innovation
-      
-Rhythmic Ai - Find music you actually like.
-Tensorflow, PyTorch
 
-    - Utilized Pytorch and TensorFlow, to train Machine-Learning LLM 
-      to recommend songs based on similarities in Music Theory
-    - Algorithm was focused on summarization and trained on a 
-      transformer model Neural Network
+Interactive Wave Animation
+Three.js, GLSL, JavaScript, WebGL
+
+    - Engineered a real-time 3D wave simulation using Three.js and custom 
+      GLSL shaders, implementing Perlin noise algorithms for fluid 
+      wave pattern generation
+    - Developed a dual-wave system with interactive parameter controls, 
+      allowing real-time manipulation of wave frequency (0.1-3.0Hz), 
+      amplitude (0.1-3.0), and speed (0.01-2.0)
+    - Optimized performance through efficient point cloud rendering and 
+      shader computations, maintaining 60+ FPS across modern browsers 
+      while handling thousands of vertices
+    - Implemented comprehensive camera controls with smooth transitions 
+      and auto-rotation, along with a responsive design system adapting 
+      to various screen sizes and device capabilities
 
 Explosions - Physics-Based Particle Simulation
 Python, Tkinter
