@@ -13,6 +13,15 @@ const ASCII_NAME = `
 ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═╝╚══════╝
 `
 
+const projectsData = [
+  { name: "Interactive 3D Wave Animation", url: "https://3d-waves.vercel.app/", id: "interactive-wave-animation" },
+  { name: "Explosions - Physics-Based Particle Simulation", url: "https://github.com/baasilali/explosions", id: "explosions-physics-simulation" },
+  { name: "Resumate.dev", url: "https://resumate.dev", id: "resumate-dev" },
+  { name: "Ray Tracer Visualizer", url: "https://raytracing-fawn.vercel.app/", id: "ray-tracer-visualizer" },
+  { name: "2m", url: "https://2m.trading", id: "2m-trading" },
+  { name: "Entropy Visualizer", url: "https://entropy-sand.vercel.app/", id: "entropy-visualizer" }
+];
+
 interface Command {
   name: string
   description: string
@@ -24,6 +33,9 @@ export default function Terminal() {
   const [output, setOutput] = useState<string[]>(['Type "help" for available commands.'])
   const [commandHistory, setCommandHistory] = useState<string[]>([])
   const [historyIndex, setHistoryIndex] = useState(-1)
+  const [currentDirectory, setCurrentDirectory] = useState("~")
+  const [installedProjects, setInstalledProjects] = useState<string[]>([])
+  const [isInstalling, setIsInstalling] = useState(false)
   const [showTabSuggestions, setShowTabSuggestions] = useState(false)
   const [tabSuggestions, setTabSuggestions] = useState<string[]>([])
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
@@ -38,6 +50,16 @@ export default function Terminal() {
 These shell commands are defined internally.
 Type 'help' to see this list.
 
+Navigation & Projects:
+- "ls": List available projects
+- "cd <project-name>": Navigate to a project
+- "cd ..": Navigate back to home directory
+
+Project Commands (when in a project directory):
+- "npm install": Install project dependencies
+- "npm run dev": Launch the project in a new tab
+
+Portfolio Information:
 - "education": Show education details
 - "experience": Show work experience
 - "projects": Show project portfolio
@@ -110,7 +132,7 @@ C, C++
     - Presented at SJSU StartUp and SJSU IdeasLab - Earned 2 Awards 
       for Innovation
 
-Interactive Wave Animation
+Interactive 3D Wave Animation
 Three.js, GLSL, JavaScript, WebGL
 
     - Engineered a real-time 3D wave simulation using Three.js and custom 
@@ -138,6 +160,19 @@ Python, Tkinter
     - Developed an interactive UI for velocity control and simulation 
       management, featuring real-time parameter adjustments and 
       state reset functionality
+
+Entropy Visualizer - Frontend Node Manupulation
+TypeScript, JavaScript, CSS, HTML
+
+    - Implemented real-time statistical analysis and visualization of 
+      system dynamics, including particle velocity, influence propagation, 
+      and connection mapping, with performance-optimized rendering using 
+      requestAnimationFrame and efficient neighbor detection algorithms
+    - Developed a complex state management system for particles that 
+      handles multiple states (ordered/chaotic), implements boundary collision 
+      detection, and features an intelligent restoration algorithm that gradually 
+      returns particles to their original positions
+
 
 Resumate.dev - visibilty.
 Python, Next.js, Node.js, HTML/CS/JS
@@ -212,27 +247,194 @@ Node.js, React, AWS, HTML/CSS/JS
 
   const handleCommand = (cmd: string) => {
     const trimmedCmd = cmd.trim().toLowerCase()
-    const command = commands.find((c) => c.name === trimmedCmd)
+    const args = cmd.trim().split(" ")
+    const baseCmd = args[0].toLowerCase()
+    const command = commands.find((c) => c.name === baseCmd)
+
+    let newOutput = [...output, `[root@localhost ${currentDirectory}]# ${cmd}`]
+
+    if (isInstalling) {
+      setOutput([...newOutput, "Installation in progress. Please wait."]);
+      return;
+    }
 
     if (command) {
       if (command.name === "clear") {
         setOutput(['Type "help" for available commands.'])
+        return;
       } else {
-        setOutput((prev) => [...prev, `[root@localhost ~]# ${cmd}`, command.action()])
+        newOutput = [...newOutput, command.action()]
       }
-    } else if (trimmedCmd === "ls") {
-      setOutput((prev) => [...prev, `[root@localhost ~]# ${cmd}`, `No directories. Type "help" for available commands.`])
-    } else if (trimmedCmd === "cd") {
-      setOutput((prev) => [...prev, `[root@localhost ~]# ${cmd}`, `No directories. Type "help" for available commands.`])
+    } else if (baseCmd === "ls") {
+      if (currentDirectory === "~") {
+        const projectNames = projectsData.map(p => p.id)
+        newOutput = [...newOutput, " ", ...projectNames, " "]
+      } else {
+        newOutput = [...newOutput, " ", "Available commands: npm install, npm run dev, cd ..", " "]
+      }
+    } else if (baseCmd === "cd") {
+      if (args.length > 1) {
+        const targetDir = args.slice(1).join(" ")
+        if (targetDir === "..") {
+          if (currentDirectory !== "~") {
+            setCurrentDirectory("~")
+            newOutput = [...newOutput, `Changed directory to ~`]
+          } else {
+            newOutput = [...newOutput, `Already in root directory.`]
+          }
+        } else {
+          const projectExists = projectsData.find(p => p.id === targetDir)
+          if (projectExists) {
+            setCurrentDirectory(targetDir)
+            newOutput = [...newOutput, `Changed directory to ${targetDir}`]
+          } else {
+            newOutput = [...newOutput, `Directory not found: ${targetDir}`]
+          }
+        }
+      } else {
+        newOutput = [...newOutput, `Usage: cd <directory_name> or cd ..`]
+      }
+    } else if (baseCmd === "npm" && args.length > 1) {
+      const npmAction = args[1].toLowerCase();
+      if (currentDirectory === "~") {
+        newOutput = [...newOutput, `npm commands can only be run inside a project directory.`];
+      } else if (npmAction === "install") {
+        // Check if project is already installed
+        if (installedProjects.includes(currentDirectory)) {
+          const auditedPackages = Math.floor(Math.random() * 200) + 300;
+          const auditTime = Math.floor(Math.random() * 400) + 700;
+          const fundingPackages = Math.floor(Math.random() * 100) + 80;
+          
+          newOutput = [...newOutput, 
+            "",
+            `up to date, audited ${auditedPackages} packages in ${auditTime}ms`,
+            "",
+            `${fundingPackages} packages are looking for funding`,
+            "  run `npm fund` for details",
+            "0 vulnerabilities found"
+          ];
+          setOutput(newOutput);
+          return;
+        }
+        
+        setIsInstalling(true);
+        newOutput = [...newOutput, "Installing dependencies..."];
+        setOutput(newOutput); // Show initial message
+
+        // Create a function to generate progress bar visuals
+        const generateProgressBar = (percent: number) => {
+          const totalLength = 20; // Total length of the progress bar
+          const filledLength = Math.floor(totalLength * percent / 100);
+          // Ensure emptyLength is never negative
+          const emptyLength = Math.max(0, totalLength - filledLength);
+          
+          const bar = "[" + 
+                    "#".repeat(filledLength) + 
+                    " ".repeat(emptyLength) + 
+                    "] " + percent + "%";
+          return bar;
+        };
+
+        // Add initial messages that will remain visible
+        setTimeout(() => {
+          setOutput(prev => [...prev, "Fetching packages..."]);
+        }, 500);
+        
+        setTimeout(() => {
+          setOutput(prev => [...prev, "Resolving dependencies..."]);
+        }, 1000);
+        
+        // Add space after "Resolving dependencies..."
+        setTimeout(() => {
+          setOutput(prev => [...prev, ""]);
+        }, 1400);
+        
+        // Add the progress bar line and track its position
+        let progressLineIndex = 0;
+        setTimeout(() => {
+          // Capture the current output length before adding a new line
+          setOutput(prev => {
+            // This is the correct index for the progress bar after we add it
+            progressLineIndex = prev.length;
+            return [...prev, "[                    ] 0%"];
+          });
+          
+          // Wait a bit to ensure the state is updated before using progressLineIndex
+          setTimeout(() => {
+            // Generate specific percentage steps for a 20-character progress bar
+            const percentages = [20, 40, 60, 80, 100];
+            
+            // Schedule the progress updates
+            percentages.forEach((percent, index) => {
+              setTimeout(() => {
+                setOutput(prev => {
+                  const updated = [...prev];
+                  updated[progressLineIndex] = generateProgressBar(percent);
+                  return updated;
+                });
+              }, 400 * (index + 1)); // Update every 400ms
+            });
+            
+            // Final completion
+            setTimeout(() => {
+              const numPackages = Math.floor(Math.random() * 1000) + 500;
+              const timeTaken = (Math.random() * 10 + 5).toFixed(1);
+              setOutput(prev => {
+                const updated = [...prev];
+                return [...updated, "", `Added ${numPackages} packages in ${timeTaken}s`, `0 vulnerabilities found`];
+              });
+              setInstalledProjects(prev => [...prev, currentDirectory]);
+              setIsInstalling(false);
+            }, 400 * percentages.length + 500); // Add 500ms buffer after last percentage update
+          }, 100); // Small delay to ensure state is updated
+        }, 1500);
+        
+        return; // Prevent setting output again at the end of function
+      } else if (npmAction === "run" && args.length > 2 && args[2].toLowerCase() === "dev") {
+        if (!installedProjects.includes(currentDirectory)) {
+          newOutput = [...newOutput, `Cannot run project. Please run 'npm install' first.`];
+          setOutput(newOutput);
+          return;
+        }
+        
+        const project = projectsData.find(p => p.id === currentDirectory);
+        if (project) {
+          newOutput = [...newOutput, "> next dev"];
+          setOutput(newOutput); // Show initial message
+          
+          setTimeout(() => {
+            setOutput(prev => [...prev, 
+              "  ▲ Next.js 14.2.25",
+              `  - Project URL:  ${project.url}`,
+              ""
+            ]);
+          }, 500);
+          
+          setTimeout(() => {
+            setOutput(prev => [...prev, " ✓ Starting..."]);
+          }, 1200);
+          
+          setTimeout(() => {
+            window.open(project.url, '_blank');
+          }, 2200);
+          
+          return; // Prevent setting output again at the end of function
+        } else {
+          newOutput = [...newOutput, "Error: Could not find project data."]; // Should not happen
+        }
+      } else {
+        newOutput = [...newOutput, `Unknown npm command: npm ${npmAction}${args.length > 2 ? ' ' + args.slice(2).join(' '): ''}`];
+      }
     } else if (trimmedCmd === "flashbang") {
       setTheme('light')
-      setOutput((prev) => [...prev, `[root@localhost ~]# ${cmd}`, `FLASHBANG!`])
+      newOutput = [...newOutput, `FLASHBANG!`];
     } else if (trimmedCmd === "dark mode") {
       setTheme('dark')
-      setOutput((prev) => [...prev, `[root@localhost ~]# ${cmd}`, `Switched to dark mode.`])
+      newOutput = [...newOutput, `Switched to dark mode.`];
     } else if (trimmedCmd) {
-      setOutput((prev) => [...prev, `[root@localhost ~]# ${cmd}`, `Command not found: ${cmd}`])
+      newOutput = [...newOutput, `Command not found: ${cmd}`]
     }
+    setOutput(newOutput)
   }
 
   const handleTabCompletion = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -243,10 +445,42 @@ Node.js, React, AWS, HTML/CSS/JS
       const currentInput = input.trim().toLowerCase()
       
       // Find all commands that start with the current input
-      const matches = [
+      let availableCmds = [
         ...commands.map(cmd => cmd.name),
-        "ls", "cd", "flashbang", "dark mode" // Add secret commands to tab completion
-      ].filter(cmd => cmd.startsWith(currentInput))
+        "ls", "cd", "flashbang", "dark mode"
+      ];
+
+      if (currentDirectory !== "~") {
+        availableCmds.push("npm install", "npm run dev");
+      }
+
+      if (currentInput.startsWith("npm ")) {
+        const npmArg = currentInput.substring(4);
+        if (currentDirectory !== "~") {
+          // When in a project directory
+          if ("run".startsWith(npmArg)) {
+            availableCmds = ["npm run dev"];
+          } else if (npmArg === "run " || npmArg === "run d") {
+            availableCmds = ["npm run dev"];
+          } else if ("install".startsWith(npmArg)) {
+            availableCmds = ["npm install"];
+          } else {
+            availableCmds = ["npm install", "npm run dev"].filter(cmd => cmd.startsWith(currentInput));
+          }
+        } else {
+          availableCmds = [];
+        }
+      } else if (currentInput.startsWith("cd ")) {
+        const cdArg = currentInput.substring(3);
+        availableCmds = projectsData.map(p => `cd ${p.id}`).filter(name => name.startsWith(currentInput));
+        if (currentDirectory !== "~") {
+          availableCmds.push("cd ..");
+        }
+      } else {
+         availableCmds = availableCmds.filter(cmd => cmd.startsWith(currentInput));
+      }
+      
+      const matches = availableCmds;
       
       if (matches.length === 0) {
         // No matches, do nothing
@@ -322,33 +556,35 @@ Node.js, React, AWS, HTML/CSS/JS
 
   return (
     <div className={`min-h-screen p-4 font-mono ${theme === 'dark' ? 'bg-black text-green-400' : 'bg-gray-200 text-green-800'}`} onClick={handleClick}>
-      <div className="mx-auto max-w-3xl">
-        <pre className="mb-4 text-xs leading-none md:text-sm">{ASCII_NAME}</pre>
-
-        <div className="mb-6">
-          <p className="mb-1">B.E. Software Engineering + Minor Buisness Adminstration</p>
-          <p className="mb-3">San Jose State University</p>
-          <div className="flex space-x-4">
-            <Link href="https://github.com/baasilali" className={`flex items-center space-x-1 ${theme === 'dark' ? 'hover:text-green-300' : 'hover:text-green-600'}`}>
-              <Github className="h-5 w-5" />
-              <span>GitHub</span>
-            </Link>
-            <Link href="https://linkedin.com/in/baasilali" className={`flex items-center space-x-1 ${theme === 'dark' ? 'hover:text-green-300' : 'hover:text-green-600'}`}>
-              <Linkedin className="h-5 w-5" />
-              <span>LinkedIn</span>
-            </Link>
-            <Link href="mailto:baasil.ali@gmail.com" className={`flex items-center space-x-1 ${theme === 'dark' ? 'hover:text-green-300' : 'hover:text-green-600'}`}>
-              <Mail className="h-5 w-5" />
-              <span>Email</span>
-            </Link>
-            <Link href="https://drive.google.com/file/d/1uO7cDSyq9zHykewBZKtcgqyrvOpwhsss/view?usp=sharing" className={`flex items-center space-x-1 ${theme === 'dark' ? 'hover:text-green-300' : 'hover:text-green-600'}`}>
-              <File className="h-5 w-5" />
-              <span>Resume</span>
-            </Link>
+      <div className="mx-auto max-w-5xl">
+        <div className="flex flex-col md:flex-row md:items-start md:gap-8 mb-6">
+          <pre className="text-xs leading-none md:text-sm whitespace-pre mb-4 md:mb-0 md:flex-shrink-0">{ASCII_NAME}</pre>
+          
+          <div className="md:pt-8 flex flex-col justify-center">
+            <p className="mb-2">B.E. Software Engineering + Minor Buisness Adminstration</p>
+            <p className="mb-4">San Jose State University</p>
+            <div className="flex flex-wrap gap-4">
+              <Link href="https://github.com/baasilali" className={`flex items-center space-x-1 ${theme === 'dark' ? 'hover:text-green-300' : 'hover:text-green-600'}`}>
+                <Github className="h-5 w-5" />
+                <span>GitHub</span>
+              </Link>
+              <Link href="https://linkedin.com/in/baasilali" className={`flex items-center space-x-1 ${theme === 'dark' ? 'hover:text-green-300' : 'hover:text-green-600'}`}>
+                <Linkedin className="h-5 w-5" />
+                <span>LinkedIn</span>
+              </Link>
+              <Link href="mailto:baasil.ali@gmail.com" className={`flex items-center space-x-1 ${theme === 'dark' ? 'hover:text-green-300' : 'hover:text-green-600'}`}>
+                <Mail className="h-5 w-5" />
+                <span>Email</span>
+              </Link>
+              <Link href="https://drive.google.com/file/d/1uO7cDSyq9zHykewBZKtcgqyrvOpwhsss/view?usp=sharing" className={`flex items-center space-x-1 ${theme === 'dark' ? 'hover:text-green-300' : 'hover:text-green-600'}`}>
+                <File className="h-5 w-5" />
+                <span>Resume</span>
+              </Link>
+            </div>
           </div>
         </div>
 
-        <div ref={outputRef} className={`mb-4 h-[60vh] overflow-y-auto rounded border ${theme === 'dark' ? 'border-green-400 bg-black' : 'border-green-800 bg-gray-100'} p-4 relative`}>
+        <div ref={outputRef} className={`mb-4 h-[70vh] overflow-y-auto rounded border ${theme === 'dark' ? 'border-green-400 bg-black' : 'border-green-800 bg-gray-100'} p-4 relative`}>
           {output.map((line, i) => (
             <div key={i} className="whitespace-pre-wrap">
               {line}
@@ -368,7 +604,7 @@ Node.js, React, AWS, HTML/CSS/JS
           )}
           
           <form onSubmit={handleSubmit} className="flex">
-            <span className="mr-2">[root@localhost ~]#</span>
+            <span className="mr-2">[root@localhost {currentDirectory}]#</span>
             <input
               ref={inputRef}
               type="text"
