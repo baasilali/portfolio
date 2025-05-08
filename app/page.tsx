@@ -471,7 +471,6 @@ Node.js, React, AWS, HTML/CSS/JS
           availableCmds = [];
         }
       } else if (currentInput.startsWith("cd ")) {
-        const cdArg = currentInput.substring(3);
         availableCmds = projectsData.map(p => `cd ${p.id}`).filter(name => name.startsWith(currentInput));
         if (currentDirectory !== "~") {
           availableCmds.push("cd ..");
