@@ -50,6 +50,13 @@ export default function Terminal() {
 These shell commands are defined internally.
 Type 'help' to see this list.
 
+Portfolio Information:
+- "education": Show education details
+- "experience": Show work experience
+- "projects": Show project portfolio
+- "certifications": Show certifications
+- "clear": Clear the terminal
+
 Navigation & Projects:
 - "ls": List available projects
 - "cd <project-name>": Navigate to a project
@@ -58,13 +65,6 @@ Navigation & Projects:
 Project Commands (when in a project directory):
 - "npm install": Install project dependencies
 - "npm run dev": Launch the project in a new tab
-
-Portfolio Information:
-- "education": Show education details
-- "experience": Show work experience
-- "projects": Show project portfolio
-- "certifications": Show certifications
-- "clear": Clear the terminal
 
 `,
     },
