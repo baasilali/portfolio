@@ -73,7 +73,7 @@ Project Commands (when in a project directory):
       description: "Show education details",
       action: () => `
 San Jose State University - Bachelor's in Engineering in Software Engineering
-- Minor in Buisness Administration
+- Minor in Business Administration
 - Graduation Year: 2026
 - GPA: 3.86
 
@@ -123,9 +123,9 @@ Python
       description: "Show project portfolio",
       action: () => `
 
-Ultrasonic Measuring Intrument 
+Ultrasonic Measuring Instrument 
 C, C++
-    - Using an Arduino IDE and a RasberryPi5, developed multi-layered
+    - Using an Arduino IDE and a RaspberryPi5, developed multi-layered
       functions in C/C# to read data from an Ultrasonic Sensor to 
       accurately measure exact distances (in cm/in/ft) up to 15 ft 
       with a 4% error margin (laser-measuring instrument as control) 
@@ -161,7 +161,7 @@ Python, Tkinter
       management, featuring real-time parameter adjustments and 
       state reset functionality
 
-Entropy Visualizer - Frontend Node Manupulation
+Entropy Visualizer - Frontend Node Manipulation
 TypeScript, JavaScript, CSS, HTML
 
     - Implemented real-time statistical analysis and visualization of 
@@ -174,8 +174,8 @@ TypeScript, JavaScript, CSS, HTML
       returns particles to their original positions
 
 
-Resumate.dev - visibilty.
-Python, Next.js, Node.js, HTML/CS/JS
+Resumate.dev - visibility.
+Python, Next.js, Node.js, HTML/CSS/JS
 
     - Developed an AI integrated web-app trained on an NLP using 
       spaCy to provide keyword feedback for users, leveraging company 
@@ -560,7 +560,7 @@ Node.js, React, AWS, HTML/CSS/JS
           <pre className="text-xs leading-none md:text-sm whitespace-pre mb-4 md:mb-0 md:flex-shrink-0">{ASCII_NAME}</pre>
           
           <div className="md:pt-8 flex flex-col justify-center">
-            <p className="mb-2">B.E. Software Engineering + Minor Buisness Adminstration</p>
+            <p className="mb-2">B.E. Software Engineering + Minor Business Administration</p>
             <p className="mb-4">San Jose State University</p>
             <div className="flex flex-wrap gap-4">
               <Link href="https://github.com/baasilali" className={`flex items-center space-x-1 ${theme === 'dark' ? 'hover:text-green-300' : 'hover:text-green-600'}`}>
