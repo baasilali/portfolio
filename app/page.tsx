@@ -18,7 +18,6 @@ const projectsData = [
   { name: "Explosions - Physics-Based Particle Simulation", url: "https://github.com/baasilali/explosions", id: "explosions-physics-simulation" },
   { name: "Resumate.dev", url: "https://resumate.dev", id: "resumate-dev" },
   { name: "Ray Tracer Visualizer", url: "https://raytracing-fawn.vercel.app/", id: "ray-tracer-visualizer" },
-  { name: "2m", url: "https://2m.trading", id: "2m-trading" },
   { name: "Entropy Visualizer", url: "https://entropy-sand.vercel.app/", id: "entropy-visualizer" }
 ];
 
@@ -57,22 +56,14 @@ Portfolio Information:
 - "certifications": Show certifications
 - "clear": Clear the terminal
 
-Navigation & Projects:
-- "ls": List available projects
-- "cd <project-name>": Navigate to a project
-- "cd ..": Navigate back to home directory
-
-Project Commands (when in a project directory):
-- "npm install": Install project dependencies
-- "npm run dev": Launch the project in a new tab
-
 `,
     },
     {
       name: "education",
       description: "Show education details",
       action: () => `
-San Jose State University - Bachelor's in Engineering in Software Engineering
+San Jose State University - Bachelor's in Science in Software Engineering
+- Additional Enrollement: Computer Networking (CNSM)
 - Minor in Business Administration
 - Graduation Year: 2026
 - GPA: 3.86
@@ -575,7 +566,7 @@ Node.js, React, AWS, HTML/CSS/JS
                 <Mail className="h-5 w-5" />
                 <span>Email</span>
               </Link>
-              <Link href="https://drive.google.com/file/d/1uO7cDSyq9zHykewBZKtcgqyrvOpwhsss/view?usp=sharing" className={`flex items-center space-x-1 ${theme === 'dark' ? 'hover:text-green-300' : 'hover:text-green-600'}`}>
+              <Link href="https://drive.google.com/file/d/1o59oWJB0hXdixwsfjoanPJ9xRY3tnvkh/view?usp=sharing" className={`flex items-center space-x-1 ${theme === 'dark' ? 'hover:text-green-300' : 'hover:text-green-600'}`}>
                 <File className="h-5 w-5" />
                 <span>Resume</span>
               </Link>
@@ -585,7 +576,7 @@ Node.js, React, AWS, HTML/CSS/JS
 
         <div ref={outputRef} className={`mb-4 h-[70vh] overflow-y-auto rounded border ${theme === 'dark' ? 'border-green-400 bg-black' : 'border-green-800 bg-gray-100'} p-4 relative`}>
           {output.map((line, i) => (
-            <div key={i} className="whitespace-pre-wrap">
+            <div key={i} className={`whitespace-pre-wrap ${(line.includes('Portfolio Information:') || line.includes('Navigation & Projects:') || line.includes('Project Commands') || (line.startsWith('- "') && line.includes('":')) || (line.startsWith('- ') && line.includes(':'))) && !line.includes('Step bash, version') && !line.includes('These shell commands are defined internally') && !line.includes('Type \'help\' to see this list') ? 'text-white' : ''}`}>
               {line}
             </div>
           ))}
