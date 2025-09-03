@@ -18,7 +18,8 @@ const projectsData = [
   { name: "Explosions - Physics-Based Particle Simulation", url: "https://github.com/baasilali/explosions", id: "explosions-physics-simulation" },
   { name: "Resumate.dev", url: "https://resumate.dev", id: "resumate-dev" },
   { name: "Ray Tracer Visualizer", url: "https://raytracing-fawn.vercel.app/", id: "ray-tracer-visualizer" },
-  { name: "Entropy Visualizer", url: "https://entropy-sand.vercel.app/", id: "entropy-visualizer" }
+  { name: "Entropy Visualizer", url: "https://entropy-sand.vercel.app/", id: "entropy-visualizer" },
+  { name: "9M", url: "https://9m.site", id: "9M" }
 ];
 
 interface Command {
@@ -551,7 +552,7 @@ Node.js, React, AWS, HTML/CSS/JS
           <pre className="text-xs leading-none md:text-sm whitespace-pre mb-4 md:mb-0 md:flex-shrink-0">{ASCII_NAME}</pre>
           
           <div className="md:pt-8 flex flex-col justify-center">
-            <p className="mb-2">B.E. Software Engineering + Minor Business Administration</p>
+            <p className="mb-2">B.S. Software Engineering + Minor Business Administration</p>
             <p className="mb-4">San Jose State University</p>
             <div className="flex flex-wrap gap-4">
               <Link href="https://github.com/baasilali" className={`flex items-center space-x-1 ${theme === 'dark' ? 'hover:text-green-300' : 'hover:text-green-600'}`}>
