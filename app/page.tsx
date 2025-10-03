@@ -108,6 +108,12 @@ Python
     - Created documentation for over 50+ classes and programs, used 
       feedback from Sr. Engineers to uphold relevancy and use-cases
 
+Elide - Product Engineer
+September 2025 - Present
+San Francisco, CA
+
+    - Backed by Oracle, Product Growth
+
 `,
     },
     {
