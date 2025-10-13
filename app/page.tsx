@@ -112,7 +112,7 @@ Elide - Product Engineer
 September 2025 - Present
 San Francisco, CA
 
-    - Backed by Oracle, Product Growth
+    - Backed by Oracle, Product Growth and Implementation
 
 `,
     },
@@ -202,7 +202,6 @@ React, Three.js, TypeScript, Tailwind CSS
 2m
 Node.js, React, AWS, HTML/CSS/JS
 
-    - Coming Soon! (2m.trading)
     - Designed and integrated an AI-driven chatbot tailored for the CS:GO 
       Skin economy, leveraging a customized Llama3 model on a RAG to 
       real-time data on prices, market-trends, and pattern-identification
