@@ -112,7 +112,7 @@ Elide - Product Engineer
 September 2025 - Present
 San Francisco, CA
 
-    - Backed by Oracle, Product Growth and Implementation
+    - Backed by Oracle, Product Growth, Development, and Implementation
 
 `,
     },
