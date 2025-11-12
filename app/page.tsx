@@ -15,11 +15,11 @@ const ASCII_NAME = `
 
 const projectsData = [
   { name: "Interactive 3D Wave Animation", url: "https://3d-waves.vercel.app/", id: "interactive-wave-animation" },
-  { name: "Explosions - Physics-Based Particle Simulation", url: "https://github.com/baasilali/explosions", id: "explosions-physics-simulation" },
-  { name: "Resumate.dev", url: "https://resumate.dev", id: "resumate-dev" },
   { name: "Ray Tracer Visualizer", url: "https://raytracing-fawn.vercel.app/", id: "ray-tracer-visualizer" },
   { name: "Entropy Visualizer", url: "https://entropy-sand.vercel.app/", id: "entropy-visualizer" },
-  { name: "9M", url: "https://9m.site", id: "9M" }
+  { name: "9M Holdings Inc.", url: "https://9m.site", id: "9M" },
+  { name: "2M Trading (Temporarily Unavailible)", url: "https://2m.trading", id: "2m-trading" },
+
 ];
 
 interface Command {
@@ -112,7 +112,7 @@ Elide - Product Engineer
 September 2025 - Present
 San Francisco, CA
 
-    - Backed by Oracle, Product Growth, Development, and Implementation
+    - Backed by Oracle. Product Growth, Development, and Implementation
 
 `,
     },
