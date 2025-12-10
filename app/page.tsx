@@ -2,6 +2,18 @@
 
 import { useState, useEffect, useRef } from "react"
 import { File, Github, Linkedin, Mail } from "lucide-react"
+
+// Custom X (Twitter) Icon Component
+const XIcon = ({ className }: { className?: string }) => (
+  <svg
+    viewBox="0 0 24 24"
+    className={className}
+    fill="currentColor"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+  </svg>
+)
 import Link from "next/link"
 
 const ASCII_NAME = `
@@ -571,6 +583,10 @@ Node.js, React, AWS, HTML/CSS/JS
               <Link href="mailto:baasil.ali@gmail.com" className={`flex items-center space-x-1 ${theme === 'dark' ? 'hover:text-green-300' : 'hover:text-green-600'}`}>
                 <Mail className="h-5 w-5" />
                 <span>Email</span>
+              </Link>
+              <Link href="https://x.com/baasilalii" className={`flex items-center space-x-1 ${theme === 'dark' ? 'hover:text-green-300' : 'hover:text-green-600'}`}>
+                <XIcon className="h-5 w-5" />
+                <span>Twitter</span>
               </Link>
               <Link href="https://drive.google.com/file/d/1o59oWJB0hXdixwsfjoanPJ9xRY3tnvkh/view?usp=sharing" className={`flex items-center space-x-1 ${theme === 'dark' ? 'hover:text-green-300' : 'hover:text-green-600'}`}>
                 <File className="h-5 w-5" />
