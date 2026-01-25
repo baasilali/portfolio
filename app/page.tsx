@@ -1,29 +1,57 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { File, Github, Linkedin, Mail } from "lucide-react"
 
-// Custom X (Twitter) Icon Component
-const XIcon = ({ className }: { className?: string }) => (
-  <svg
-    viewBox="0 0 24 24"
-    className={className}
-    fill="currentColor"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-  </svg>
-)
-import Link from "next/link"
-
-const ASCII_NAME = `
-██████╗  █████╗  █████╗ ███████╗██╗██╗     
+const ASCII_NAME = `██████╗  █████╗  █████╗ ███████╗██╗██╗     
 ██╔══██╗██╔══██╗██╔══██╗██╔════╝██║██║     
 ██████╔╝███████║███████║███████╗██║██║     
 ██╔══██╗██╔══██║██╔══██║╚════██║██║██║     
 ██████╔╝██║  ██║██║  ██║███████║██║███████╗
-╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═╝╚══════╝
-`
+╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═╝╚══════╝`
+
+const generateNeofetch = (uptime: string, resolution: string) => {
+  const asciiLines = ASCII_NAME.split('\n')
+  const info = [
+    'baasil@portfolio',
+    '-----------------',
+    `__LABEL__OS:__VALUE__ FreeBSD 14.0-RELEASE amd64`,
+    `__LABEL__Uptime:__VALUE__ ${uptime}`,
+    '__LABEL__Packages:__VALUE__ 500 (pkg)',
+    '__LABEL__Shell:__VALUE__ bash',
+    `__LABEL__Resolution:__VALUE__ ${resolution}`,
+    '__LABEL__DE:__VALUE__ Xfce',
+    '__LABEL__WM:__VALUE__ Xfwm4',
+    '__LABEL__WM Theme:__VALUE__ Default',
+    '__LABEL__Theme:__VALUE__ Adwaita [GTK3]',
+    '__LABEL__Icons:__VALUE__ elementary-xfce [GTK2], Adwaita [GTK3]',
+    '__LABEL__Terminal:__VALUE__ portfolio.sh',
+    '__LABEL__Terminal Font:__VALUE__ Monospace 12',
+    '__LABEL__CPU:__VALUE__ AMD Ryzen 7 9800X3D',
+    '__LABEL__GPU:__VALUE__ NVIDIA GeForce RTX 5090',
+    '__LABEL__Memory:__VALUE__ 126MB / 98304MB',
+  ]
+  
+  const maxAsciiLength = Math.max(...asciiLines.map(line => line.length))
+  const combined = []
+  const maxLines = Math.max(asciiLines.length, info.length)
+  
+  for (let i = 0; i < maxLines; i++) {
+    const asciiLine = asciiLines[i] || ''
+    const infoLine = info[i] || ''
+    const padding = ' '.repeat(Math.max(0, maxAsciiLength - asciiLine.length + 4))
+    combined.push(asciiLine + padding + infoLine)
+  }
+  
+  // Add color palette (using special marker that we'll detect in rendering)
+  const colorPalette1 = ' '.repeat(maxAsciiLength + 4) + '__COLOR_PALETTE_1__'
+  const colorPalette2 = ' '.repeat(maxAsciiLength + 4) + '__COLOR_PALETTE_2__'
+  combined.push(' ')
+  combined.push(' ')
+  combined.push(colorPalette1)
+  combined.push(colorPalette2)
+  
+  return combined.join('\n') + '\n\nType "help" for available commands.'
+}
 
 const projectsData = [
   { name: "Interactive 3D Wave Animation", url: "https://3d-waves.vercel.app/", id: "interactive-wave-animation" },
@@ -42,7 +70,6 @@ interface Command {
 
 export default function Terminal() {
   const [input, setInput] = useState("")
-  const [output, setOutput] = useState<string[]>(['Type "help" for available commands.'])
   const [commandHistory, setCommandHistory] = useState<string[]>([])
   const [historyIndex, setHistoryIndex] = useState(-1)
   const [currentDirectory, setCurrentDirectory] = useState("~")
@@ -51,8 +78,13 @@ export default function Terminal() {
   const [showTabSuggestions, setShowTabSuggestions] = useState(false)
   const [tabSuggestions, setTabSuggestions] = useState<string[]>([])
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
+  const [uptime, setUptime] = useState("0 secs")
+  const [resolution, setResolution] = useState("1920x1080")
+  const [output, setOutput] = useState<string[]>([])
+  const [isNeofetchMode, setIsNeofetchMode] = useState(true)
   const inputRef = useRef<HTMLInputElement>(null)
   const outputRef = useRef<HTMLDivElement>(null)
+  const startTimeRef = useRef(Date.now())
 
   const commands: Command[] = [
     {
@@ -67,7 +99,21 @@ Portfolio Information:
 - "experience": Show work experience
 - "projects": Show project portfolio
 - "certifications": Show certifications
+- "links": Show contact links
 - "clear": Clear the terminal
+
+`,
+    },
+    {
+      name: "links",
+      description: "Show contact links",
+      action: () => `
+
+GitHub: https://github.com/baasilali
+LinkedIn: https://linkedin.com/in/baasilali
+Email: baasil.ali@gmail.com
+Twitter: https://x.com/baasilalii
+Resume: https://drive.google.com/file/d/1o59oWJB0hXdixwsfjoanPJ9xRY3tnvkh/view?usp=sharing
 
 `,
     },
@@ -244,7 +290,7 @@ Node.js, React, AWS, HTML/CSS/JS
     {
       name: "clear",
       description: "Clear the terminal",
-      action: () => "",
+      action: () => "CLEAR_SCREEN",
     },
   ]
 
@@ -253,6 +299,46 @@ Node.js, React, AWS, HTML/CSS/JS
       outputRef.current.scrollTop = outputRef.current.scrollHeight
     }
   }, [output]) // This dependency is necessary for scrolling to work
+
+  // Initialize and update neofetch when uptime or resolution changes
+  useEffect(() => {
+    if (isNeofetchMode) {
+      setOutput([generateNeofetch(uptime, resolution)])
+    }
+  }, [uptime, resolution, isNeofetchMode])
+
+  // Update uptime every second
+  useEffect(() => {
+    const updateUptime = () => {
+      const elapsed = Math.floor((Date.now() - startTimeRef.current) / 1000)
+      if (elapsed < 60) {
+        setUptime(`${elapsed} secs`)
+      } else if (elapsed < 3600) {
+        const mins = Math.floor(elapsed / 60)
+        const secs = elapsed % 60
+        setUptime(`${mins} min${mins !== 1 ? 's' : ''}, ${secs} secs`)
+      } else {
+        const hours = Math.floor(elapsed / 3600)
+        const mins = Math.floor((elapsed % 3600) / 60)
+        setUptime(`${hours} hour${hours !== 1 ? 's' : ''}, ${mins} min${mins !== 1 ? 's' : ''}`)
+      }
+    }
+    
+    updateUptime()
+    const interval = setInterval(updateUptime, 1000)
+    return () => clearInterval(interval)
+  }, [])
+
+  // Update resolution on window resize
+  useEffect(() => {
+    const updateResolution = () => {
+      setResolution(`${window.innerWidth}x${window.innerHeight}`)
+    }
+    
+    updateResolution()
+    window.addEventListener('resize', updateResolution)
+    return () => window.removeEventListener('resize', updateResolution)
+  }, [])
 
   const handleCommand = (cmd: string) => {
     const trimmedCmd = cmd.trim().toLowerCase()
@@ -267,14 +353,21 @@ Node.js, React, AWS, HTML/CSS/JS
       return;
     }
 
+    // Disable neofetch mode when any command is run (except clear which handles it specially)
+    if (command?.name !== "clear") {
+      setIsNeofetchMode(false)
+    }
+
     if (command) {
       if (command.name === "clear") {
-        setOutput(['Type "help" for available commands.'])
+        setIsNeofetchMode(true)
+        setOutput([generateNeofetch(uptime, resolution)])
         return;
       } else {
         newOutput = [...newOutput, command.action()]
       }
     } else if (baseCmd === "ls") {
+      setIsNeofetchMode(false)
       if (currentDirectory === "~") {
         const projectNames = projectsData.map(p => p.id)
         newOutput = [...newOutput, " ", ...projectNames, " "]
@@ -282,6 +375,7 @@ Node.js, React, AWS, HTML/CSS/JS
         newOutput = [...newOutput, " ", "Available commands: npm install, npm run dev, cd ..", " "]
       }
     } else if (baseCmd === "cd") {
+      setIsNeofetchMode(false)
       if (args.length > 1) {
         const targetDir = args.slice(1).join(" ")
         if (targetDir === "..") {
@@ -304,6 +398,7 @@ Node.js, React, AWS, HTML/CSS/JS
         newOutput = [...newOutput, `Usage: cd <directory_name> or cd ..`]
       }
     } else if (baseCmd === "npm" && args.length > 1) {
+      setIsNeofetchMode(false)
       const npmAction = args[1].toLowerCase();
       if (currentDirectory === "~") {
         newOutput = [...newOutput, `npm commands can only be run inside a project directory.`];
@@ -435,12 +530,15 @@ Node.js, React, AWS, HTML/CSS/JS
         newOutput = [...newOutput, `Unknown npm command: npm ${npmAction}${args.length > 2 ? ' ' + args.slice(2).join(' '): ''}`];
       }
     } else if (trimmedCmd === "flashbang") {
+      setIsNeofetchMode(false)
       setTheme('light')
       newOutput = [...newOutput, `FLASHBANG!`];
     } else if (trimmedCmd === "dark mode") {
+      setIsNeofetchMode(false)
       setTheme('dark')
       newOutput = [...newOutput, `Switched to dark mode.`];
     } else if (trimmedCmd) {
+      setIsNeofetchMode(false)
       newOutput = [...newOutput, `Command not found: ${cmd}`]
     }
     setOutput(newOutput)
@@ -563,45 +661,64 @@ Node.js, React, AWS, HTML/CSS/JS
   }
 
   return (
-    <div className={`min-h-screen p-4 font-mono ${theme === 'dark' ? 'bg-black text-green-400' : 'bg-gray-200 text-green-800'}`} onClick={handleClick}>
-      <div className="mx-auto max-w-5xl">
-        <div className="flex flex-col md:flex-row md:items-start md:gap-8 mb-6">
-          <pre className="text-xs leading-none md:text-sm whitespace-pre mb-4 md:mb-0 md:flex-shrink-0">{ASCII_NAME}</pre>
-          
-          <div className="md:pt-8 flex flex-col justify-center">
-            <p className="mb-2">B.S. Software Engineering + Minor Business Administration</p>
-            <p className="mb-4">San Jose State University</p>
-            <div className="flex flex-wrap gap-4">
-              <Link href="https://github.com/baasilali" className={`flex items-center space-x-1 ${theme === 'dark' ? 'hover:text-green-300' : 'hover:text-green-600'}`}>
-                <Github className="h-5 w-5" />
-                <span>GitHub</span>
-              </Link>
-              <Link href="https://linkedin.com/in/baasilali" className={`flex items-center space-x-1 ${theme === 'dark' ? 'hover:text-green-300' : 'hover:text-green-600'}`}>
-                <Linkedin className="h-5 w-5" />
-                <span>LinkedIn</span>
-              </Link>
-              <Link href="mailto:baasil.ali@gmail.com" className={`flex items-center space-x-1 ${theme === 'dark' ? 'hover:text-green-300' : 'hover:text-green-600'}`}>
-                <Mail className="h-5 w-5" />
-                <span>Email</span>
-              </Link>
-              <Link href="https://x.com/baasilalii" className={`flex items-center space-x-1 ${theme === 'dark' ? 'hover:text-green-300' : 'hover:text-green-600'}`}>
-                <XIcon className="h-5 w-5" />
-                <span>Twitter</span>
-              </Link>
-              <Link href="https://drive.google.com/file/d/1o59oWJB0hXdixwsfjoanPJ9xRY3tnvkh/view?usp=sharing" className={`flex items-center space-x-1 ${theme === 'dark' ? 'hover:text-green-300' : 'hover:text-green-600'}`}>
-                <File className="h-5 w-5" />
-                <span>Resume</span>
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        <div ref={outputRef} className={`mb-4 h-[70vh] overflow-y-auto rounded border ${theme === 'dark' ? 'border-green-400 bg-black' : 'border-green-800 bg-gray-100'} p-4 relative`}>
-          {output.map((line, i) => (
-            <div key={i} className={`whitespace-pre-wrap ${(line.includes('Portfolio Information:') || line.includes('Navigation & Projects:') || line.includes('Project Commands') || (line.startsWith('- "') && line.includes('":')) || (line.startsWith('- ') && line.includes(':'))) && !line.includes('Step bash, version') && !line.includes('These shell commands are defined internally') && !line.includes('Type \'help\' to see this list') ? 'text-white' : ''}`}>
-              {line}
-            </div>
-          ))}
+    <div className={`min-h-screen font-mono ${theme === 'dark' ? 'bg-black text-green-400' : 'bg-gray-200 text-green-800'}`} onClick={handleClick}>
+      <div className="p-4">
+        <div ref={outputRef} className={`mb-4 h-[90vh] overflow-y-auto rounded ${theme === 'dark' ? 'bg-black' : 'bg-gray-100'} p-4 relative`}>
+          {output.map((entry, i) => {
+            const lines = entry.split('\n')
+            return lines.map((line, j) => {
+              const key = `${i}-${j}`
+              if (line.includes('__COLOR_PALETTE_1__')) {
+                const prefix = line.split('__COLOR_PALETTE_1__')[0]
+                return (
+                  <div key={key} className="whitespace-pre leading-none">
+                    {prefix}
+                    <span className="text-gray-900 bg-gray-900">███</span>
+                    <span className="text-red-800 bg-red-800">███</span>
+                    <span className="text-green-800 bg-green-800">███</span>
+                    <span className="text-yellow-700 bg-yellow-700">███</span>
+                    <span className="text-blue-800 bg-blue-800">███</span>
+                    <span className="text-purple-800 bg-purple-800">███</span>
+                    <span className="text-cyan-700 bg-cyan-700">███</span>
+                    <span className="text-gray-500 bg-gray-500">███</span>
+                  </div>
+                )
+              }
+              if (line.includes('__COLOR_PALETTE_2__')) {
+                const prefix = line.split('__COLOR_PALETTE_2__')[0]
+                return (
+                  <div key={key} className="whitespace-pre leading-none">
+                    {prefix}
+                    <span className="text-gray-500 bg-gray-500">███</span>
+                    <span className="text-red-500 bg-red-500">███</span>
+                    <span className="text-green-500 bg-green-500">███</span>
+                    <span className="text-yellow-400 bg-yellow-400">███</span>
+                    <span className="text-blue-500 bg-blue-500">███</span>
+                    <span className="text-purple-500 bg-purple-500">███</span>
+                    <span className="text-cyan-400 bg-cyan-400">███</span>
+                    <span className="text-white bg-white">███</span>
+                  </div>
+                )
+              }
+              if (line.includes('__LABEL__') && line.includes('__VALUE__')) {
+                const parts = line.split('__LABEL__')
+                const prefix = parts[0]
+                const rest = parts[1].split('__VALUE__')
+                const label = rest[0]
+                const value = rest[1]
+                return (
+                  <div key={key} className="whitespace-pre">
+                    {prefix}<span className={theme === 'dark' ? 'text-green-400' : 'text-green-800'}>{label}</span><span className="text-white">{value}</span>
+                  </div>
+                )
+              }
+              return (
+                <div key={key} className={`whitespace-pre-wrap ${(line.includes('Portfolio Information:') || line.includes('Navigation & Projects:') || line.includes('Project Commands') || (line.startsWith('- "') && line.includes('":')) || (line.startsWith('- ') && line.includes(':'))) && !line.includes('Step bash, version') && !line.includes('These shell commands are defined internally') && !line.includes('Type \'help\' to see this list') ? 'text-white' : ''}`}>
+                  {line}
+                </div>
+              )
+            })
+          })}
           
           {/* Tab suggestions */}
           {showTabSuggestions && tabSuggestions.length > 0 && (
