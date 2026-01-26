@@ -13,7 +13,7 @@ html {
 body {
   background-color: #000000;
   color: #4ade80;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-jetbrains-mono), monospace;
 }
 
 @layer utilities {

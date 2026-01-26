@@ -1,29 +1,85 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { File, Github, Linkedin, Mail } from "lucide-react"
 
-// Custom X (Twitter) Icon Component
-const XIcon = ({ className }: { className?: string }) => (
-  <svg
-    viewBox="0 0 24 24"
-    className={className}
-    fill="currentColor"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-  </svg>
-)
-import Link from "next/link"
+const ASCII_NAME = `                                                           _...---.._
+                                                       _.\`       -_ \`\`.
+                                                   .-'\`                 \`.
+                                                .-\`                     q ;
+                                             _-\`                       __  \\
+                                         .-'\`                  . ' .   \\ \`;/
+                                     _.-\`                    /.      \`._\`/
+                             _...--'\`                        \\_\`..._
+                          .'\`                         -         \`'--:._
+                       .-\`                           \\                  \`-.
+                      .                \`              \`-..__.....----...., \`.
+                     '                 \`  '''---..-''\`'              : :  : :
+                   .\` -                '\`.  \`-.                       \`'   \`'
+                .-\` .\` '             .\`'.__ ;
+            _.-\` .-\`   '            .
+        _.-\` _.-\`    .' '         .\`   
+(\`''--'' _.-\`      .'  '        .'
+ \`'----''        .'  .\`       .\`   
+               .'  .'     .-'\`
+             .'   :    .-\`   
+             \`. .\`   ,\`
+              .'   .'
+             '   .\`
+            '  .\`
+            \`  '.
+            \`.___;
+                      baasil`
 
-const ASCII_NAME = `
-██████╗  █████╗  █████╗ ███████╗██╗██╗     
-██╔══██╗██╔══██╗██╔══██╗██╔════╝██║██║     
-██████╔╝███████║███████║███████╗██║██║     
-██╔══██╗██╔══██║██╔══██║╚════██║██║██║     
-██████╔╝██║  ██║██║  ██║███████║██║███████╗
-╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═╝╚══════╝
-`
+const generateNeofetch = (uptime: string, resolution: string, memory: string, isMobile: boolean) => {
+  const info = [
+    'baasil@portfolio',
+    '-----------------',
+    `__LABEL__OS:__VALUE__ FreeBSD 14.0-RELEASE amd64`,
+    `__LABEL__Uptime:__VALUE__ ${uptime}`,
+    '__LABEL__Packages:__VALUE__ 500 (pkg)',
+    '__LABEL__Shell:__VALUE__ bash',
+    `__LABEL__Resolution:__VALUE__ ${resolution}`,
+    '__LABEL__DE:__VALUE__ Xfce',
+    '__LABEL__WM:__VALUE__ Xfwm4',
+    '__LABEL__WM Theme:__VALUE__ Default',
+    '__LABEL__Theme:__VALUE__ Adwaita [GTK3]',
+    '__LABEL__Icons:__VALUE__ elementary-xfce [GTK2], Adwaita [GTK3]',
+    '__LABEL__Terminal:__VALUE__ portfolio.sh',
+    '__LABEL__Terminal Font:__VALUE__ JetBrains Mono 12',
+    '__LABEL__CPU:__VALUE__ AMD Ryzen 7 9800X3D',
+    '__LABEL__GPU:__VALUE__ NVIDIA GeForce RTX 5090',
+    `__LABEL__Memory:__VALUE__ ${memory}`,
+    '',
+    '__COLOR_PALETTE_1__',
+    '__COLOR_PALETTE_2__',
+  ]
+
+  if (isMobile) {
+    // Mobile: stack vertically - ASCII art above, then info below
+    // Trim leading whitespace to left-align the ASCII art
+    // Mark ASCII lines for smaller font rendering
+    const asciiLines = ASCII_NAME.split('\n')
+    const nonEmptyLines = asciiLines.filter(line => line.trim().length > 0)
+    const minLeadingSpaces = Math.min(...nonEmptyLines.map(line => line.match(/^(\s*)/)?.[1].length || 0))
+    const trimmedAscii = asciiLines.map(line => '__ASCII__' + line.slice(minLeadingSpaces)).join('\n')
+    return '[root@localhost ~]# neofetch\n' + trimmedAscii + '\n\n' + info.join('\n') + '\n\n\nType "help" for available commands.'
+  }
+  
+  // Desktop: side-by-side layout
+  const asciiLines = ASCII_NAME.split('\n')
+  const maxAsciiLength = Math.max(...asciiLines.map(line => line.length))
+  const combined = []
+  const maxLines = Math.max(asciiLines.length, info.length)
+  
+  for (let i = 0; i < maxLines; i++) {
+    const asciiLine = asciiLines[i] || ''
+    const infoLine = info[i] || ''
+    const padding = ' '.repeat(Math.max(0, maxAsciiLength - asciiLine.length + 4))
+    combined.push(asciiLine + padding + infoLine)
+  }
+  
+  return '[root@localhost ~]# neofetch\n' + combined.join('\n') + '\n\n\n\n\nType "help" for available commands.'
+}
 
 const projectsData = [
   { name: "Interactive 3D Wave Animation", url: "https://3d-waves.vercel.app/", id: "interactive-wave-animation" },
@@ -42,7 +98,6 @@ interface Command {
 
 export default function Terminal() {
   const [input, setInput] = useState("")
-  const [output, setOutput] = useState<string[]>(['Type "help" for available commands.'])
   const [commandHistory, setCommandHistory] = useState<string[]>([])
   const [historyIndex, setHistoryIndex] = useState(-1)
   const [currentDirectory, setCurrentDirectory] = useState("~")
@@ -51,8 +106,16 @@ export default function Terminal() {
   const [showTabSuggestions, setShowTabSuggestions] = useState(false)
   const [tabSuggestions, setTabSuggestions] = useState<string[]>([])
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
+  const [accentColor, setAccentColor] = useState('#4ade80') // green-400 default
+  const [uptime, setUptime] = useState("0 secs")
+  const [resolution, setResolution] = useState("1920x1080")
+  const [memory, setMemory] = useState("0MB / 0MB")
+  const [isMobile, setIsMobile] = useState(false)
+  const [output, setOutput] = useState<string[]>([])
+  const [isNeofetchMode, setIsNeofetchMode] = useState(true)
   const inputRef = useRef<HTMLInputElement>(null)
   const outputRef = useRef<HTMLDivElement>(null)
+  const startTimeRef = useRef(Date.now())
 
   const commands: Command[] = [
     {
@@ -62,12 +125,32 @@ export default function Terminal() {
 These shell commands are defined internally.
 Type 'help' to see this list.
 
-Portfolio Information:
+Availible Commands:
 - "education": Show education details
 - "experience": Show work experience
+- "neofetch": Display system information
 - "projects": Show project portfolio
 - "certifications": Show certifications
+- "links": Show contact links
 - "clear": Clear the terminal
+
+`,
+    },
+    {
+      name: "neofetch",
+      description: "Display system information",
+      action: () => "NEOFETCH",
+    },
+    {
+      name: "links",
+      description: "Show contact links",
+      action: () => `
+
+GitHub: https://github.com/baasilali
+LinkedIn: https://linkedin.com/in/baasilali
+Email: baasil.ali@gmail.com
+Twitter: https://x.com/baasilalii
+Resume: https://drive.google.com/file/d/1o59oWJB0hXdixwsfjoanPJ9xRY3tnvkh/view?usp=sharing
 
 `,
     },
@@ -106,6 +189,8 @@ Java, JavaScript, Node.js, Next.js
       - Product usage increased by 35% post front-end development, 
         increasing profit by 50,000 USD in one calendar year
 
+---
+
 Teledyne Lecroy - SWE Intern
 July 2023 - Nov 2023
 Milpitas, CA
@@ -120,11 +205,16 @@ Python
     - Created documentation for over 50+ classes and programs, used 
       feedback from Sr. Engineers to uphold relevancy and use-cases
 
+---
+
 Elide - Product Engineer
 September 2025 - Present
 San Francisco, CA
 
-    - Backed by Oracle. Product Growth, Development, and Implementation
+    - Backed by Insight Venture Partners, Jetbrains, and Oracle.
+    - Product Development, Marketing, and Growth.
+    - Created and maintain core runtime and documentation + docs architechture.
+    - Over 20,000 lines of code merged.
 
 `,
     },
@@ -142,6 +232,8 @@ C, C++
     - Presented at SJSU StartUp and SJSU IdeasLab - Earned 2 Awards 
       for Innovation
 
+---
+
 Interactive 3D Wave Animation
 Three.js, GLSL, JavaScript, WebGL
 
@@ -158,6 +250,8 @@ Three.js, GLSL, JavaScript, WebGL
       and auto-rotation, along with a responsive design system adapting 
       to various screen sizes and device capabilities
 
+---
+
 Explosions - Physics-Based Particle Simulation
 Python, Tkinter
 
@@ -171,6 +265,8 @@ Python, Tkinter
       management, featuring real-time parameter adjustments and 
       state reset functionality
 
+---
+
 Entropy Visualizer - Frontend Node Manipulation
 TypeScript, JavaScript, CSS, HTML
 
@@ -183,6 +279,7 @@ TypeScript, JavaScript, CSS, HTML
       detection, and features an intelligent restoration algorithm that gradually 
       returns particles to their original positions
 
+---
 
 Resumate.dev - visibility.
 Python, Next.js, Node.js, HTML/CSS/JS
@@ -194,6 +291,8 @@ Python, Next.js, Node.js, HTML/CSS/JS
       to securely organize and store information to train AI
     - Calculated 90% efficiency in data allocation, 98% accuracy in created 
       word-clouds and calculated a 18% increase in interviews
+
+---
 
 Ray Tracer Visualizer - Interactive Light Simulation
 React, Three.js, TypeScript, Tailwind CSS
@@ -210,6 +309,8 @@ React, Three.js, TypeScript, Tailwind CSS
     - Implemented comprehensive controls for camera manipulation, object 
       transformation, and ray parameter adjustments using React Three 
       Fiber and Drei
+
+---
 
 2m
 Node.js, React, AWS, HTML/CSS/JS
@@ -244,7 +345,7 @@ Node.js, React, AWS, HTML/CSS/JS
     {
       name: "clear",
       description: "Clear the terminal",
-      action: () => "",
+      action: () => "CLEAR_SCREEN",
     },
   ]
 
@@ -253,6 +354,67 @@ Node.js, React, AWS, HTML/CSS/JS
       outputRef.current.scrollTop = outputRef.current.scrollHeight
     }
   }, [output]) // This dependency is necessary for scrolling to work
+
+  // Initialize and update neofetch when uptime, resolution, memory, or screen size changes
+  useEffect(() => {
+    if (isNeofetchMode) {
+      setOutput([generateNeofetch(uptime, resolution, memory, isMobile)])
+    }
+  }, [uptime, resolution, memory, isMobile, isNeofetchMode])
+
+  // Update uptime every second
+  useEffect(() => {
+    const updateUptime = () => {
+      const elapsed = Math.floor((Date.now() - startTimeRef.current) / 1000)
+      if (elapsed < 60) {
+        setUptime(`${elapsed} secs`)
+      } else if (elapsed < 3600) {
+        const mins = Math.floor(elapsed / 60)
+        const secs = elapsed % 60
+        setUptime(`${mins} min${mins !== 1 ? 's' : ''}, ${secs} secs`)
+      } else {
+        const hours = Math.floor(elapsed / 3600)
+        const mins = Math.floor((elapsed % 3600) / 60)
+        setUptime(`${hours} hour${hours !== 1 ? 's' : ''}, ${mins} min${mins !== 1 ? 's' : ''}`)
+      }
+    }
+    
+    updateUptime()
+    const interval = setInterval(updateUptime, 1000)
+    return () => clearInterval(interval)
+  }, [])
+
+  // Update resolution and mobile detection on window resize
+  // The side-by-side neofetch needs ~125 chars width, at ~9.6px per char = ~1200px minimum
+  useEffect(() => {
+    const updateResolution = () => {
+      setResolution(`${window.innerWidth}x${window.innerHeight}`)
+      setIsMobile(window.innerWidth < 1200)
+    }
+    
+    updateResolution()
+    window.addEventListener('resize', updateResolution)
+    return () => window.removeEventListener('resize', updateResolution)
+  }, [])
+
+  // Update memory usage
+  useEffect(() => {
+    const updateMemory = () => {
+      // performance.memory is Chrome/Chromium only
+      const perf = performance as Performance & { memory?: { usedJSHeapSize: number; jsHeapSizeLimit: number } }
+      if (perf.memory) {
+        const used = Math.round(perf.memory.usedJSHeapSize / 1024 / 1024)
+        const total = Math.round(perf.memory.jsHeapSizeLimit / 1024 / 1024)
+        setMemory(`${used}MB / ${total}MB`)
+      } else {
+        setMemory('N/A')
+      }
+    }
+    
+    updateMemory()
+    const interval = setInterval(updateMemory, 2000)
+    return () => clearInterval(interval)
+  }, [])
 
   const handleCommand = (cmd: string) => {
     const trimmedCmd = cmd.trim().toLowerCase()
@@ -267,14 +429,25 @@ Node.js, React, AWS, HTML/CSS/JS
       return;
     }
 
+    // Disable neofetch mode when any command is run (except clear/neofetch which handle it specially)
+    if (command?.name !== "clear" && command?.name !== "neofetch") {
+      setIsNeofetchMode(false)
+    }
+
     if (command) {
       if (command.name === "clear") {
+        setIsNeofetchMode(false)
         setOutput(['Type "help" for available commands.'])
+        return;
+      } else if (command.name === "neofetch") {
+        setIsNeofetchMode(true)
+        setOutput([...newOutput, generateNeofetch(uptime, resolution, memory, isMobile).replace('[root@localhost ~]# neofetch\n', '')])
         return;
       } else {
         newOutput = [...newOutput, command.action()]
       }
     } else if (baseCmd === "ls") {
+      setIsNeofetchMode(false)
       if (currentDirectory === "~") {
         const projectNames = projectsData.map(p => p.id)
         newOutput = [...newOutput, " ", ...projectNames, " "]
@@ -282,6 +455,7 @@ Node.js, React, AWS, HTML/CSS/JS
         newOutput = [...newOutput, " ", "Available commands: npm install, npm run dev, cd ..", " "]
       }
     } else if (baseCmd === "cd") {
+      setIsNeofetchMode(false)
       if (args.length > 1) {
         const targetDir = args.slice(1).join(" ")
         if (targetDir === "..") {
@@ -304,6 +478,7 @@ Node.js, React, AWS, HTML/CSS/JS
         newOutput = [...newOutput, `Usage: cd <directory_name> or cd ..`]
       }
     } else if (baseCmd === "npm" && args.length > 1) {
+      setIsNeofetchMode(false)
       const npmAction = args[1].toLowerCase();
       if (currentDirectory === "~") {
         newOutput = [...newOutput, `npm commands can only be run inside a project directory.`];
@@ -435,12 +610,15 @@ Node.js, React, AWS, HTML/CSS/JS
         newOutput = [...newOutput, `Unknown npm command: npm ${npmAction}${args.length > 2 ? ' ' + args.slice(2).join(' '): ''}`];
       }
     } else if (trimmedCmd === "flashbang") {
+      setIsNeofetchMode(false)
       setTheme('light')
       newOutput = [...newOutput, `FLASHBANG!`];
     } else if (trimmedCmd === "dark mode") {
+      setIsNeofetchMode(false)
       setTheme('dark')
       newOutput = [...newOutput, `Switched to dark mode.`];
     } else if (trimmedCmd) {
+      setIsNeofetchMode(false)
       newOutput = [...newOutput, `Command not found: ${cmd}`]
     }
     setOutput(newOutput)
@@ -563,53 +741,186 @@ Node.js, React, AWS, HTML/CSS/JS
   }
 
   return (
-    <div className={`min-h-screen p-4 font-mono ${theme === 'dark' ? 'bg-black text-green-400' : 'bg-gray-200 text-green-800'}`} onClick={handleClick}>
-      <div className="mx-auto max-w-5xl">
-        <div className="flex flex-col md:flex-row md:items-start md:gap-8 mb-6">
-          <pre className="text-xs leading-none md:text-sm whitespace-pre mb-4 md:mb-0 md:flex-shrink-0">{ASCII_NAME}</pre>
-          
-          <div className="md:pt-8 flex flex-col justify-center">
-            <p className="mb-2">B.S. Software Engineering + Minor Business Administration</p>
-            <p className="mb-4">San Jose State University</p>
-            <div className="flex flex-wrap gap-4">
-              <Link href="https://github.com/baasilali" className={`flex items-center space-x-1 ${theme === 'dark' ? 'hover:text-green-300' : 'hover:text-green-600'}`}>
-                <Github className="h-5 w-5" />
-                <span>GitHub</span>
-              </Link>
-              <Link href="https://linkedin.com/in/baasilali" className={`flex items-center space-x-1 ${theme === 'dark' ? 'hover:text-green-300' : 'hover:text-green-600'}`}>
-                <Linkedin className="h-5 w-5" />
-                <span>LinkedIn</span>
-              </Link>
-              <Link href="mailto:baasil.ali@gmail.com" className={`flex items-center space-x-1 ${theme === 'dark' ? 'hover:text-green-300' : 'hover:text-green-600'}`}>
-                <Mail className="h-5 w-5" />
-                <span>Email</span>
-              </Link>
-              <Link href="https://x.com/baasilalii" className={`flex items-center space-x-1 ${theme === 'dark' ? 'hover:text-green-300' : 'hover:text-green-600'}`}>
-                <XIcon className="h-5 w-5" />
-                <span>Twitter</span>
-              </Link>
-              <Link href="https://drive.google.com/file/d/1o59oWJB0hXdixwsfjoanPJ9xRY3tnvkh/view?usp=sharing" className={`flex items-center space-x-1 ${theme === 'dark' ? 'hover:text-green-300' : 'hover:text-green-600'}`}>
-                <File className="h-5 w-5" />
-                <span>Resume</span>
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        <div ref={outputRef} className={`mb-4 h-[70vh] overflow-y-auto rounded border ${theme === 'dark' ? 'border-green-400 bg-black' : 'border-green-800 bg-gray-100'} p-4 relative`}>
-          {output.map((line, i) => (
-            <div key={i} className={`whitespace-pre-wrap ${(line.includes('Portfolio Information:') || line.includes('Navigation & Projects:') || line.includes('Project Commands') || (line.startsWith('- "') && line.includes('":')) || (line.startsWith('- ') && line.includes(':'))) && !line.includes('Step bash, version') && !line.includes('These shell commands are defined internally') && !line.includes('Type \'help\' to see this list') ? 'text-white' : ''}`}>
-              {line}
-            </div>
-          ))}
+    <div 
+      className={`min-h-screen font-mono text-xs sm:text-sm md:text-base ${theme === 'dark' ? 'bg-black' : 'bg-gray-200'}`} 
+      style={{ color: accentColor }}
+      onClick={handleClick}
+    >
+      <div className="p-2 sm:p-4">
+        <div ref={outputRef} className={`mb-4 h-[90vh] overflow-y-auto overflow-x-auto rounded ${theme === 'dark' ? 'bg-black' : 'bg-gray-100'} p-2 sm:p-4 relative`}>
+          {output.map((entry, i) => {
+            const lines = entry.split('\n')
+            return lines.map((line, j) => {
+              const key = `${i}-${j}`
+              if (line.includes('__COLOR_PALETTE_1__')) {
+                const prefix = line.split('__COLOR_PALETTE_1__')[0]
+                const palette1 = [
+                  '#1f2937', // gray-800
+                  '#991b1b', // red-800
+                  '#166534', // green-800
+                  '#a16207', // yellow-700
+                  '#1e40af', // blue-800
+                  '#6b21a8', // purple-800
+                  '#0e7490', // cyan-700
+                  '#6b7280', // gray-500
+                ]
+                return (
+                  <div key={key} className="whitespace-pre leading-none">
+                    {prefix}
+                    {palette1.map((color, idx) => (
+                      <span
+                        key={idx}
+                        className="cursor-pointer hover:opacity-80"
+                        style={{ color, backgroundColor: color }}
+                        onClick={(e) => { e.stopPropagation(); setAccentColor(color); }}
+                      >███</span>
+                    ))}
+                  </div>
+                )
+              }
+              if (line.includes('__COLOR_PALETTE_2__')) {
+                const prefix = line.split('__COLOR_PALETTE_2__')[0]
+                const palette2 = [
+                  '#6b7280', // gray-500
+                  '#ef4444', // red-500
+                  '#22c55e', // green-500
+                  '#facc15', // yellow-400
+                  '#3b82f6', // blue-500
+                  '#a855f7', // purple-500
+                  '#22d3ee', // cyan-400
+                  '#ffffff', // white
+                ]
+                return (
+                  <div key={key} className="whitespace-pre leading-none">
+                    {prefix}
+                    {palette2.map((color, idx) => (
+                      <span
+                        key={idx}
+                        className="cursor-pointer hover:opacity-80"
+                        style={{ color, backgroundColor: color }}
+                        onClick={(e) => { e.stopPropagation(); setAccentColor(color); }}
+                      >███</span>
+                    ))}
+                  </div>
+                )
+              }
+              if (line.includes('__LABEL__') && line.includes('__VALUE__')) {
+                const parts = line.split('__LABEL__')
+                const prefix = parts[0]
+                const rest = parts[1].split('__VALUE__')
+                const label = rest[0]
+                const value = rest[1]
+                return (
+                  <div key={key} className="whitespace-pre">
+                    {prefix}<span style={{ color: accentColor }}>{label}</span><span className="text-white">{value}</span>
+                  </div>
+                )
+              }
+              // Mobile ASCII art - render with smaller font
+              if (line.startsWith('__ASCII__')) {
+                const asciiContent = line.slice(9) // Remove '__ASCII__' prefix
+                return (
+                  <div key={key} className="whitespace-pre text-[0.5rem] sm:text-[0.6rem] leading-none">
+                    {asciiContent}
+                  </div>
+                )
+              }
+              // Check if line is ASCII art or neofetch output (should stay green)
+              const isNeofetchLine = line.includes('@portfolio') || 
+                                     line.includes('baasil@') ||
+                                     /^[\s\S]*-{10,}[\s\S]*$/.test(line.trim()) && line.trim().startsWith('-')
+              const isAsciiArt = /^[\s._\-'`\\\/;:,|(){}[\]<>~!@#$%^&*+=]*$/.test(line) || 
+                                 (line.trim().length > 0 && !/[a-zA-Z]{3,}/.test(line.replace(/baasil|root|localhost|portfolio|neofetch/gi, '')))
+              
+              // Keep default green, only make specific command output white
+              const isWhiteLine = (
+                !isAsciiArt &&
+                !isNeofetchLine &&
+                // Skip separators - keep them green
+                line.trim() !== '---' &&
+                (
+                // Help command output content
+                line.startsWith('- "') ||
+                // Education, experience, projects, certifications, links output - must have actual word content
+                (line.startsWith('    ') && !line.includes('__') && /[a-zA-Z]{2,}/.test(line)) ||
+                line.startsWith('San Jose State University') ||
+                line.startsWith('Innowi') ||
+                line.startsWith('Teledyne') ||
+                line.startsWith('Elide') ||
+                line.startsWith('Ultrasonic') ||
+                line.startsWith('Interactive') ||
+                line.startsWith('Explosions') ||
+                line.startsWith('Entropy') ||
+                line.startsWith('Resumate') ||
+                line.startsWith('Ray Tracer') ||
+                line.startsWith('2m') ||
+                line.startsWith('GitHub:') ||
+                line.startsWith('LinkedIn:') ||
+                line.startsWith('Email:') ||
+                line.startsWith('Twitter:') ||
+                line.startsWith('Resume:') ||
+                line.startsWith('- Additional') ||
+                line.startsWith('- Minor') ||
+                line.startsWith('- Graduation') ||
+                line.startsWith('- GPA') ||
+                line.startsWith('- Relevant') ||
+                line.startsWith('- AWS') ||
+                line.startsWith('- IBM') ||
+                line.startsWith('- Stanford') ||
+                line.startsWith('- Palo Alto') ||
+                line.startsWith('- Cisco') ||
+                line.match(/^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)/) ||
+                line.match(/^(Java|Python|Node|React|C,|Three)/) ||
+                line.includes('Santa Clara') ||
+                line.includes('Milpitas') ||
+                line.includes('San Francisco')
+              ))
+              
+              // Empty lines need min-height to render as actual spacing
+              if (line.trim() === '') {
+                return <div key={key} className="h-[1.2em]">&nbsp;</div>
+              }
+              
+              // On mobile, handle indentation smartly with hanging indent for bullets
+              if (isMobile) {
+                const trimmed = line.trimStart()
+                const isBullet = trimmed.startsWith('- ')
+                
+                if (isBullet) {
+                  // Hanging indent: bullet stays left, text wraps properly
+                  return (
+                    <div key={key} className={`whitespace-normal flex ${isWhiteLine ? 'text-white' : ''}`}>
+                      <span className="shrink-0">- </span>
+                      <span>{trimmed.slice(2)}</span>
+                    </div>
+                  )
+                }
+                
+                return (
+                  <div key={key} className={`whitespace-normal ${isWhiteLine ? 'text-white' : ''}`}>
+                    {trimmed}
+                  </div>
+                )
+              }
+              
+              return (
+                <div key={key} className={`whitespace-pre-wrap ${isWhiteLine ? 'text-white' : ''}`}>
+                  {line}
+                </div>
+              )
+            })
+          })}
           
           {/* Tab suggestions */}
           {showTabSuggestions && tabSuggestions.length > 0 && (
-            <div className={`absolute bottom-12 left-4 right-4 ${theme === 'dark' ? 'bg-black border-green-400' : 'bg-gray-100 border-green-800'} border p-2 rounded`}>
-              <div className={`text-sm ${theme === 'dark' ? 'text-green-400' : 'text-green-800'}`}>Available commands:</div>
+            <div 
+              className={`absolute bottom-12 left-4 right-4 ${theme === 'dark' ? 'bg-black' : 'bg-gray-100'} border p-2 rounded`}
+              style={{ borderColor: accentColor }}
+            >
+              <div className="text-sm" style={{ color: accentColor }}>Available commands:</div>
               <div className="grid grid-cols-2 gap-2 mt-1">
                 {tabSuggestions.map((cmd, i) => (
-                  <div key={i} className={theme === 'dark' ? 'text-green-400' : 'text-green-800'}>{cmd}</div>
+                  <div key={i} style={{ color: accentColor }}>{cmd}</div>
                 ))}
               </div>
             </div>
