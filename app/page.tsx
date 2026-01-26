@@ -2,12 +2,33 @@
 
 import { useState, useEffect, useRef } from "react"
 
-const ASCII_NAME = `██████╗  █████╗  █████╗ ███████╗██╗██╗     
-██╔══██╗██╔══██╗██╔══██╗██╔════╝██║██║     
-██████╔╝███████║███████║███████╗██║██║     
-██╔══██╗██╔══██║██╔══██║╚════██║██║██║     
-██████╔╝██║  ██║██║  ██║███████║██║███████╗
-╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═╝╚══════╝`
+const ASCII_NAME = `                                                           _...---.._
+                                                       _.\`       -_ \`\`.
+                                                   .-'\`                 \`.
+                                                .-\`                     q ;
+                                             _-\`                       __  \\
+                                         .-'\`                  . ' .   \\ \`;/
+                                     _.-\`                    /.      \`._\`/
+                             _...--'\`                        \\_\`..._
+                          .'\`                         -         \`'--:._
+                       .-\`                           \\                  \`-.
+                      .                \`              \`-..__.....----...., \`.
+                     '                 \`  '''---..-''\`'              : :  : :
+                   .\` -                '\`.  \`-.                       \`'   \`'
+                .-\` .\` '             .\`'.__ ;
+            _.-\` .-\`   '            .
+        _.-\` _.-\`    .' '         .\`   
+(\`''--'' _.-\`      .'  '        .'
+ \`'----''        .'  .\`       .\`   
+               .'  .'     .-'\`
+             .'   :    .-\`   
+             \`. .\`   ,\`
+              .'   .'
+             '   .\`
+            '  .\`
+            \`  '.
+            \`.___;
+                      baasil`
 
 const generateNeofetch = (uptime: string, resolution: string) => {
   const asciiLines = ASCII_NAME.split('\n')
@@ -29,6 +50,9 @@ const generateNeofetch = (uptime: string, resolution: string) => {
     '__LABEL__CPU:__VALUE__ AMD Ryzen 7 9800X3D',
     '__LABEL__GPU:__VALUE__ NVIDIA GeForce RTX 5090',
     '__LABEL__Memory:__VALUE__ 126MB / 98304MB',
+    '',
+    '__COLOR_PALETTE_1__',
+    '__COLOR_PALETTE_2__',
   ]
   
   const maxAsciiLength = Math.max(...asciiLines.map(line => line.length))
@@ -42,15 +66,7 @@ const generateNeofetch = (uptime: string, resolution: string) => {
     combined.push(asciiLine + padding + infoLine)
   }
   
-  // Add color palette (using special marker that we'll detect in rendering)
-  const colorPalette1 = ' '.repeat(maxAsciiLength + 4) + '__COLOR_PALETTE_1__'
-  const colorPalette2 = ' '.repeat(maxAsciiLength + 4) + '__COLOR_PALETTE_2__'
-  combined.push(' ')
-  combined.push(' ')
-  combined.push(colorPalette1)
-  combined.push(colorPalette2)
-  
-  return combined.join('\n') + '\n\nType "help" for available commands.'
+  return '[root@localhost ~]# neofetch\n' + combined.join('\n') + '\n\n\n\n\nType "help" for available commands.'
 }
 
 const projectsData = [
@@ -94,7 +110,7 @@ export default function Terminal() {
 These shell commands are defined internally.
 Type 'help' to see this list.
 
-Portfolio Information:
+Availible Commands:
 - "education": Show education details
 - "experience": Show work experience
 - "projects": Show project portfolio
@@ -103,6 +119,11 @@ Portfolio Information:
 - "clear": Clear the terminal
 
 `,
+    },
+    {
+      name: "neofetch",
+      description: "Display system information",
+      action: () => "NEOFETCH",
     },
     {
       name: "links",
@@ -152,6 +173,8 @@ Java, JavaScript, Node.js, Next.js
       - Product usage increased by 35% post front-end development, 
         increasing profit by 50,000 USD in one calendar year
 
+---
+
 Teledyne Lecroy - SWE Intern
 July 2023 - Nov 2023
 Milpitas, CA
@@ -165,6 +188,8 @@ Python
       back-end objects to minimize future maintenance
     - Created documentation for over 50+ classes and programs, used 
       feedback from Sr. Engineers to uphold relevancy and use-cases
+
+---
 
 Elide - Product Engineer
 September 2025 - Present
@@ -188,6 +213,8 @@ C, C++
     - Presented at SJSU StartUp and SJSU IdeasLab - Earned 2 Awards 
       for Innovation
 
+---
+
 Interactive 3D Wave Animation
 Three.js, GLSL, JavaScript, WebGL
 
@@ -204,6 +231,8 @@ Three.js, GLSL, JavaScript, WebGL
       and auto-rotation, along with a responsive design system adapting 
       to various screen sizes and device capabilities
 
+---
+
 Explosions - Physics-Based Particle Simulation
 Python, Tkinter
 
@@ -217,6 +246,8 @@ Python, Tkinter
       management, featuring real-time parameter adjustments and 
       state reset functionality
 
+---
+
 Entropy Visualizer - Frontend Node Manipulation
 TypeScript, JavaScript, CSS, HTML
 
@@ -229,6 +260,7 @@ TypeScript, JavaScript, CSS, HTML
       detection, and features an intelligent restoration algorithm that gradually 
       returns particles to their original positions
 
+---
 
 Resumate.dev - visibility.
 Python, Next.js, Node.js, HTML/CSS/JS
@@ -240,6 +272,8 @@ Python, Next.js, Node.js, HTML/CSS/JS
       to securely organize and store information to train AI
     - Calculated 90% efficiency in data allocation, 98% accuracy in created 
       word-clouds and calculated a 18% increase in interviews
+
+---
 
 Ray Tracer Visualizer - Interactive Light Simulation
 React, Three.js, TypeScript, Tailwind CSS
@@ -256,6 +290,8 @@ React, Three.js, TypeScript, Tailwind CSS
     - Implemented comprehensive controls for camera manipulation, object 
       transformation, and ray parameter adjustments using React Three 
       Fiber and Drei
+
+---
 
 2m
 Node.js, React, AWS, HTML/CSS/JS
@@ -353,8 +389,8 @@ Node.js, React, AWS, HTML/CSS/JS
       return;
     }
 
-    // Disable neofetch mode when any command is run (except clear which handles it specially)
-    if (command?.name !== "clear") {
+    // Disable neofetch mode when any command is run (except clear/neofetch which handle it specially)
+    if (command?.name !== "clear" && command?.name !== "neofetch") {
       setIsNeofetchMode(false)
     }
 
@@ -362,6 +398,10 @@ Node.js, React, AWS, HTML/CSS/JS
       if (command.name === "clear") {
         setIsNeofetchMode(true)
         setOutput([generateNeofetch(uptime, resolution)])
+        return;
+      } else if (command.name === "neofetch") {
+        setIsNeofetchMode(true)
+        setOutput([...newOutput, generateNeofetch(uptime, resolution).replace('[root@localhost ~]# neofetch\n', '')])
         return;
       } else {
         newOutput = [...newOutput, command.action()]
@@ -712,8 +752,60 @@ Node.js, React, AWS, HTML/CSS/JS
                   </div>
                 )
               }
+              // Check if line is ASCII art (mostly spaces + special chars, no letters after trim)
+              const isAsciiArt = /^[\s._\-'`\\\/;:,|(){}[\]<>~!@#$%^&*+=]*$/.test(line) || 
+                                 (line.trim().length > 0 && !/[a-zA-Z]{3,}/.test(line.replace(/baasil|root|localhost/gi, '')))
+              
+              // Keep default green, only make specific command output white
+              const isWhiteLine = (
+                !isAsciiArt &&
+                // Skip separators - keep them green
+                line.trim() !== '---' &&
+                (
+                // Help command output content
+                line.startsWith('- "') ||
+                // Education, experience, projects, certifications, links output - must have actual word content
+                (line.startsWith('    ') && !line.includes('__') && /[a-zA-Z]{2,}/.test(line)) ||
+                line.startsWith('San Jose State University') ||
+                line.startsWith('Innowi') ||
+                line.startsWith('Teledyne') ||
+                line.startsWith('Elide') ||
+                line.startsWith('Ultrasonic') ||
+                line.startsWith('Interactive') ||
+                line.startsWith('Explosions') ||
+                line.startsWith('Entropy') ||
+                line.startsWith('Resumate') ||
+                line.startsWith('Ray Tracer') ||
+                line.startsWith('2m') ||
+                line.startsWith('GitHub:') ||
+                line.startsWith('LinkedIn:') ||
+                line.startsWith('Email:') ||
+                line.startsWith('Twitter:') ||
+                line.startsWith('Resume:') ||
+                line.startsWith('- Additional') ||
+                line.startsWith('- Minor') ||
+                line.startsWith('- Graduation') ||
+                line.startsWith('- GPA') ||
+                line.startsWith('- Relevant') ||
+                line.startsWith('- AWS') ||
+                line.startsWith('- IBM') ||
+                line.startsWith('- Stanford') ||
+                line.startsWith('- Palo Alto') ||
+                line.startsWith('- Cisco') ||
+                line.match(/^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)/) ||
+                line.match(/^(Java|Python|Node|React|C,|Three)/) ||
+                line.includes('Santa Clara') ||
+                line.includes('Milpitas') ||
+                line.includes('San Francisco')
+              ))
+              
+              // Empty lines need min-height to render as actual spacing
+              if (line.trim() === '') {
+                return <div key={key} className="h-[1.2em]">&nbsp;</div>
+              }
+              
               return (
-                <div key={key} className={`whitespace-pre-wrap ${(line.includes('Portfolio Information:') || line.includes('Navigation & Projects:') || line.includes('Project Commands') || (line.startsWith('- "') && line.includes('":')) || (line.startsWith('- ') && line.includes(':'))) && !line.includes('Step bash, version') && !line.includes('These shell commands are defined internally') && !line.includes('Type \'help\' to see this list') ? 'text-white' : ''}`}>
+                <div key={key} className={`whitespace-pre-wrap ${isWhiteLine ? 'text-white' : ''}`}>
                   {line}
                 </div>
               )
