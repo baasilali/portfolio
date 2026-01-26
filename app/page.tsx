@@ -752,13 +752,17 @@ Node.js, React, AWS, HTML/CSS/JS
                   </div>
                 )
               }
-              // Check if line is ASCII art (mostly spaces + special chars, no letters after trim)
+              // Check if line is ASCII art or neofetch output (should stay green)
+              const isNeofetchLine = line.includes('@portfolio') || 
+                                     line.includes('baasil@') ||
+                                     /^[\s\S]*-{10,}[\s\S]*$/.test(line.trim()) && line.trim().startsWith('-')
               const isAsciiArt = /^[\s._\-'`\\\/;:,|(){}[\]<>~!@#$%^&*+=]*$/.test(line) || 
-                                 (line.trim().length > 0 && !/[a-zA-Z]{3,}/.test(line.replace(/baasil|root|localhost/gi, '')))
+                                 (line.trim().length > 0 && !/[a-zA-Z]{3,}/.test(line.replace(/baasil|root|localhost|portfolio|neofetch/gi, '')))
               
               // Keep default green, only make specific command output white
               const isWhiteLine = (
                 !isAsciiArt &&
+                !isNeofetchLine &&
                 // Skip separators - keep them green
                 line.trim() !== '---' &&
                 (
