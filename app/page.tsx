@@ -78,7 +78,7 @@ const generateNeofetch = (uptime: string, resolution: string, memory: string, is
     combined.push(asciiLine + padding + infoLine)
   }
   
-  return '[root@localhost ~]# neofetch\n' + combined.join('\n') + '\n\n\n\n\nType "help" for available commands.'
+  return '[root@localhost ~]# neofetch\n' + combined.join('\n') + '\n\nType "help" for available commands.'
 }
 
 const projectsData = [
@@ -349,11 +349,11 @@ Node.js, React, AWS, HTML/CSS/JS
     },
   ]
 
-  useEffect(() => {
+  const scrollToBottom = () => {
     if (outputRef.current) {
       outputRef.current.scrollTop = outputRef.current.scrollHeight
     }
-  }, [output]) // This dependency is necessary for scrolling to work
+  }
 
   // Initialize and update neofetch when uptime, resolution, memory, or screen size changes
   useEffect(() => {
@@ -569,6 +569,7 @@ Node.js, React, AWS, HTML/CSS/JS
               });
               setInstalledProjects(prev => [...prev, currentDirectory]);
               setIsInstalling(false);
+              setTimeout(scrollToBottom, 0);
             }, 400 * percentages.length + 500); // Add 500ms buffer after last percentage update
           }, 100); // Small delay to ensure state is updated
         }, 1500);
@@ -585,6 +586,7 @@ Node.js, React, AWS, HTML/CSS/JS
         if (project) {
           newOutput = [...newOutput, "> next dev"];
           setOutput(newOutput); // Show initial message
+          setTimeout(scrollToBottom, 0);
           
           setTimeout(() => {
             setOutput(prev => [...prev, 
@@ -592,10 +594,12 @@ Node.js, React, AWS, HTML/CSS/JS
               `  - Project URL:  ${project.url}`,
               ""
             ]);
+            setTimeout(scrollToBottom, 0);
           }, 500);
           
           setTimeout(() => {
             setOutput(prev => [...prev, " ✓ Starting..."]);
+            setTimeout(scrollToBottom, 0);
           }, 1200);
           
           setTimeout(() => {
@@ -733,6 +737,7 @@ Node.js, React, AWS, HTML/CSS/JS
       setCommandHistory(prev => [...prev, input])
       setHistoryIndex(-1)
       setInput("")
+      setTimeout(scrollToBottom, 0)
     }
   }
 
@@ -746,8 +751,7 @@ Node.js, React, AWS, HTML/CSS/JS
       style={{ color: accentColor }}
       onClick={handleClick}
     >
-      <div className="p-2 sm:p-4">
-        <div ref={outputRef} className={`mb-4 h-[90vh] overflow-y-auto overflow-x-auto rounded ${theme === 'dark' ? 'bg-black' : 'bg-gray-100'} p-2 sm:p-4 relative`}>
+      <div ref={outputRef} className={`min-h-screen overflow-x-auto ${theme === 'dark' ? 'bg-black' : 'bg-gray-100'} p-2 sm:p-4 relative`}>
           {output.map((entry, i) => {
             const lines = entry.split('\n')
             return lines.map((line, j) => {
@@ -940,7 +944,6 @@ Node.js, React, AWS, HTML/CSS/JS
           </form>
         </div>
       </div>
-    </div>
-  )
-}
+    )
+  }
 
