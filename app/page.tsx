@@ -94,6 +94,7 @@ export default function Terminal() {
   const [showTabSuggestions, setShowTabSuggestions] = useState(false)
   const [tabSuggestions, setTabSuggestions] = useState<string[]>([])
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
+  const [accentColor, setAccentColor] = useState('#4ade80') // green-400 default
   const [uptime, setUptime] = useState("0 secs")
   const [resolution, setResolution] = useState("1920x1080")
   const [output, setOutput] = useState<string[]>([])
@@ -701,7 +702,11 @@ Node.js, React, AWS, HTML/CSS/JS
   }
 
   return (
-    <div className={`min-h-screen font-mono ${theme === 'dark' ? 'bg-black text-green-400' : 'bg-gray-200 text-green-800'}`} onClick={handleClick}>
+    <div 
+      className={`min-h-screen font-mono ${theme === 'dark' ? 'bg-black' : 'bg-gray-200'}`} 
+      style={{ color: accentColor }}
+      onClick={handleClick}
+    >
       <div className="p-4">
         <div ref={outputRef} className={`mb-4 h-[90vh] overflow-y-auto rounded ${theme === 'dark' ? 'bg-black' : 'bg-gray-100'} p-4 relative`}>
           {output.map((entry, i) => {
@@ -710,33 +715,53 @@ Node.js, React, AWS, HTML/CSS/JS
               const key = `${i}-${j}`
               if (line.includes('__COLOR_PALETTE_1__')) {
                 const prefix = line.split('__COLOR_PALETTE_1__')[0]
+                const palette1 = [
+                  '#1f2937', // gray-800
+                  '#991b1b', // red-800
+                  '#166534', // green-800
+                  '#a16207', // yellow-700
+                  '#1e40af', // blue-800
+                  '#6b21a8', // purple-800
+                  '#0e7490', // cyan-700
+                  '#6b7280', // gray-500
+                ]
                 return (
                   <div key={key} className="whitespace-pre leading-none">
                     {prefix}
-                    <span className="text-gray-900 bg-gray-900">███</span>
-                    <span className="text-red-800 bg-red-800">███</span>
-                    <span className="text-green-800 bg-green-800">███</span>
-                    <span className="text-yellow-700 bg-yellow-700">███</span>
-                    <span className="text-blue-800 bg-blue-800">███</span>
-                    <span className="text-purple-800 bg-purple-800">███</span>
-                    <span className="text-cyan-700 bg-cyan-700">███</span>
-                    <span className="text-gray-500 bg-gray-500">███</span>
+                    {palette1.map((color, idx) => (
+                      <span
+                        key={idx}
+                        className="cursor-pointer hover:opacity-80"
+                        style={{ color, backgroundColor: color }}
+                        onClick={(e) => { e.stopPropagation(); setAccentColor(color); }}
+                      >███</span>
+                    ))}
                   </div>
                 )
               }
               if (line.includes('__COLOR_PALETTE_2__')) {
                 const prefix = line.split('__COLOR_PALETTE_2__')[0]
+                const palette2 = [
+                  '#6b7280', // gray-500
+                  '#ef4444', // red-500
+                  '#22c55e', // green-500
+                  '#facc15', // yellow-400
+                  '#3b82f6', // blue-500
+                  '#a855f7', // purple-500
+                  '#22d3ee', // cyan-400
+                  '#ffffff', // white
+                ]
                 return (
                   <div key={key} className="whitespace-pre leading-none">
                     {prefix}
-                    <span className="text-gray-500 bg-gray-500">███</span>
-                    <span className="text-red-500 bg-red-500">███</span>
-                    <span className="text-green-500 bg-green-500">███</span>
-                    <span className="text-yellow-400 bg-yellow-400">███</span>
-                    <span className="text-blue-500 bg-blue-500">███</span>
-                    <span className="text-purple-500 bg-purple-500">███</span>
-                    <span className="text-cyan-400 bg-cyan-400">███</span>
-                    <span className="text-white bg-white">███</span>
+                    {palette2.map((color, idx) => (
+                      <span
+                        key={idx}
+                        className="cursor-pointer hover:opacity-80"
+                        style={{ color, backgroundColor: color }}
+                        onClick={(e) => { e.stopPropagation(); setAccentColor(color); }}
+                      >███</span>
+                    ))}
                   </div>
                 )
               }
@@ -748,7 +773,7 @@ Node.js, React, AWS, HTML/CSS/JS
                 const value = rest[1]
                 return (
                   <div key={key} className="whitespace-pre">
-                    {prefix}<span className={theme === 'dark' ? 'text-green-400' : 'text-green-800'}>{label}</span><span className="text-white">{value}</span>
+                    {prefix}<span style={{ color: accentColor }}>{label}</span><span className="text-white">{value}</span>
                   </div>
                 )
               }
@@ -818,11 +843,14 @@ Node.js, React, AWS, HTML/CSS/JS
           
           {/* Tab suggestions */}
           {showTabSuggestions && tabSuggestions.length > 0 && (
-            <div className={`absolute bottom-12 left-4 right-4 ${theme === 'dark' ? 'bg-black border-green-400' : 'bg-gray-100 border-green-800'} border p-2 rounded`}>
-              <div className={`text-sm ${theme === 'dark' ? 'text-green-400' : 'text-green-800'}`}>Available commands:</div>
+            <div 
+              className={`absolute bottom-12 left-4 right-4 ${theme === 'dark' ? 'bg-black' : 'bg-gray-100'} border p-2 rounded`}
+              style={{ borderColor: accentColor }}
+            >
+              <div className="text-sm" style={{ color: accentColor }}>Available commands:</div>
               <div className="grid grid-cols-2 gap-2 mt-1">
                 {tabSuggestions.map((cmd, i) => (
-                  <div key={i} className={theme === 'dark' ? 'text-green-400' : 'text-green-800'}>{cmd}</div>
+                  <div key={i} style={{ color: accentColor }}>{cmd}</div>
                 ))}
               </div>
             </div>
