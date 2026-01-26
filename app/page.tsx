@@ -30,8 +30,7 @@ const ASCII_NAME = `                                                           _
             \`.___;
                       baasil`
 
-const generateNeofetch = (uptime: string, resolution: string, memory: string) => {
-  const asciiLines = ASCII_NAME.split('\n')
+const generateNeofetch = (uptime: string, resolution: string, memory: string, isMobile: boolean) => {
   const info = [
     'baasil@portfolio',
     '-----------------',
@@ -54,7 +53,20 @@ const generateNeofetch = (uptime: string, resolution: string, memory: string) =>
     '__COLOR_PALETTE_1__',
     '__COLOR_PALETTE_2__',
   ]
+
+  if (isMobile) {
+    // Mobile: stack vertically - ASCII art above, then info below
+    // Trim leading whitespace to left-align the ASCII art
+    // Mark ASCII lines for smaller font rendering
+    const asciiLines = ASCII_NAME.split('\n')
+    const nonEmptyLines = asciiLines.filter(line => line.trim().length > 0)
+    const minLeadingSpaces = Math.min(...nonEmptyLines.map(line => line.match(/^(\s*)/)?.[1].length || 0))
+    const trimmedAscii = asciiLines.map(line => '__ASCII__' + line.slice(minLeadingSpaces)).join('\n')
+    return '[root@localhost ~]# neofetch\n' + trimmedAscii + '\n\n' + info.join('\n') + '\n\n\nType "help" for available commands.'
+  }
   
+  // Desktop: side-by-side layout
+  const asciiLines = ASCII_NAME.split('\n')
   const maxAsciiLength = Math.max(...asciiLines.map(line => line.length))
   const combined = []
   const maxLines = Math.max(asciiLines.length, info.length)
@@ -98,6 +110,7 @@ export default function Terminal() {
   const [uptime, setUptime] = useState("0 secs")
   const [resolution, setResolution] = useState("1920x1080")
   const [memory, setMemory] = useState("0MB / 0MB")
+  const [isMobile, setIsMobile] = useState(false)
   const [output, setOutput] = useState<string[]>([])
   const [isNeofetchMode, setIsNeofetchMode] = useState(true)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -198,7 +211,10 @@ Elide - Product Engineer
 September 2025 - Present
 San Francisco, CA
 
-    - Backed by Oracle. Product Growth, Development, and Implementation
+    - Backed by Insight Venture Partners, Jetbrains, and Oracle.
+    - Product Development, Marketing, and Growth.
+    - Created and maintain core runtime and documentation + docs architechture.
+    - Over 20,000 lines of code merged.
 
 `,
     },
@@ -339,12 +355,12 @@ Node.js, React, AWS, HTML/CSS/JS
     }
   }, [output]) // This dependency is necessary for scrolling to work
 
-  // Initialize and update neofetch when uptime, resolution, or memory changes
+  // Initialize and update neofetch when uptime, resolution, memory, or screen size changes
   useEffect(() => {
     if (isNeofetchMode) {
-      setOutput([generateNeofetch(uptime, resolution, memory)])
+      setOutput([generateNeofetch(uptime, resolution, memory, isMobile)])
     }
-  }, [uptime, resolution, memory, isNeofetchMode])
+  }, [uptime, resolution, memory, isMobile, isNeofetchMode])
 
   // Update uptime every second
   useEffect(() => {
@@ -368,10 +384,12 @@ Node.js, React, AWS, HTML/CSS/JS
     return () => clearInterval(interval)
   }, [])
 
-  // Update resolution on window resize
+  // Update resolution and mobile detection on window resize
+  // The side-by-side neofetch needs ~125 chars width, at ~9.6px per char = ~1200px minimum
   useEffect(() => {
     const updateResolution = () => {
       setResolution(`${window.innerWidth}x${window.innerHeight}`)
+      setIsMobile(window.innerWidth < 1200)
     }
     
     updateResolution()
@@ -423,7 +441,7 @@ Node.js, React, AWS, HTML/CSS/JS
         return;
       } else if (command.name === "neofetch") {
         setIsNeofetchMode(true)
-        setOutput([...newOutput, generateNeofetch(uptime, resolution, memory).replace('[root@localhost ~]# neofetch\n', '')])
+        setOutput([...newOutput, generateNeofetch(uptime, resolution, memory, isMobile).replace('[root@localhost ~]# neofetch\n', '')])
         return;
       } else {
         newOutput = [...newOutput, command.action()]
@@ -724,12 +742,12 @@ Node.js, React, AWS, HTML/CSS/JS
 
   return (
     <div 
-      className={`min-h-screen font-mono ${theme === 'dark' ? 'bg-black' : 'bg-gray-200'}`} 
+      className={`min-h-screen font-mono text-xs sm:text-sm md:text-base ${theme === 'dark' ? 'bg-black' : 'bg-gray-200'}`} 
       style={{ color: accentColor }}
       onClick={handleClick}
     >
-      <div className="p-4">
-        <div ref={outputRef} className={`mb-4 h-[90vh] overflow-y-auto rounded ${theme === 'dark' ? 'bg-black' : 'bg-gray-100'} p-4 relative`}>
+      <div className="p-2 sm:p-4">
+        <div ref={outputRef} className={`mb-4 h-[90vh] overflow-y-auto overflow-x-auto rounded ${theme === 'dark' ? 'bg-black' : 'bg-gray-100'} p-2 sm:p-4 relative`}>
           {output.map((entry, i) => {
             const lines = entry.split('\n')
             return lines.map((line, j) => {
@@ -798,6 +816,15 @@ Node.js, React, AWS, HTML/CSS/JS
                   </div>
                 )
               }
+              // Mobile ASCII art - render with smaller font
+              if (line.startsWith('__ASCII__')) {
+                const asciiContent = line.slice(9) // Remove '__ASCII__' prefix
+                return (
+                  <div key={key} className="whitespace-pre text-[0.5rem] sm:text-[0.6rem] leading-none">
+                    {asciiContent}
+                  </div>
+                )
+              }
               // Check if line is ASCII art or neofetch output (should stay green)
               const isNeofetchLine = line.includes('@portfolio') || 
                                      line.includes('baasil@') ||
@@ -852,6 +879,28 @@ Node.js, React, AWS, HTML/CSS/JS
               // Empty lines need min-height to render as actual spacing
               if (line.trim() === '') {
                 return <div key={key} className="h-[1.2em]">&nbsp;</div>
+              }
+              
+              // On mobile, handle indentation smartly with hanging indent for bullets
+              if (isMobile) {
+                const trimmed = line.trimStart()
+                const isBullet = trimmed.startsWith('- ')
+                
+                if (isBullet) {
+                  // Hanging indent: bullet stays left, text wraps properly
+                  return (
+                    <div key={key} className={`whitespace-normal flex ${isWhiteLine ? 'text-white' : ''}`}>
+                      <span className="shrink-0">- </span>
+                      <span>{trimmed.slice(2)}</span>
+                    </div>
+                  )
+                }
+                
+                return (
+                  <div key={key} className={`whitespace-normal ${isWhiteLine ? 'text-white' : ''}`}>
+                    {trimmed}
+                  </div>
+                )
               }
               
               return (
