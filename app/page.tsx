@@ -30,7 +30,7 @@ const ASCII_NAME = `                                                           _
             \`.___;
                       baasil`
 
-const generateNeofetch = (uptime: string, resolution: string) => {
+const generateNeofetch = (uptime: string, resolution: string, memory: string) => {
   const asciiLines = ASCII_NAME.split('\n')
   const info = [
     'baasil@portfolio',
@@ -46,10 +46,10 @@ const generateNeofetch = (uptime: string, resolution: string) => {
     '__LABEL__Theme:__VALUE__ Adwaita [GTK3]',
     '__LABEL__Icons:__VALUE__ elementary-xfce [GTK2], Adwaita [GTK3]',
     '__LABEL__Terminal:__VALUE__ portfolio.sh',
-    '__LABEL__Terminal Font:__VALUE__ Monospace 12',
+    '__LABEL__Terminal Font:__VALUE__ JetBrains Mono 12',
     '__LABEL__CPU:__VALUE__ AMD Ryzen 7 9800X3D',
     '__LABEL__GPU:__VALUE__ NVIDIA GeForce RTX 5090',
-    '__LABEL__Memory:__VALUE__ 126MB / 98304MB',
+    `__LABEL__Memory:__VALUE__ ${memory}`,
     '',
     '__COLOR_PALETTE_1__',
     '__COLOR_PALETTE_2__',
@@ -97,6 +97,7 @@ export default function Terminal() {
   const [accentColor, setAccentColor] = useState('#4ade80') // green-400 default
   const [uptime, setUptime] = useState("0 secs")
   const [resolution, setResolution] = useState("1920x1080")
+  const [memory, setMemory] = useState("0MB / 0MB")
   const [output, setOutput] = useState<string[]>([])
   const [isNeofetchMode, setIsNeofetchMode] = useState(true)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -338,12 +339,12 @@ Node.js, React, AWS, HTML/CSS/JS
     }
   }, [output]) // This dependency is necessary for scrolling to work
 
-  // Initialize and update neofetch when uptime or resolution changes
+  // Initialize and update neofetch when uptime, resolution, or memory changes
   useEffect(() => {
     if (isNeofetchMode) {
-      setOutput([generateNeofetch(uptime, resolution)])
+      setOutput([generateNeofetch(uptime, resolution, memory)])
     }
-  }, [uptime, resolution, isNeofetchMode])
+  }, [uptime, resolution, memory, isNeofetchMode])
 
   // Update uptime every second
   useEffect(() => {
@@ -378,6 +379,25 @@ Node.js, React, AWS, HTML/CSS/JS
     return () => window.removeEventListener('resize', updateResolution)
   }, [])
 
+  // Update memory usage
+  useEffect(() => {
+    const updateMemory = () => {
+      // performance.memory is Chrome/Chromium only
+      const perf = performance as Performance & { memory?: { usedJSHeapSize: number; jsHeapSizeLimit: number } }
+      if (perf.memory) {
+        const used = Math.round(perf.memory.usedJSHeapSize / 1024 / 1024)
+        const total = Math.round(perf.memory.jsHeapSizeLimit / 1024 / 1024)
+        setMemory(`${used}MB / ${total}MB`)
+      } else {
+        setMemory('N/A')
+      }
+    }
+    
+    updateMemory()
+    const interval = setInterval(updateMemory, 2000)
+    return () => clearInterval(interval)
+  }, [])
+
   const handleCommand = (cmd: string) => {
     const trimmedCmd = cmd.trim().toLowerCase()
     const args = cmd.trim().split(" ")
@@ -403,7 +423,7 @@ Node.js, React, AWS, HTML/CSS/JS
         return;
       } else if (command.name === "neofetch") {
         setIsNeofetchMode(true)
-        setOutput([...newOutput, generateNeofetch(uptime, resolution).replace('[root@localhost ~]# neofetch\n', '')])
+        setOutput([...newOutput, generateNeofetch(uptime, resolution, memory).replace('[root@localhost ~]# neofetch\n', '')])
         return;
       } else {
         newOutput = [...newOutput, command.action()]
