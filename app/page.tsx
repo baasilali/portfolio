@@ -114,6 +114,7 @@ Type 'help' to see this list.
 Availible Commands:
 - "education": Show education details
 - "experience": Show work experience
+- "neofetch": Display system information
 - "projects": Show project portfolio
 - "certifications": Show certifications
 - "links": Show contact links
@@ -397,8 +398,8 @@ Node.js, React, AWS, HTML/CSS/JS
 
     if (command) {
       if (command.name === "clear") {
-        setIsNeofetchMode(true)
-        setOutput([generateNeofetch(uptime, resolution)])
+        setIsNeofetchMode(false)
+        setOutput(['Type "help" for available commands.'])
         return;
       } else if (command.name === "neofetch") {
         setIsNeofetchMode(true)
