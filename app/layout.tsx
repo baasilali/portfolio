@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
+import Script from "next/script";
 import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 
@@ -30,6 +31,18 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <meta name="color-scheme" content="dark" />
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-76TNG0RDW5"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-76TNG0RDW5');
+          `}
+        </Script>
       </head>
       <body
         className={`${jetbrainsMono.variable} antialiased bg-black text-green-400 min-h-screen`}
