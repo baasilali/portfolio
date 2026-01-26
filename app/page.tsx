@@ -113,6 +113,7 @@ export default function Terminal() {
   const [isMobile, setIsMobile] = useState(false)
   const [output, setOutput] = useState<string[]>([])
   const [isNeofetchMode, setIsNeofetchMode] = useState(true)
+  const [shouldScroll, setShouldScroll] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const outputRef = useRef<HTMLDivElement>(null)
   const startTimeRef = useRef(Date.now())
@@ -349,10 +350,19 @@ Node.js, React, AWS, HTML/CSS/JS
     },
   ]
 
-  const scrollToBottom = () => {
-    if (outputRef.current) {
-      outputRef.current.scrollTop = outputRef.current.scrollHeight
+  // Scroll to bottom when shouldScroll is triggered
+  useEffect(() => {
+    if (shouldScroll) {
+      const timer = setTimeout(() => {
+        window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' })
+        setShouldScroll(false)
+      }, 100)
+      return () => clearTimeout(timer)
     }
+  }, [shouldScroll, output])
+
+  const scrollToBottom = () => {
+    setShouldScroll(true)
   }
 
   // Initialize and update neofetch when uptime, resolution, memory, or screen size changes
@@ -569,7 +579,7 @@ Node.js, React, AWS, HTML/CSS/JS
               });
               setInstalledProjects(prev => [...prev, currentDirectory]);
               setIsInstalling(false);
-              setTimeout(scrollToBottom, 0);
+              scrollToBottom();
             }, 400 * percentages.length + 500); // Add 500ms buffer after last percentage update
           }, 100); // Small delay to ensure state is updated
         }, 1500);
@@ -586,7 +596,7 @@ Node.js, React, AWS, HTML/CSS/JS
         if (project) {
           newOutput = [...newOutput, "> next dev"];
           setOutput(newOutput); // Show initial message
-          setTimeout(scrollToBottom, 0);
+          scrollToBottom();
           
           setTimeout(() => {
             setOutput(prev => [...prev, 
@@ -594,12 +604,12 @@ Node.js, React, AWS, HTML/CSS/JS
               `  - Project URL:  ${project.url}`,
               ""
             ]);
-            setTimeout(scrollToBottom, 0);
+            scrollToBottom();
           }, 500);
           
           setTimeout(() => {
             setOutput(prev => [...prev, " ✓ Starting..."]);
-            setTimeout(scrollToBottom, 0);
+            scrollToBottom();
           }, 1200);
           
           setTimeout(() => {
@@ -737,7 +747,7 @@ Node.js, React, AWS, HTML/CSS/JS
       setCommandHistory(prev => [...prev, input])
       setHistoryIndex(-1)
       setInput("")
-      setTimeout(scrollToBottom, 0)
+      scrollToBottom()
     }
   }
 
@@ -833,8 +843,11 @@ Node.js, React, AWS, HTML/CSS/JS
               const isNeofetchLine = line.includes('@portfolio') || 
                                      line.includes('baasil@') ||
                                      /^[\s\S]*-{10,}[\s\S]*$/.test(line.trim()) && line.trim().startsWith('-')
-              const isAsciiArt = /^[\s._\-'`\\\/;:,|(){}[\]<>~!@#$%^&*+=]*$/.test(line) || 
-                                 (line.trim().length > 0 && !/[a-zA-Z]{3,}/.test(line.replace(/baasil|root|localhost|portfolio|neofetch/gi, '')))
+              const isProjectId = ['interactive-wave-animation', 'ray-tracer-visualizer', 'entropy-visualizer', '9M', '2m-trading'].includes(line)
+              const isAsciiArt = !isProjectId && (
+                /^[\s._\-'`\\\/;:,|(){}[\]<>~!@#$%^&*+=]*$/.test(line) || 
+                (line.trim().length > 0 && !/[a-zA-Z]{3,}/.test(line.replace(/baasil|root|localhost|portfolio|neofetch/gi, '')))
+              )
               
               // Keep default green, only make specific command output white
               const isWhiteLine = (
@@ -858,6 +871,7 @@ Node.js, React, AWS, HTML/CSS/JS
                 line.startsWith('Resumate') ||
                 line.startsWith('Ray Tracer') ||
                 line.startsWith('2m') ||
+                isProjectId ||
                 line.startsWith('GitHub:') ||
                 line.startsWith('LinkedIn:') ||
                 line.startsWith('Email:') ||
@@ -885,6 +899,29 @@ Node.js, React, AWS, HTML/CSS/JS
                 return <div key={key} className="h-[1.2em]">&nbsp;</div>
               }
               
+              // Render clickable links
+              const linkMatch = line.match(/^(GitHub|LinkedIn|Email|Twitter|Resume):\s*(.+)$/)
+              if (linkMatch) {
+                const label = linkMatch[1]
+                const value = linkMatch[2]
+                const href = label === 'Email' ? `mailto:${value}` : value
+                return (
+                  <div key={key} className="whitespace-pre-wrap text-white">
+                    {label}:{' '}
+                    <a 
+                      href={href}
+                      target={label === 'Email' ? undefined : '_blank'}
+                      rel="noopener noreferrer"
+                      className="underline hover:opacity-80"
+                      style={{ color: accentColor }}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {value}
+                    </a>
+                  </div>
+                )
+              }
+
               // On mobile, handle indentation smartly with hanging indent for bullets
               if (isMobile) {
                 const trimmed = line.trimStart()
