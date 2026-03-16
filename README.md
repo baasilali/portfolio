@@ -26,6 +26,7 @@ Visit [baasil.me](https://baasil.me)
 - `clear` - Clear terminal
 - `flashbang` - Switch to light theme (with a bang!)
 - `dark mode` - Switch to dark theme
+- `neofetch` - See settings and stuff
 
 ## Features
 
