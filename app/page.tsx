@@ -1,34 +1,14 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-
-const ASCII_NAME = `                                                           _...---.._
-                                                       _.\`       -_ \`\`.
-                                                   .-'\`                 \`.
-                                                .-\`                     q ;
-                                             _-\`                       __  \\
-                                         .-'\`                  . ' .   \\ \`;/
-                                     _.-\`                    /.      \`._\`/
-                             _...--'\`                        \\_\`..._
-                          .'\`                         -         \`'--:._
-                       .-\`                           \\                  \`-.
-                      .                \`              \`-..__.....----...., \`.
-                     '                 \`  '''---..-''\`'              : :  : :
-                   .\` -                '\`.  \`-.                       \`'   \`'
-                .-\` .\` '             .\`'.__ ;
-            _.-\` .-\`   '            .
-        _.-\` _.-\`    .' '         .\`   
-(\`''--'' _.-\`      .'  '        .'
- \`'----''        .'  .\`       .\`   
-               .'  .'     .-'\`
-             .'   :    .-\`   
-             \`. .\`   ,\`
-              .'   .'
-             '   .\`
-            '  .\`
-            \`  '.
-            \`.___;
-                      baasil`
+const ASCII_NAME = [
+  "\u2588\u2588\u2588\u2588\u2588\u2588\u2557  \u2588\u2588\u2588\u2588\u2588\u2557  \u2588\u2588\u2588\u2588\u2588\u2557 \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557\u2588\u2588\u2557\u2588\u2588\u2557     ",
+  "\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557\u2588\u2588\u2554\u2550\u2550\u2550\u2550\u255D\u2588\u2588\u2551\u2588\u2588\u2551     ",
+  "\u2588\u2588\u2588\u2588\u2588\u2588\u2554\u255D\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2551\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2551\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557\u2588\u2588\u2551\u2588\u2588\u2551     ",
+  "\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2551\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2551\u255A\u2550\u2550\u2550\u2550\u2588\u2588\u2551\u2588\u2588\u2551\u2588\u2588\u2551     ",
+  "\u2588\u2588\u2588\u2588\u2588\u2588\u2554\u255D\u2588\u2588\u2551  \u2588\u2588\u2551\u2588\u2588\u2551  \u2588\u2588\u2551\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2551\u2588\u2588\u2551\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557",
+  "\u255A\u2550\u2550\u2550\u2550\u2550\u255D \u255A\u2550\u255D  \u255A\u2550\u255D\u255A\u2550\u255D  \u255A\u2550\u255D\u255A\u2550\u2550\u2550\u2550\u2550\u2550\u255D\u255A\u2550\u255D\u255A\u2550\u2550\u2550\u2550\u2550\u2550\u255D",
+].join("\n")
 
 const generateNeofetch = (uptime: string, resolution: string, memory: string, isMobile: boolean) => {
   const info = [
@@ -112,7 +92,7 @@ export default function Terminal() {
   const [memory, setMemory] = useState("0MB / 0MB")
   const [isMobile, setIsMobile] = useState(false)
   const [output, setOutput] = useState<string[]>([])
-  const [isNeofetchMode, setIsNeofetchMode] = useState(true)
+  const [isNeofetchMode, setIsNeofetchMode] = useState(false)
   const [shouldScroll, setShouldScroll] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const outputRef = useRef<HTMLDivElement>(null)
@@ -162,7 +142,7 @@ Resume: https://drive.google.com/file/d/1o59oWJB0hXdixwsfjoanPJ9xRY3tnvkh/view?u
 San Jose State University - Bachelor's in Science in Software Engineering
 - Additional Enrollement: Computer Networking (CNSM)
 - Minor in Business Administration
-- Graduation Year: 2026
+- Graduation Year: 2025
 - GPA: 3.86
 
 - Relevant Course Material: 
@@ -208,14 +188,20 @@ Python
 
 ---
 
-Elide - Product Engineer
-September 2025 - Present
+Elide - Project Engineer
+July 2025 - December 2025
 San Francisco, CA
 
-    - Backed by Insight Venture Partners, Jetbrains, and Oracle.
-    - Product Development, Marketing, and Growth.
     - Created and maintain core runtime and documentation + docs architechture.
-    - Over 20,000 lines of code merged.
+    - Over 60,000 lines of code merged.
+
+---
+
+Elide - Director of Marketing
+January 2026 - Present
+San Francisco, CA
+
+    - Product Development, Marketing, and Growth.
 
 `,
     },
@@ -365,12 +351,18 @@ Node.js, React, AWS, HTML/CSS/JS
     setShouldScroll(true)
   }
 
-  // Initialize and update neofetch when uptime, resolution, memory, or screen size changes
+  // Update neofetch display when active and system info changes
   useEffect(() => {
     if (isNeofetchMode) {
       setOutput([generateNeofetch(uptime, resolution, memory, isMobile)])
     }
   }, [uptime, resolution, memory, isMobile, isNeofetchMode])
+
+  // Set initial output to ASCII name and ensure we're at top
+  useEffect(() => {
+    setOutput([ASCII_NAME + '\n\nType "help" for available commands.'])
+    window.scrollTo(0, 0)
+  }, [])
 
   // Update uptime every second
   useEffect(() => {
@@ -458,11 +450,9 @@ Node.js, React, AWS, HTML/CSS/JS
       }
     } else if (baseCmd === "ls") {
       setIsNeofetchMode(false)
-      if (currentDirectory === "~") {
-        const projectNames = projectsData.map(p => p.id)
-        newOutput = [...newOutput, " ", ...projectNames, " "]
-      } else {
-        newOutput = [...newOutput, " ", "Available commands: npm install, npm run dev, cd ..", " "]
+      const helpCmd = commands.find(c => c.name === "help")
+      if (helpCmd) {
+        newOutput = [...newOutput, helpCmd.action()]
       }
     } else if (baseCmd === "cd") {
       setIsNeofetchMode(false)
@@ -761,7 +751,7 @@ Node.js, React, AWS, HTML/CSS/JS
       style={{ color: accentColor }}
       onClick={handleClick}
     >
-      <div ref={outputRef} className={`min-h-screen overflow-x-auto ${theme === 'dark' ? 'bg-black' : 'bg-gray-100'} p-2 sm:p-4 relative`}>
+      <div ref={outputRef} className={`min-h-screen overflow-x-auto ${theme === 'dark' ? 'bg-black' : 'bg-gray-100'} pt-8 pb-2 pl-2 pr-2 sm:pt-12 sm:pb-4 sm:pl-4 sm:pr-4 relative`} style={{ paddingTop: 'max(2.5rem, env(safe-area-inset-top, 0px))' }}>
           {output.map((entry, i) => {
             const lines = entry.split('\n')
             return lines.map((line, j) => {
@@ -944,6 +934,14 @@ Node.js, React, AWS, HTML/CSS/JS
                 )
               }
               
+              if (isAsciiArt) {
+                return (
+                  <div key={key} className="whitespace-pre" style={{ fontFamily: "'Courier New', Courier, monospace" }}>
+                    {line}
+                  </div>
+                )
+              }
+
               return (
                 <div key={key} className={`whitespace-pre-wrap ${isWhiteLine ? 'text-white' : ''}`}>
                   {line}
