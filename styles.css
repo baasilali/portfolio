@@ -1,0 +1,79 @@
+:root {
+  --ground: #fffcf7;
+  --ink: #000;
+  --col: 552px;
+}
+
+* { box-sizing: border-box; margin: 0; }
+html, body { background: var(--ground); color: var(--ink); }
+
+body {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 20px;
+  line-height: 24px;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 116px 24px 96px;
+}
+
+main { width: var(--col); }
+
+.wordmark {
+  font-family: "Bitcount Single", system-ui, sans-serif;
+  font-size: 55px;
+  line-height: 66px;
+  -webkit-text-stroke: 1px var(--ink);
+  paint-order: stroke;
+  margin-bottom: 21px;
+}
+
+nav {
+  font-size: 25px;
+  line-height: 30px;
+  display: flex;
+  gap: 14px;
+  margin-bottom: 32px;
+}
+a, a:visited { color: #0000ee; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+nav a, nav a:visited { color: var(--ink); }
+
+#terminal { margin-bottom: 44px; }
+#terminal .line { white-space: pre-wrap; }
+#terminal .line .prefix { color: var(--ink); }
+#terminal .line .cmd { color: #555; white-space: pre; }
+#terminal .line.output,
+#terminal .line.error { color: #555; }
+#terminal .caret {
+  display: inline-block;
+  animation: blink 1s steps(1) infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+article p + p { margin-top: 24px; }
+
+.year {
+  font-weight: 700;
+  -webkit-text-stroke: 1px var(--ink);
+  paint-order: stroke;
+  font-size: 25px;
+  line-height: 30px;
+  margin-top: 32px;
+  margin-bottom: 12px;
+}
+.year:first-of-type { margin-top: 0; }
+
+.row {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  column-gap: 24px;
+  padding: 4px 0;
+}
+
+.kv {
+  display: grid;
+  grid-template-columns: 120px 24px 1fr;
+  row-gap: 12px;
+}
