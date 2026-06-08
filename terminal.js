@@ -11,12 +11,12 @@ const CONFIGS = {
     cwd: "~/workspace/works",
     tree: {
       "2026": {
-        "statistically-the-best-crosshair": { url: "./crosshair.html" },
-        "halftones-and-dithers": { url: "./halftones.html" },
+        "statistically-the-best-crosshair": { url: "./works/crosshair.html" },
+        "halftones-and-dithers": { url: "./works/halftones.html" },
       },
       "2025": {
-        "the-perfect-pc": { url: "./perfect-pc.html" },
-        "elide-simplyfying-complexity": { url: "./elide.html" },
+        "the-perfect-pc": { url: "./works/perfect-pc.html" },
+        elide: { url: "./works/elide.html" },
       },
       home: { url: "./index.html" },
       contact: { url: "./contact.html" },

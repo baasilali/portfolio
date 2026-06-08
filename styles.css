@@ -1,7 +1,8 @@
 :root {
   --ground: #fffcf7;
   --ink: #000;
-  --col: 552px;
+  /* line measure in monospace characters; one grid for all text on every page */
+  --measure: 49ch;
 }
 
 * { box-sizing: border-box; margin: 0; }
@@ -17,7 +18,7 @@ body {
   padding: 116px 24px 96px;
 }
 
-main { width: var(--col); }
+main { width: var(--measure); }
 
 .wordmark {
   font-family: "Bitcount Single", system-ui, sans-serif;
@@ -25,6 +26,7 @@ main { width: var(--col); }
   line-height: 66px;
   -webkit-text-stroke: 1px var(--ink);
   paint-order: stroke;
+  margin-left: 2.6px;
   margin-bottom: 21px;
 }
 
@@ -32,13 +34,11 @@ nav {
   font-size: 25px;
   line-height: 30px;
   display: flex;
-  gap: 14px;
+  gap: 18px;
   margin-bottom: 32px;
 }
 a, a:visited { color: #0000ee; text-decoration: none; }
 a:hover { text-decoration: underline; }
-
-nav a, nav a:visited { color: var(--ink); }
 
 #terminal { margin-bottom: 44px; }
 #terminal .line { white-space: pre-wrap; }
@@ -77,3 +77,19 @@ article p + p { margin-top: 24px; }
   grid-template-columns: 120px 24px 1fr;
   row-gap: 12px;
 }
+
+.post-title {
+  -webkit-text-stroke: 1px var(--ink);
+  paint-order: stroke;
+  font-size: 25px;
+  line-height: 30px;
+  white-space: nowrap;
+  margin-bottom: 24px;
+}
+.post-figure {
+  display: block;
+  width: 100%;
+  background: #f2f1e8;
+  margin-bottom: 32px;
+}
+.post-body { font-family: "Times New Roman", Times, serif; }
