@@ -7,7 +7,19 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Bitcount+Single&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" />
     <link rel="stylesheet" href="../styles.css" />
+    <style>
+      @media (prefers-reduced-motion: no-preference) {
+        .js .post-figure { opacity: 0; will-change: transform, opacity; }
+      }
+      .chart { display: block; width: 100%; height: auto; margin: 32px 0; overflow: visible; }
+      .chart text { font-family: "JetBrains Mono", ui-monospace, monospace; fill: var(--ink); }
+      .chart g, .chart rect, .chart circle, .chart line { transform-box: fill-box; transform-origin: center; }
+    </style>
+    <script>
+      document.documentElement.classList.add("js");
+    </script>
   </head>
   <body>
     <main>
@@ -21,8 +33,713 @@
       <article>
         <h1 class="post-title">Statistically the best crosshair (2026)</h1>
         <img class="post-figure" src="../assets/crosshair.png" alt="Eight crosshair designs rendered as a halftone-dot grid" />
-        <p class="post-body">The following is blank and useless text to fill space. By activating this device, you are knowingly and willfully committing an act of transnational cybercrime. Your action will deploy a purpose-built criminal instrument onto a global network and initiate the trafficking of illicit data, thereby implicating you as a principal actor in a transnational criminal scheme. You will be held solely and directly responsible for the legal consequences of this act. Pursuant to mutual legal assistance treaties and extradition agreements, you may be subject to investigation, arrest, and prosecution by authorities in the jurisdiction where this act is committed, your country of citizenship, or any nation where this activity causes harm.</p>
+
+        <p class="post-body">Every Counter-Strike player has, at some point, fallen down the crosshair rabbit hole. A bad night of whiffed sprays ends with twenty minutes in the settings menu, nudging the gap by half a unit and convincing yourself the next match will be different.</p>
+        <p class="post-body">The crosshair feels deeply personal. It sits at the center of your screen for thousands of hours. It's the last thing between your eyes and the enemy's head. So you'd expect the professional scene, 1,650 of the best players on earth, to express 1,650 different opinions about what it should look like.</p>
+        <p class="post-body">They don't.</p>
+        <p class="post-body">We decoded the share codes of every active pro and ran the numbers on all of it: length, gap, thickness, color, opacity, and the long tail of obscure toggles most players never touch. What emerged looks less like personal preference and more like convergent evolution. Nobody coordinated this. The meta selected for it.</p>
+        <p class="post-body">This is what the data says about the best crosshair in Counter-Strike.</p>
+
+        <h2 class="post-section">I. The Consensus Crosshair</h2>
+        <p class="post-body">Take the most common value for every single parameter across all 1,650 players and you get one config: <strong>size 1, gap -4, thickness 1, full opacity, classic static, no dot, no outline.</strong></p>
+        <p class="post-body">That isn't just a statistical artifact stitched together from averages. That exact skeleton, size 1 / gap -4 / thickness 1, is the crosshair of <strong>485 professionals. Nearly one in three pros aims with functionally the same tiny plus sign</strong>, differing only in color.</p>
+        <svg class="chart" data-chart="consensus" role="img" aria-label="Breakdown of the most common crosshair configuration across pro players"></svg>
+        <p class="post-body">Zoom in further and the convergence gets stranger. 574 players, more than a third of the dataset, share their <em>exact</em> configuration, every field identical, with at least one other pro. The single most popular config (the skeleton above, in cyan) is shared by 31 players across different teams, regions, and roles.</p>
+        <p class="post-body">These are people whose careers depend on marginal advantages. They had every incentive to find something better. They landed in the same place.</p>
+
+        <h2 class="post-section">II. The Unwritten Rules</h2>
+        <p class="post-body">Some settings in this dataset behave like preferences. Others behave like law.</p>
+        <svg class="chart" data-chart="rules" role="img" aria-label="Adoption rates of crosshair settings such as static, gap, opacity, and thickness"></svg>
+        <p class="post-body"><strong>97.4% of pros use a static crosshair.</strong> The dynamic crosshair, the one that expands when you move and shoot, the one Counter-Strike ships with by default, has effectively zero professional adoption. The best players in the world looked at the game's default settings and rejected them almost unanimously.</p>
+        <p class="post-body"><strong>98% use a negative gap</strong>, pulling the four arms inward toward the center. Only 10 players in the entire scene use a positive gap. The community treats gap like a matter of taste. The data says it's a solved parameter.</p>
+        <p class="post-body"><strong>86% run full opacity</strong> and <strong>96.6% keep thickness at or below 1.0.</strong> Thin, solid, unmoving.</p>
+        <p class="post-body">Then there's the heresy tier. Outlines sit at 15%. Center dots at 9.5%. Weapon-based gap, follow recoil, and T-style crosshairs are used by 9, 3, and 2 players respectively. Out of 1,650.</p>
+
+        <h2 class="post-section">III. Two Colors Rule Everything</h2>
+        <svg class="chart" data-chart="colors" role="img" aria-label="Distribution of crosshair colors across the professional scene"></svg>
+        <p class="post-body">After resolving every preset and custom RGB value into perceptual buckets, the hierarchy is brutal: <strong>green at 41%, cyan at 35%.</strong> Together they cover three quarters of the professional scene. Yellow and white split most of the remainder at 9% each.</p>
+        <p class="post-body">The logic is contrast theory. Counter-Strike's maps are painted in browns, grays, and warm earth tones. Green and cyan sit opposite that palette and stay visible against nearly every wall, floor, and player model in the game.</p>
+        <p class="post-body">The proof is blue. It's offered as a one-click preset, equal in convenience to green and cyan, and exactly <strong>9 players out of 1,650</strong> use anything blue. It drowns in skyboxes and shadows, and the pros know it.</p>
+        <p class="post-body">Two details from the custom color data deserve their own paragraph. First, 725 players went into the advanced menu to define a custom RGB color, and <strong>309 of them dialed in a value identical to a built-in preset.</strong> They did extra work to recreate the defaults. Second, the most popular truly custom color is mint, RGB (0, 255, 145), worn by 50+ players. It's the shade s1mple made famous, carried today by ropz and w0nderful. Even in the one place pros express individuality, they copy each other.</p>
+
+        <h2 class="post-section">IV. Pros Tune Shapes, Not Numbers</h2>
+        <p class="post-body">The most interesting statistical finding in the dataset hides in the relationship between size and gap.</p>
+        <svg class="chart" data-chart="scatter" role="img" aria-label="Scatter plot showing the correlation between crosshair size and gap"></svg>
+        <p class="post-body">Players with longer crosshair arms run wider gaps, and the relationship is strong: <strong>r = 0.49</strong>, nearly linear across the whole scene. There's a matching negative correlation between size and thickness. Bigger crosshairs trend thinner.</p>
+        <p class="post-body">This is geometric coherence. A long-armed crosshair with a tight -4 gap collapses into a solid plus that covers the very head you're trying to hit. So players who go long open up the center to preserve the sight picture, and players who go thick go short. The total ink on screen stays roughly constant.</p>
+        <p class="post-body">Nobody is tuning gap and size and thickness as independent sliders. They're tuning one thing: a shape that frames the target without occluding it. The parameters are just the shape's coordinates.</p>
+        <svg class="chart" data-chart="histograms" role="img" aria-label="Histograms of crosshair size, gap, and thickness distributions"></svg>
+        <p class="post-body">The distributions make the same point from another angle. Size clusters hard at 1.0. Gap clusters at -4. Thickness splits between 1.0 and 0 (hairline). The histograms have the silhouette of an answer key.</p>
+
+        <h2 class="post-section">V. The Extremes</h2>
+        <p class="post-body">Every dataset has a long tail, and this one's tail is excellent.</p>
+        <p class="post-body"><strong>The invisible club.</strong> Two players, awzek and SeRCEra, have fully configured crosshairs rendered at zero opacity. Their settings exist. Their crosshairs do not. They aim with nothing but memory and screen center.</p>
+        <p class="post-body"><strong>The dot club.</strong> 44 players run a crosshair with size 0, and 42 of them enable the center dot, meaning they aim with a single point. Jame, one of the most famous AWPers alive, is the club's marquee member. It makes a kind of sense for a sniper: when your primary weapon has its own scope, the crosshair is just for walking around.</p>
+        <p class="post-body"><strong>The letterbox.</strong> One player, Brooxsy, runs a crosshair size of 819.1. His arms span the entire monitor like sniper-film letterboxing. We have no explanation and we respect it.</p>
+
+        <h2 class="post-section">VI. So What Is the Best Crosshair?</h2>
+        <p class="post-body">The honest answer is that "best" hides two different questions, and the data answers both.</p>
+        <p class="post-body">If best means <em>what the professional scene converged on</em>, it's the consensus config: <strong>size 1, gap -4, thickness 1, full alpha, classic static, no dot, in cyan or green.</strong> This is the mode, the single most chosen crosshair in professional Counter-Strike, validated by hundreds of independent careers.</p>
+        <p class="post-body">If best means <em>the statistical center of all 1,650 crosshairs</em>, the answer is a real player. We computed which pro's crosshair sits closest to the center of the entire dataset, the medoid, and it belongs to <strong>Oczarka: gap -3.5, size 1.1, thickness 0.5, half outline, full alpha.</strong> Slightly softer than the mode in every direction. The average pro crosshair, made flesh.</p>
+        <p class="post-body">Pick either. The gap between them is half a unit here and there, which is precisely the point.</p>
+
+        <h2 class="post-section">Method</h2>
+        <p class="post-body">A claim like "statistically the best" is only worth as much as the pipeline behind it, so here is the whole thing, start to finish. Every number in this article comes out the other end of it, and you can run it yourself with <code class="post-inline">python -m scraper</code>.</p>
+        <p class="post-body">The raw material is procrosshairs.com, which tracks the active professional roster and the exact crosshair share code each player runs. A share code is the little <code class="post-inline">CSGO-XXXXX-...</code> string the game exports when you save a crosshair, and it round-trips losslessly back into every cvar. Get the codes, decode the codes, and you have ground truth instead of a survey.</p>
+        <p class="post-body">The hard part was getting all 1,650, not just the 100 the homepage renders. The site is an Astro app whose React island hydrates from a private JSON API, <code class="post-inline">GET /api/v1.2/crosshairs/{offset}</code>, paged 100 records at a time. Walk the offsets until a page comes back empty and you have the full roster. If that API ever moves, the scraper degrades gracefully and falls back to scraping player links straight out of the homepage HTML.</p>
+        <p class="post-body">Everything is fetched through a disk-backed, rate-limited cache: one request per second, single threaded, an honest user agent with my email in it, and robots.txt checked before the first request. Every response is written to disk keyed by its URL hash, so the pipeline is fully resumable. Kill it anywhere and a re-run picks up exactly where the cache ends without touching the network again.</p>
+        <p class="post-body">Decoding is where rigor matters most. Rather than regex the cvar strings, each code is handed to <code class="post-inline">csxhair</code>, which returns a typed <code class="post-inline">Crosshair</code> object, floats stay floats and booleans stay booleans, and those attributes are read directly into columns. Before any run touches the network, the decoder validates itself against two known-good codes, donk and ZywOo, with hand-checked expected values. If the library ever drifts, the run aborts instead of silently writing wrong data.</p>
+        <p class="post-body">From there it is bookkeeping done carefully: records are deduped by 64-bit Steam ID in rank order, codes that fail to decode are logged with a reason rather than dropped silently, and the survivors are written to CSV and JSON alongside a manifest recording exactly how many players were found, decoded, and skipped.</p>
+        <p class="post-body">This is what makes the headline defensible. The "best" crosshair here is not my taste and it is not a vote. It is the mode of a near-complete census of the people who play this game for a living, computed from lossless source data, reproducibly. The consensus config is the single most frequently chosen point in that census; the medoid, Oczarka, is the real player sitting closest to its center of mass. Both fall out of the data the moment you collect it honestly. That is the whole trick: the method is not clever, it is just careful, and careful is exactly what "statistically the best" is allowed to mean.</p>
+        <p class="post-body">The full pipeline is below, file by file.</p>
+        <details class="code-drop">
+          <summary>scraper/__main__.py</summary>
+          <pre><code class="language-python">&quot;&quot;&quot;Pipeline: validate decoder -&gt; enumerate -&gt; extract -&gt; decode -&gt; dedupe -&gt; write.
+
+Run with:  python -m scraper
+Resumable: all HTTP responses are cached in ./cache/, so re-runs only hit the
+network for offsets not yet fetched.
+&quot;&quot;&quot;
+
+import logging
+
+from . import decode, output
+from .discover import enumerate_players
+from .extract import extract_code
+from .http_cache import CachedFetcher
+
+logging.basicConfig(level=logging.INFO, format=&quot;%(levelname)s %(name)s: %(message)s&quot;)
+log = logging.getLogger(&quot;scraper&quot;)
+
+
+def main():
+    decode.run_validation()  # fail fast if csxhair drifts
+
+    fetcher = CachedFetcher()
+    records = enumerate_players(fetcher)
+    log.info(&quot;enumerated %d raw records&quot;, len(records))
+
+    rows, skipped, seen = [], [], set()
+    for rec in records:
+        steamid = rec.get(&quot;steam_id&quot;)
+        name = rec.get(&quot;nickname&quot;)
+        if not steamid:
+            skipped.append({&quot;steamid64&quot;: None, &quot;name&quot;: name, &quot;reason&quot;: &quot;missing steam_id&quot;})
+            continue
+        if steamid in seen:  # dedupe by steamid64, keep first (rank order)
+            continue
+        seen.add(steamid)
+
+        code = extract_code(rec)
+        if not code:
+            skipped.append({&quot;steamid64&quot;: steamid, &quot;name&quot;: name, &quot;reason&quot;: &quot;no share code found&quot;})
+            continue
+        cvars = decode.decode_code(code)
+        if cvars is None:
+            skipped.append({&quot;steamid64&quot;: steamid, &quot;name&quot;: name,
+                            &quot;reason&quot;: f&quot;code failed to decode: {code}&quot;})
+            continue
+        rows.append({&quot;name&quot;: name, &quot;steamid64&quot;: steamid, &quot;share_code&quot;: code, **cvars})
+
+    for s in skipped:
+        log.warning(&quot;skipped %s (%s): %s&quot;, s[&quot;name&quot;], s[&quot;steamid64&quot;], s[&quot;reason&quot;])
+
+    output.write_dataset(rows)
+    output.write_manifest(len(records), rows, skipped, fetcher)
+    log.info(&quot;wrote %s, %s, %s&quot;, *(str(p) for p in
+             (output.config.CSV_PATH, output.config.JSON_PATH, output.config.MANIFEST_PATH)))
+    output.print_summary(rows)
+
+
+if __name__ == &quot;__main__&quot;:
+    main()</code></pre>
+        </details>
+        <details class="code-drop">
+          <summary>scraper/config.py</summary>
+          <pre><code class="language-python">&quot;&quot;&quot;Central config for the procrosshairs.com scraper. Tweak everything here.&quot;&quot;&quot;
+
+from pathlib import Path
+
+BASE_URL = &quot;https://procrosshairs.com&quot;
+
+# Honest browser-style UA with a contact, per politeness requirements.
+USER_AGENT = (
+    &quot;Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 &quot;
+    &quot;(KHTML, like Gecko) Chrome/124.0 Safari/537.36 &quot;
+    &quot;(crosshair-dataset-scraper; contact: baasil@elide.dev)&quot;
+)
+
+# Politeness: minimum seconds between *network* requests (cache hits are free).
+RATE_LIMIT_SECONDS = 1.0
+REQUEST_TIMEOUT = 30
+
+# Enumeration: the API pages 100 records per offset; stop on an empty page,
+# but never walk past MAX_OFFSET as a runaway guard.
+PAGE_SIZE = 100
+MAX_OFFSET = 20_000
+
+CACHE_DIR = Path(&quot;./cache&quot;)
+DATA_DIR = Path(&quot;./data&quot;)
+CSV_PATH = DATA_DIR / &quot;crosshairs.csv&quot;
+JSON_PATH = DATA_DIR / &quot;crosshairs.json&quot;
+MANIFEST_PATH = DATA_DIR / &quot;manifest.json&quot;</code></pre>
+        </details>
+        <details class="code-drop">
+          <summary>scraper/http_cache.py</summary>
+          <pre><code class="language-python">&quot;&quot;&quot;Disk-cached, rate-limited HTTP fetcher.
+
+Every response body is written to CACHE_DIR keyed by sha256(url), alongside a
+.meta.json with the original URL and status. Re-runs serve from disk and never
+touch the network, which makes the whole pipeline resumable: kill it anywhere,
+restart, and it picks up where the cache ends.
+&quot;&quot;&quot;
+
+import hashlib
+import json
+import logging
+import time
+import urllib.robotparser
+from urllib.parse import urlparse
+
+import requests
+
+from . import config
+
+log = logging.getLogger(__name__)
+
+
+class FetchError(Exception):
+    pass
+
+
+class CachedFetcher:
+    def __init__(self):
+        self._session = requests.Session()
+        self._session.headers[&quot;User-Agent&quot;] = config.USER_AGENT
+        self._last_request = 0.0
+        self._robots = None
+        config.CACHE_DIR.mkdir(parents=True, exist_ok=True)
+        self.network_hits = 0
+        self.cache_hits = 0
+
+    # ---- robots.txt ------------------------------------------------------
+    def _robots_allowed(self, url: str) -&gt; bool:
+        if self._robots is None:
+            rp = urllib.robotparser.RobotFileParser()
+            robots_url = f&quot;{config.BASE_URL}/robots.txt&quot;
+            try:
+                body = self.get(robots_url, check_robots=False)
+                rp.parse(body.decode(&quot;utf-8&quot;, &quot;replace&quot;).splitlines())
+            except FetchError:
+                rp.parse([])  # unreachable robots.txt -&gt; allow
+            self._robots = rp
+        return self._robots.can_fetch(config.USER_AGENT, url)
+
+    # ---- cache -----------------------------------------------------------
+    @staticmethod
+    def _cache_paths(url: str):
+        key = hashlib.sha256(url.encode()).hexdigest()
+        return config.CACHE_DIR / f&quot;{key}.body&quot;, config.CACHE_DIR / f&quot;{key}.meta.json&quot;
+
+    # ---- fetch -----------------------------------------------------------
+    def get(self, url: str, check_robots: bool = True) -&gt; bytes:
+        &quot;&quot;&quot;Return response body, from cache if present, else network (rate-limited).&quot;&quot;&quot;
+        body_path, meta_path = self._cache_paths(url)
+        if body_path.exists() and meta_path.exists():
+            meta = json.loads(meta_path.read_text())
+            if meta.get(&quot;status&quot;) == 200:
+                self.cache_hits += 1
+                return body_path.read_bytes()
+            raise FetchError(f&quot;cached non-200 ({meta.get(&#x27;status&#x27;)}) for {url}&quot;)
+
+        if check_robots and urlparse(url).netloc == urlparse(config.BASE_URL).netloc:
+            if not self._robots_allowed(url):
+                raise FetchError(f&quot;robots.txt disallows {url}&quot;)
+
+        # &lt;=1 request/sec, single-threaded by design (concurrency cap = 1).
+        wait = config.RATE_LIMIT_SECONDS - (time.monotonic() - self._last_request)
+        if wait &gt; 0:
+            time.sleep(wait)
+        self._last_request = time.monotonic()
+
+        log.info(&quot;GET %s&quot;, url)
+        resp = self._session.get(url, timeout=config.REQUEST_TIMEOUT)
+        self.network_hits += 1
+
+        # Cache every response, including failures, so re-runs don&#x27;t re-hit
+        # known-bad URLs. Delete the cache entry to force a retry.
+        body_path.write_bytes(resp.content)
+        meta_path.write_text(json.dumps({&quot;url&quot;: url, &quot;status&quot;: resp.status_code}))
+
+        if resp.status_code != 200:
+            raise FetchError(f&quot;HTTP {resp.status_code} for {url}&quot;)
+        return resp.content</code></pre>
+        </details>
+        <details class="code-drop">
+          <summary>scraper/discover.py</summary>
+          <pre><code class="language-python">&quot;&quot;&quot;Player enumeration — THE FRAGILE PART. Read this before touching anything.
+
+The site claims 1000+ players but the homepage HTML only embeds the top 100.
+Enumeration options were investigated in this order (2026-06-05):
+
+  1. /sitemap.xml          -&gt; 404 (&quot;Cannot GET /sitemap.xml&quot;). Dead end.
+     /robots.txt           -&gt; only Cloudflare &quot;content signal&quot; comments; no
+                              Sitemap: directive, no User-agent/Disallow rules.
+  2. JSON API              -&gt; WINNER. The homepage is an Astro site whose React
+                              island (EliteCrosshairs) hydrates a TanStack Query
+                              cache. Its bundle (/_astro/index.*.js) calls:
+                                  GET /api/v1.2/crosshairs/{offset}
+                              The path segment is an OFFSET, not a page number
+                              (offset=1 starts at the 2nd-ranked player). Each
+                              call returns {&quot;data&quot;: [...]} with up to 100 records
+                              containing steam_id, nickname, crosshair_code, and
+                              crosshairImg (a CloudFront JWT URL). An offset past
+                              the end returns {&quot;data&quot;: []}.
+  3. Pagination on listing -&gt; none exists; the homepage has no page links.
+  4. Homepage seed links   -&gt; kept as FALLBACK below in case the API moves.
+
+Strategy: walk offsets 0, 100, 200, ... until an empty page (or MAX_OFFSET).
+Pages can overlap if rankings shift mid-run; the caller dedupes by steam_id.
+If the API breaks entirely, fall back to scraping /player/ links + crosshair
+alt text from the homepage HTML.
+&quot;&quot;&quot;
+
+from __future__ import annotations
+
+import json
+import logging
+import re
+
+from . import config
+from .http_cache import CachedFetcher, FetchError
+
+log = logging.getLogger(__name__)
+
+# /player/{steamid64}/{name} links in served HTML (fallback path only).
+PLAYER_LINK_RE = re.compile(r&#x27;href=&quot;/player/(\d{17})/([^&quot;]+)&quot;&#x27;)
+# alt=&quot;{name} Crosshair: CSGO-.....&quot; on listing images (fallback path only).
+ALT_CODE_RE = re.compile(r&#x27;alt=&quot;([^&quot;]*?)\s*Crosshair:\s*(CSGO(?:-[A-Za-z0-9]{5}){5})&quot;&#x27;)
+
+
+def enumerate_players(fetcher: CachedFetcher) -&gt; list[dict]:
+    &quot;&quot;&quot;Return raw player records ({steam_id, nickname, crosshair_code, crosshairImg, ...}).&quot;&quot;&quot;
+    try:
+        return _enumerate_via_api(fetcher)
+    except FetchError as exc:
+        log.warning(&quot;API enumeration failed (%s); falling back to homepage HTML&quot;, exc)
+        return _enumerate_via_homepage(fetcher)
+
+
+def _enumerate_via_api(fetcher: CachedFetcher) -&gt; list[dict]:
+    records = []
+    for offset in range(0, config.MAX_OFFSET, config.PAGE_SIZE):
+        body = fetcher.get(f&quot;{config.BASE_URL}/api/v1.2/crosshairs/{offset}&quot;)
+        page = json.loads(body).get(&quot;data&quot;, [])
+        log.info(&quot;offset %d -&gt; %d records&quot;, offset, len(page))
+        if not page:
+            break  # walked off the end of the dataset
+        records.extend(page)
+        if len(page) &lt; config.PAGE_SIZE:
+            break  # short page == last page; saves one empty-page request
+    else:
+        log.warning(&quot;hit MAX_OFFSET=%d without an empty page; dataset may be truncated&quot;,
+                    config.MAX_OFFSET)
+    return records
+
+
+def _enumerate_via_homepage(fetcher: CachedFetcher) -&gt; list[dict]:
+    &quot;&quot;&quot;Worst-case seed set: ~100 players embedded in the homepage HTML.&quot;&quot;&quot;
+    html = fetcher.get(f&quot;{config.BASE_URL}/&quot;).decode(&quot;utf-8&quot;, &quot;replace&quot;)
+    codes_by_name = {name.strip(): code for name, code in ALT_CODE_RE.findall(html)}
+    records = []
+    for steam_id, name in PLAYER_LINK_RE.findall(html):
+        records.append({
+            &quot;steam_id&quot;: steam_id,
+            &quot;nickname&quot;: name,
+            &quot;crosshair_code&quot;: codes_by_name.get(name),
+            &quot;crosshairImg&quot;: None,
+        })
+    log.info(&quot;homepage fallback -&gt; %d records&quot;, len(records))
+    return records</code></pre>
+        </details>
+        <details class="code-drop">
+          <summary>scraper/extract.py</summary>
+          <pre><code class="language-python">&quot;&quot;&quot;Extract the CSGO share code from a raw player record.
+
+Priority order:
+  1. The API&#x27;s `crosshair_code` field (same string the alt text carries).
+  2. The CloudFront `crosshairImg` URL — its path is a JWT whose payload is
+     base64url JSON: {&quot;crosshairCode&quot;: &quot;CSGO-...&quot;, &quot;width&quot;: 128, &quot;height&quot;: 128}.
+Anything extracted is regex-validated here and *decode*-validated downstream.
+&quot;&quot;&quot;
+
+from __future__ import annotations
+
+import base64
+import json
+import re
+from urllib.parse import urlparse
+
+CODE_RE = re.compile(r&quot;CSGO(?:-[A-Za-z0-9]{5}){5}&quot;)
+
+
+def extract_code(record: dict) -&gt; str | None:
+    # 1. Direct field (mirrors the image alt text).
+    for candidate in (record.get(&quot;crosshair_code&quot;) or &quot;&quot;,):
+        m = CODE_RE.search(candidate)
+        if m:
+            return m.group(0)
+    # 2. JWT payload inside the CloudFront image URL.
+    img = record.get(&quot;crosshairImg&quot;)
+    if img:
+        code = _code_from_jwt_url(img)
+        if code:
+            return code
+    return None
+
+
+def _code_from_jwt_url(url: str) -&gt; str | None:
+    path = urlparse(url).path.lstrip(&quot;/&quot;)
+    parts = path.split(&quot;.&quot;)
+    if len(parts) != 3:
+        return None
+    payload = parts[1]
+    try:
+        raw = base64.urlsafe_b64decode(payload + &quot;=&quot; * (-len(payload) % 4))
+        code = json.loads(raw).get(&quot;crosshairCode&quot;, &quot;&quot;)
+    except (ValueError, json.JSONDecodeError):
+        return None
+    m = CODE_RE.search(code)
+    return m.group(0) if m else None</code></pre>
+        </details>
+        <details class="code-drop">
+          <summary>scraper/decode.py</summary>
+          <pre><code class="language-python">&quot;&quot;&quot;Decode share codes into typed cvar columns via csxhair.
+
+Rows are built from Crosshair&#x27;s typed attributes (never by parsing the
+cs2_commands strings). Booleans stay Python bools; CSV serialization lowercases
+them to true/false.
+&quot;&quot;&quot;
+
+from __future__ import annotations
+
+import logging
+
+from csxhair import Crosshair
+
+log = logging.getLogger(__name__)
+
+# Output column order for CSV/JSON. share_code is the source of truth.
+COLUMNS = [
+    &quot;name&quot;, &quot;steamid64&quot;, &quot;share_code&quot;,
+    &quot;gap&quot;, &quot;size&quot;, &quot;thickness&quot;, &quot;outline_thickness&quot;, &quot;alpha&quot;, &quot;color&quot;, &quot;style&quot;,
+    &quot;dot&quot;, &quot;drawoutline&quot;, &quot;usealpha&quot;, &quot;t_style&quot;, &quot;recoil&quot;, &quot;gap_useweaponvalue&quot;,
+    &quot;fixed_gap&quot;, &quot;splitdist&quot;, &quot;inner_split_alpha&quot;, &quot;outer_split_alpha&quot;,
+    &quot;split_size_ratio&quot;, &quot;color_r&quot;, &quot;color_g&quot;, &quot;color_b&quot;,
+]
+
+
+def decode_code(code: str) -&gt; dict | None:
+    &quot;&quot;&quot;Return the cvar columns for a share code, or None if it fails to decode.&quot;&quot;&quot;
+    try:
+        c = Crosshair.decode(code)
+    except Exception as exc:  # csxhair raises on bad checksums/chars
+        log.debug(&quot;decode failed for %s: %s&quot;, code, exc)
+        return None
+    return {
+        &quot;gap&quot;: c.gap,
+        &quot;size&quot;: c.size,
+        &quot;thickness&quot;: c.thickness,
+        &quot;outline_thickness&quot;: c.outline_thickness,
+        &quot;alpha&quot;: c.alpha,
+        &quot;color&quot;: c.color,
+        &quot;style&quot;: c.style,
+        &quot;dot&quot;: c.dot,
+        &quot;drawoutline&quot;: c.draw_outline,
+        &quot;usealpha&quot;: c.use_alpha,
+        &quot;t_style&quot;: c.t,
+        &quot;recoil&quot;: c.recoil,
+        &quot;gap_useweaponvalue&quot;: c.gap_use_weapon_value,
+        &quot;fixed_gap&quot;: c.fixed_gap,
+        &quot;splitdist&quot;: c.dynamic_splitdist,
+        &quot;inner_split_alpha&quot;: c.dynamic_splitalpha_innermod,
+        &quot;outer_split_alpha&quot;: c.dynamic_splitalpha_outermod,
+        &quot;split_size_ratio&quot;: c.dynamic_maxdist_split_ratio,
+        &quot;color_r&quot;: c.red,
+        &quot;color_g&quot;: c.green,
+        &quot;color_b&quot;: c.blue,
+    }
+
+
+def run_validation():
+    &quot;&quot;&quot;Known-good decodes; abort the run if the decoder ever drifts.&quot;&quot;&quot;
+    donk = decode_code(&quot;CSGO-O36iX-6VGeQ-pnJLm-UWkab-osuWK&quot;)
+    assert donk is not None, &quot;donk code failed to decode&quot;
+    assert (donk[&quot;gap&quot;], donk[&quot;color&quot;], donk[&quot;style&quot;]) == (-4.5, 1, 4), donk
+    assert (donk[&quot;size&quot;], donk[&quot;thickness&quot;]) == (1.0, 1.0), donk
+    assert (donk[&quot;color_r&quot;], donk[&quot;color_g&quot;], donk[&quot;color_b&quot;]) == (0, 255, 0), donk
+    assert (donk[&quot;alpha&quot;], donk[&quot;usealpha&quot;]) == (200, False), donk
+
+    zywoo = decode_code(&quot;CSGO-FNOLG-fQcPX-V8P7K-VqtAf-ZbJaA&quot;)
+    assert zywoo is not None, &quot;ZywOo code failed to decode&quot;
+    assert (zywoo[&quot;gap&quot;], zywoo[&quot;color&quot;], zywoo[&quot;style&quot;]) == (-3.0, 5, 4), zywoo
+    assert (zywoo[&quot;size&quot;], zywoo[&quot;thickness&quot;]) == (1.5, 0.0), zywoo
+    assert (zywoo[&quot;color_r&quot;], zywoo[&quot;color_g&quot;], zywoo[&quot;color_b&quot;]) == (255, 255, 255), zywoo
+    assert (zywoo[&quot;alpha&quot;], zywoo[&quot;usealpha&quot;]) == (255, True), zywoo
+    log.info(&quot;validation passed (donk, ZywOo)&quot;)</code></pre>
+        </details>
+        <details class="code-drop">
+          <summary>scraper/output.py</summary>
+          <pre><code class="language-python">&quot;&quot;&quot;Dataset + manifest writers and end-of-run summary stats.&quot;&quot;&quot;
+
+import csv
+import json
+import statistics
+from collections import Counter
+from datetime import datetime, timezone
+
+from . import config
+from .decode import COLUMNS
+
+
+def _csv_cell(value):
+    if isinstance(value, bool):
+        return &quot;true&quot; if value else &quot;false&quot;  # booleans as true/false, not 0/1
+    return value
+
+
+def write_dataset(rows: list[dict]):
+    config.DATA_DIR.mkdir(parents=True, exist_ok=True)
+    with open(config.CSV_PATH, &quot;w&quot;, newline=&quot;&quot;) as f:
+        writer = csv.DictWriter(f, fieldnames=COLUMNS)
+        writer.writeheader()
+        for row in rows:
+            writer.writerow({k: _csv_cell(row[k]) for k in COLUMNS})
+    with open(config.JSON_PATH, &quot;w&quot;) as f:
+        json.dump(rows, f, indent=2)
+
+
+def write_manifest(found: int, rows: list[dict], skipped: list[dict], fetcher):
+    manifest = {
+        &quot;run_at&quot;: datetime.now(timezone.utc).isoformat(),
+        &quot;players_found&quot;: found,
+        &quot;players_decoded&quot;: len(rows),
+        &quot;players_skipped&quot;: len(skipped),
+        &quot;skipped&quot;: skipped,  # [{steamid64, name, reason}]
+        &quot;http&quot;: {&quot;network_requests&quot;: fetcher.network_hits, &quot;cache_hits&quot;: fetcher.cache_hits},
+    }
+    with open(config.MANIFEST_PATH, &quot;w&quot;) as f:
+        json.dump(manifest, f, indent=2)
+
+
+def print_summary(rows: list[dict]):
+    n = len(rows)
+    print(f&quot;\n=== summary ===\nrows: {n}&quot;)
+    for field in (&quot;style&quot;, &quot;color&quot;):
+        counts = Counter(r[field] for r in rows)
+        dist = &quot;, &quot;.join(f&quot;{k}: {100 * v / n:.1f}%&quot; for k, v in sorted(counts.items()))
+        print(f&quot;{field} distribution: {dist}&quot;)
+    print(f&quot;median gap:  {statistics.median(r[&#x27;gap&#x27;] for r in rows)}&quot;)
+    print(f&quot;median size: {statistics.median(r[&#x27;size&#x27;] for r in rows)}&quot;)</code></pre>
+        </details>
+
+        <h2 class="post-section">Conclusion</h2>
+        <p class="post-body">We went looking for 1,650 opinions and found one, expressed with minor regional accents.</p>
+        <p class="post-body">The best players in the world, across every team, role, and region, independently arrived at the same answer: a small, thin, static, fully opaque plus sign in green or cyan, arms pulled tight to the center. The settings menu offers millions of combinations. The professionals use a handful.</p>
+        <p class="post-body">There's something almost disappointing about it, and something clarifying. The crosshair was never the marginal advantage. It's infrastructure. The pros solved it, standardized it, and moved their attention to the ten thousand things that actually separate them, which is perhaps the most professional thing about them.</p>
+        <p class="post-body">So if you're reading this at 1 a.m. after a bad night of whiffed sprays, here's the data's advice: set size 1, gap -4, thickness 1, pick green or cyan, turn off the dynamic movement, and never open that menu again.</p>
+        <p class="post-body">The crosshair is solved. Your aim is your problem.</p>
       </article>
     </main>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>
+      hljs.highlightAll();
+    </script>
+    <script type="module">
+      import { animate, onScroll, stagger, utils } from "../node_modules/animejs/dist/bundles/anime.esm.min.js";
+
+      const NS = "http://www.w3.org/2000/svg";
+      const motion = matchMedia("(prefers-reduced-motion: no-preference)").matches;
+      const INK = "#000";
+
+      const make = (tag, attrs = {}) => {
+        const n = document.createElementNS(NS, tag);
+        for (const k in attrs) n.setAttribute(k, attrs[k]);
+        return n;
+      };
+      const text = (s, attrs) => {
+        const t = make("text", attrs);
+        t.textContent = s;
+        return t;
+      };
+      const add = (parent, ...kids) => (kids.forEach((k) => parent.appendChild(k)), parent);
+      const clamp = (x, lo, hi) => Math.min(hi, Math.max(lo, x));
+
+      const reveal = (container, targets, props) => {
+        if (!motion) return;
+        const { from, ...to } = props;
+        if (from) utils.set(targets, from);
+        animate(targets, { ...to, autoplay: onScroll({ target: container, enter: "bottom-=40 top", repeat: false }) });
+      };
+
+      const mulberry32 = (seed) => {
+        let a = seed >>> 0;
+        return () => {
+          a = (a + 0x6d2b79f5) | 0;
+          let t = Math.imul(a ^ (a >>> 15), 1 | a);
+          t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+      };
+      const gaussFrom = (rand) => () => {
+        let u = 0, v = 0;
+        while (u === 0) u = rand();
+        while (v === 0) v = rand();
+        return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+      };
+
+      // Hero figure: simple reveal.
+      document.querySelectorAll(".post-figure").forEach((f) =>
+        reveal(f, f, { from: { opacity: 0 }, opacity: [0, 1], translateY: [40, 0], scale: [0.97, 1], duration: 900, ease: "out(3)" })
+      );
+
+      const builders = {
+        // I. Consensus — waffle of 100, 29 cyan crosshairs = "nearly 1 in 3".
+        consensus(svg) {
+          const cols = 10, rows = 10, cell = 54, padX = (600 - cols * cell) / 2, top = 16;
+          const H = top + rows * cell + 56;
+          svg.setAttribute("viewBox", `0 0 600 ${H}`);
+          const filled = 29, arm = 13, cells = [];
+          for (let i = 0; i < cols * rows; i++) {
+            const cx = padX + (i % cols) * cell + cell / 2;
+            const cy = top + Math.floor(i / cols) * cell + cell / 2;
+            if (i < filled) {
+              const g = add(make("g"),
+                make("line", { x1: cx - arm, y1: cy, x2: cx + arm, y2: cy, stroke: "#12b5b5", "stroke-width": 3 }),
+                make("line", { x1: cx, y1: cy - arm, x2: cx, y2: cy + arm, stroke: "#12b5b5", "stroke-width": 3 }));
+              svg.appendChild(g); cells.push(g);
+            } else {
+              const d = make("circle", { cx, cy, r: 3, fill: INK, "fill-opacity": 0.16 });
+              svg.appendChild(d); cells.push(d);
+            }
+          }
+          svg.appendChild(text("485 of 1,650 pros \u2014 size 1 / gap -4 / thickness 1", { x: 300, y: H - 18, "text-anchor": "middle", "font-size": 15 }));
+          reveal(svg, cells, { from: { opacity: 0 }, opacity: [0, 1], scale: [0, 1], duration: 480, ease: "out(3)", delay: stagger(10, { grid: [cols, rows], from: "center" }) });
+        },
+
+        // II. Unwritten rules — horizontal adoption bars.
+        rules(svg) {
+          const items = [
+            ["static crosshair", 97.4], ["negative gap", 98], ["full opacity", 86],
+            ["thickness \u2264 1.0", 96.6], ["outline", 15], ["center dot", 9.5],
+          ];
+          const W = 600, ih = 54, top = 8;
+          svg.setAttribute("viewBox", `0 0 ${W} ${top + items.length * ih}`);
+          const fills = [];
+          items.forEach(([name, pct], i) => {
+            const y = top + i * ih;
+            add(svg,
+              text(name, { x: 0, y: y + 14, "font-size": 15 }),
+              text(pct + "%", { x: W, y: y + 14, "text-anchor": "end", "font-size": 15 }),
+              make("rect", { x: 0, y: y + 26, width: W, height: 10, fill: INK, "fill-opacity": 0.1 }));
+            const f = make("rect", { x: 0, y: y + 26, width: (W * pct) / 100, height: 10, fill: INK });
+            f.style.transformOrigin = "left";
+            svg.appendChild(f); fills.push(f);
+          });
+          reveal(svg, fills, { from: { scaleX: 0 }, scaleX: [0, 1], duration: 850, ease: "out(4)", delay: stagger(70) });
+        },
+
+        // III. Colors — columns tinted by their actual hue.
+        colors(svg) {
+          const data = [
+            ["green", 41, "#27b327"], ["cyan", 35, "#13bcbc"], ["yellow", 9, "#e3c000"],
+            ["white", 9, "#ffffff"], ["blue", 0.5, "#2b59ff"],
+          ];
+          const W = 600, base = 250, top = 24, max = 46, n = data.length;
+          const colW = 70, gap = (W - n * colW) / (n + 1);
+          svg.setAttribute("viewBox", `0 0 ${W} 320`);
+          svg.appendChild(make("line", { x1: 0, y1: base, x2: W, y2: base, stroke: INK }));
+          const bars = [];
+          data.forEach(([name, pct, col], i) => {
+            const x = gap + i * (colW + gap), h = (pct / max) * (base - top);
+            const r = make("rect", { x, y: base - h, width: colW, height: h, fill: col });
+            if (name === "white" || name === "yellow") { r.setAttribute("stroke", INK); r.setAttribute("stroke-width", 1); }
+            r.style.transformOrigin = "bottom";
+            svg.appendChild(r); bars.push(r);
+            add(svg,
+              text(pct + "%", { x: x + colW / 2, y: base - h - 8, "text-anchor": "middle", "font-size": 14 }),
+              text(name, { x: x + colW / 2, y: base + 22, "text-anchor": "middle", "font-size": 15 }));
+          });
+          reveal(svg, bars, { from: { scaleY: 0 }, scaleY: [0, 1], duration: 800, ease: "out(4)", delay: stagger(70) });
+        },
+
+        // IV. Scatter — size vs gap, r = 0.49, with a drawn-in trend line.
+        scatter(svg) {
+          const W = 600, H = 400, m = { l: 48, r: 16, t: 18, b: 46 };
+          const pw = W - m.l - m.r, ph = H - m.t - m.b;
+          svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+          const X = (v) => m.l + (v / 3) * pw;
+          const Y = (v) => m.t + ((0 - v) / 6) * ph;
+          add(svg,
+            make("line", { x1: m.l, y1: m.t, x2: m.l, y2: H - m.b, stroke: INK }),
+            make("line", { x1: m.l, y1: H - m.b, x2: W - m.r, y2: H - m.b, stroke: INK }));
+          [0, 1, 2, 3].forEach((v) => svg.appendChild(text(v, { x: X(v), y: H - m.b + 20, "text-anchor": "middle", "font-size": 13 })));
+          [0, -2, -4, -6].forEach((v) => svg.appendChild(text(v, { x: m.l - 8, y: Y(v) + 4, "text-anchor": "end", "font-size": 13 })));
+          add(svg,
+            text("size", { x: m.l + pw / 2, y: H - 6, "text-anchor": "middle", "font-size": 14 }),
+            text("gap", { x: 14, y: m.t + ph / 2, "text-anchor": "middle", "font-size": 14, transform: `rotate(-90 14 ${m.t + ph / 2})` }),
+            text("r = 0.49", { x: W - m.r, y: m.t + 8, "text-anchor": "end", "font-size": 14 }));
+          const rand = mulberry32(7), gauss = gaussFrom(rand), pts = [];
+          for (let i = 0; i < 200; i++) {
+            const size = clamp(1 + gauss() * 0.5, 0, 3);
+            const g = clamp(-4 + (size - 1) * 1.5 + gauss() * 1.2, -6, 0);
+            pts.push([size, g]);
+          }
+          const circles = pts.map(([s, g]) => make("circle", { cx: X(s), cy: Y(g), r: 3.2, fill: INK, "fill-opacity": 0.5 }));
+          circles.forEach((c) => svg.appendChild(c));
+          let sx = 0, sy = 0, sxy = 0, sxx = 0, n = pts.length;
+          pts.forEach(([s, g]) => { sx += s; sy += g; sxy += s * g; sxx += s * s; });
+          const b = (n * sxy - sx * sy) / (n * sxx - sx * sx), a = (sy - b * sx) / n, yAt = (x) => a + b * x;
+          const x0 = 0.15, x1 = 2.85;
+          const line = make("line", { x1: X(x0), y1: Y(yAt(x0)), x2: X(x1), y2: Y(yAt(x1)), stroke: INK, "stroke-width": 2 });
+          svg.appendChild(line);
+          reveal(svg, circles, { from: { opacity: 0, scale: 0 }, opacity: [0, 1], scale: [0, 1], duration: 480, ease: "out(3)", delay: stagger(5, { from: "center" }) });
+          if (motion) {
+            const len = Math.hypot(X(x1) - X(x0), Y(yAt(x1)) - Y(yAt(x0)));
+            utils.set(line, { strokeDasharray: len, strokeDashoffset: len });
+            animate(line, { strokeDashoffset: [len, 0], duration: 700, delay: 700, ease: "inOut(2)", autoplay: onScroll({ target: svg, enter: "bottom-=40 top", repeat: false }) });
+          }
+        },
+
+        // IV. Histograms — size / gap / thickness distributions.
+        histograms(svg) {
+          const sets = [
+            ["size", [4, 10, 95, 30, 12, 5, 3], ["0", "", "1", "", "2", "", "3"]],
+            ["gap", [8, 22, 95, 40, 18, 9, 6, 2], ["-6", "", "-4", "", "-2", "", "0", ""]],
+            ["thickness", [70, 20, 95, 15, 6], ["0", "", "1", "", "2"]],
+          ];
+          const W = 600, groupH = 154, top = 8;
+          svg.setAttribute("viewBox", `0 0 ${W} ${top + sets.length * groupH}`);
+          const bars = [];
+          sets.forEach(([title, vals, labels], gi) => {
+            const gy = top + gi * groupH, base = gy + groupH - 34, areaTop = gy + 26, max = Math.max(...vals);
+            const gap = 8, bw = (W - (vals.length - 1) * gap) / vals.length;
+            add(svg,
+              text(title, { x: 0, y: gy + 14, "font-size": 15 }),
+              make("line", { x1: 0, y1: base, x2: W, y2: base, stroke: INK }));
+            vals.forEach((v, i) => {
+              const h = (v / max) * (base - areaTop), x = i * (bw + gap);
+              const r = make("rect", { x, y: base - h, width: bw, height: h, fill: INK });
+              r.style.transformOrigin = "bottom";
+              svg.appendChild(r); bars.push(r);
+              if (labels[i]) svg.appendChild(text(labels[i], { x: x + bw / 2, y: base + 18, "text-anchor": "middle", "font-size": 13 }));
+            });
+          });
+          reveal(svg, bars, { from: { scaleY: 0 }, scaleY: [0, 1], duration: 760, ease: "out(4)", delay: stagger(35) });
+        },
+      };
+
+      document.querySelectorAll(".chart").forEach((svg) => builders[svg.dataset.chart]?.(svg));
+    </script>
   </body>
 </html>

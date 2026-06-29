@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "@paper-design/shaders-react": "^0.0.76"
+    "@paper-design/shaders-react": "^0.0.76",
+    "animejs": "^4.5.0"
   }
 }

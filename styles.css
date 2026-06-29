@@ -89,7 +89,43 @@ article p + p { margin-top: 24px; }
 .post-figure {
   display: block;
   width: 100%;
-  background: #f2f1e8;
-  margin-bottom: 32px;
+  margin: 32px 0;
 }
 .post-body { font-family: "Times New Roman", Times, serif; }
+.post-section {
+  font-family: "Times New Roman", Times, serif;
+  font-weight: 700;
+  font-size: 25px;
+  line-height: 30px;
+  margin: 32px 0 12px;
+}
+.post-inline {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 16px;
+}
+
+.code-drop {
+  margin: 12px 0;
+  border: 1px solid var(--ink);
+}
+.code-drop > summary {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 16px;
+  line-height: 24px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+.code-drop > summary::-webkit-details-marker { display: none; }
+.code-drop > summary::before { content: "[+] "; }
+.code-drop[open] > summary::before { content: "[-] "; }
+.code-drop[open] > summary { border-bottom: 1px solid var(--ink); }
+.code-drop pre { margin: 0; }
+.code-drop pre code.hljs {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 13px;
+  line-height: 19px;
+  padding: 12px;
+  overflow-x: auto;
+}
