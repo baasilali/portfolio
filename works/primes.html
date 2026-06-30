@@ -30,22 +30,14 @@
         position: absolute;
         left: 16px;
         bottom: 14px;
-        font-size: 18px;
-        line-height: 26px;
+        font-family: "JetBrains Mono", ui-monospace, monospace;
+        font-size: 12px;
+        line-height: 18px;
+        color: #fff;
         pointer-events: none;
         text-shadow: 0 0 8px #000, 0 0 8px #000;
       }
       .viz-eq div { white-space: nowrap; }
-      .viz-eq .v { background: linear-gradient(90deg,#ff5d5d,#ffd166,#5dd6c4,#6aa9ff,#b48cff); -webkit-background-clip: text; background-clip: text; color: transparent; }
-      .viz-hint {
-        position: absolute;
-        top: 12px;
-        right: 14px;
-        font-size: 12px;
-        color: #888;
-        pointer-events: none;
-        letter-spacing: 0.04em;
-      }
       .viz-cap {
         font-family: "JetBrains Mono", ui-monospace, monospace;
         font-size: 13px;
@@ -73,11 +65,10 @@
 
         <figure class="viz post-figure" aria-label="Rotatable 3D point cloud of the first 1,600 primes plotted on a parametric spiral">
           <canvas id="hero" role="img"></canvas>
-          <div class="viz-hint">drag to rotate &middot; scroll to zoom &middot; hover a node</div>
           <div class="viz-eq">
-            <div><span class="v">x = p&nbsp;sin&nbsp;p&nbsp;cos&nbsp;p</span></div>
-            <div><span class="v">y = p&nbsp;sin&sup2;&nbsp;p</span></div>
-            <div><span class="v">z = p&nbsp;cos&nbsp;p</span></div>
+            <div>x = p&nbsp;sin&nbsp;p&nbsp;cos&nbsp;p</div>
+            <div>y = p&nbsp;sin&sup2;&nbsp;p</div>
+            <div>z = p&nbsp;cos&nbsp;p</div>
           </div>
         </figure>
         <p class="viz-cap">The first 1,600 primes, each plotted at the point above. Drag along any axis.</p>
