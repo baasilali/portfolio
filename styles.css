@@ -128,4 +128,5 @@ article p + p { margin-top: 24px; }
   line-height: 19px;
   padding: 12px;
   overflow-x: auto;
+  background: transparent;
 }
