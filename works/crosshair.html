@@ -34,64 +34,57 @@
         <h1 class="post-title">Statistically the best crosshair (2026)</h1>
         <img class="post-figure" src="../assets/crosshair.png" alt="Eight crosshair designs rendered as a halftone-dot grid" />
 
-        <p class="post-body">Every Counter-Strike player has, at some point, fallen down the crosshair rabbit hole. A bad night of whiffed sprays ends with twenty minutes in the settings menu, nudging the gap by half a unit and convincing yourself the next match will be different.</p>
-        <p class="post-body">The crosshair feels deeply personal. It sits at the center of your screen for thousands of hours. It's the last thing between your eyes and the enemy's head. So you'd expect the professional scene, 1,650 of the best players on earth, to express 1,650 different opinions about what it should look like.</p>
-        <p class="post-body">They don't.</p>
-        <p class="post-body">We decoded the share codes of every active pro and ran the numbers on all of it: length, gap, thickness, color, opacity, and the long tail of obscure toggles most players never touch. What emerged looks less like personal preference and more like convergent evolution. Nobody coordinated this. The meta selected for it.</p>
-        <p class="post-body">This is what the data says about the best crosshair in Counter-Strike.</p>
+        <p class="post-body">The crosshair occupies a fixed position at the center of a Counter-Strike player's screen and is among the most frequently adjusted elements of the game's interface. Given the breadth of available configuration options, substantial variation across the professional population might be expected.</p>
+        <p class="post-body">This article examines the crosshair configurations of 1,650 active professional players, reconstructed from the share codes each player publishes. For every configuration we recover the full set of console variables: arm length, center gap, line thickness, color, opacity, and the complete set of secondary toggles.</p>
+        <p class="post-body">The data exhibit strong convergence. Across nearly every parameter the population concentrates on a narrow range of values, and a substantial fraction of players adopt identical configurations. The sections below report these distributions and the methodology used to obtain them.</p>
 
-        <h2 class="post-section">I. The Consensus Crosshair</h2>
-        <p class="post-body">Take the most common value for every single parameter across all 1,650 players and you get one config: <strong>size 1, gap -4, thickness 1, full opacity, classic static, no dot, no outline.</strong></p>
-        <p class="post-body">That isn't just a statistical artifact stitched together from averages. That exact skeleton, size 1 / gap -4 / thickness 1, is the crosshair of <strong>485 professionals. Nearly one in three pros aims with functionally the same tiny plus sign</strong>, differing only in color.</p>
+        <h2 class="post-section">I. The Consensus Configuration</h2>
+        <p class="post-body">Computing the modal value of each parameter independently across all 1,650 players yields a single configuration: <strong>size 1, gap -4, thickness 1, full opacity, classic static style, no center dot, and no outline.</strong></p>
+        <p class="post-body">This configuration is not merely an artifact of aggregating marginal modes. The exact skeleton of size 1, gap -4, and thickness 1 is used by <strong>485 players, approximately one in three,</strong> who differ only in color.</p>
         <svg class="chart" data-chart="consensus" role="img" aria-label="Breakdown of the most common crosshair configuration across pro players"></svg>
-        <p class="post-body">Zoom in further and the convergence gets stranger. 574 players, more than a third of the dataset, share their <em>exact</em> configuration, every field identical, with at least one other pro. The single most popular config (the skeleton above, in cyan) is shared by 31 players across different teams, regions, and roles.</p>
-        <p class="post-body">These are people whose careers depend on marginal advantages. They had every incentive to find something better. They landed in the same place.</p>
+        <p class="post-body">The convergence extends to complete configurations. 574 players, more than a third of the sample, share an <em>identical</em> configuration, every field matching, with at least one other player. The single most common configuration, shown above in cyan, is used by 31 players across different teams, regions, and roles.</p>
+        <p class="post-body">This degree of agreement is notable given that professional players have strong incentives to identify any marginal advantage. The concentration is consistent with a parameter space that has been effectively exhausted.</p>
 
-        <h2 class="post-section">II. The Unwritten Rules</h2>
-        <p class="post-body">Some settings in this dataset behave like preferences. Others behave like law.</p>
+        <h2 class="post-section">II. Adoption Rates Across Settings</h2>
+        <p class="post-body">The settings divide into two categories: those exhibiting wide variation, consistent with personal preference, and those exhibiting near-uniform adoption.</p>
         <svg class="chart" data-chart="rules" role="img" aria-label="Adoption rates of crosshair settings such as static, gap, opacity, and thickness"></svg>
-        <p class="post-body"><strong>97.4% of pros use a static crosshair.</strong> The dynamic crosshair, the one that expands when you move and shoot, the one Counter-Strike ships with by default, has effectively zero professional adoption. The best players in the world looked at the game's default settings and rejected them almost unanimously.</p>
-        <p class="post-body"><strong>98% use a negative gap</strong>, pulling the four arms inward toward the center. Only 10 players in the entire scene use a positive gap. The community treats gap like a matter of taste. The data says it's a solved parameter.</p>
-        <p class="post-body"><strong>86% run full opacity</strong> and <strong>96.6% keep thickness at or below 1.0.</strong> Thin, solid, unmoving.</p>
-        <p class="post-body">Then there's the heresy tier. Outlines sit at 15%. Center dots at 9.5%. Weapon-based gap, follow recoil, and T-style crosshairs are used by 9, 3, and 2 players respectively. Out of 1,650.</p>
+        <p class="post-body"><strong>97.4% of players use a static crosshair.</strong> The dynamic crosshair, which expands during movement and firing and is the game's default, has negligible professional adoption.</p>
+        <p class="post-body"><strong>98% use a negative gap,</strong> drawing the four arms inward toward the center; only 10 players use a positive gap. <strong>86% use full opacity,</strong> and <strong>96.6% use a thickness of 1.0 or below.</strong></p>
+        <p class="post-body">The remaining options are rare. Outlines appear in 15% of configurations and center dots in 9.5%. Weapon-based gap, follow-recoil, and T-style crosshairs are used by 9, 3, and 2 players respectively, out of 1,650.</p>
 
-        <h2 class="post-section">III. Two Colors Rule Everything</h2>
+        <h2 class="post-section">III. Color Distribution</h2>
         <svg class="chart" data-chart="colors" role="img" aria-label="Distribution of crosshair colors across the professional scene"></svg>
-        <p class="post-body">After resolving every preset and custom RGB value into perceptual buckets, the hierarchy is brutal: <strong>green at 41%, cyan at 35%.</strong> Together they cover three quarters of the professional scene. Yellow and white split most of the remainder at 9% each.</p>
-        <p class="post-body">The logic is contrast theory. Counter-Strike's maps are painted in browns, grays, and warm earth tones. Green and cyan sit opposite that palette and stay visible against nearly every wall, floor, and player model in the game.</p>
-        <p class="post-body">The proof is blue. It's offered as a one-click preset, equal in convenience to green and cyan, and exactly <strong>9 players out of 1,650</strong> use anything blue. It drowns in skyboxes and shadows, and the pros know it.</p>
-        <p class="post-body">Two details from the custom color data deserve their own paragraph. First, 725 players went into the advanced menu to define a custom RGB color, and <strong>309 of them dialed in a value identical to a built-in preset.</strong> They did extra work to recreate the defaults. Second, the most popular truly custom color is mint, RGB (0, 255, 145), worn by 50+ players. It's the shade s1mple made famous, carried today by ropz and w0nderful. Even in the one place pros express individuality, they copy each other.</p>
+        <p class="post-body">After resolving every preset and custom RGB value into perceptual color categories, two colors dominate: <strong>green at 41% and cyan at 35%,</strong> together accounting for roughly three quarters of the sample. Yellow and white each account for approximately 9%.</p>
+        <p class="post-body">The distribution is consistent with contrast considerations. Counter-Strike environments are dominated by browns, grays, and warm earth tones; green and cyan are perceptually distinct from this palette and remain visible against most surfaces and player models.</p>
+        <p class="post-body">Blue provides a useful control. It is available as a one-click preset, equivalent in convenience to green and cyan, yet only <strong>9 players out of 1,650</strong> use any blue variant, consistent with its low visibility against sky and shadow.</p>
+        <p class="post-body">The custom-color data contain two notable patterns. First, of the 725 players who defined a custom RGB color, <strong>309 specified a value identical to a built-in preset,</strong> recreating a default through additional effort. Second, the most common genuinely custom color is mint, RGB (0, 255, 145), used by more than 50 players; popularized by s1mple, it is currently used by ropz and w0nderful. Even in custom configuration, players converge on shared values.</p>
 
-        <h2 class="post-section">IV. Pros Tune Shapes, Not Numbers</h2>
-        <p class="post-body">The most interesting statistical finding in the dataset hides in the relationship between size and gap.</p>
+        <h2 class="post-section">IV. The Size-Gap Relationship</h2>
+        <p class="post-body">The most notable relationship in the dataset is between arm length (size) and center gap.</p>
         <svg class="chart" data-chart="scatter" role="img" aria-label="Scatter plot showing the correlation between crosshair size and gap"></svg>
-        <p class="post-body">Players with longer crosshair arms run wider gaps, and the relationship is strong: <strong>r = 0.49</strong>, nearly linear across the whole scene. There's a matching negative correlation between size and thickness. Bigger crosshairs trend thinner.</p>
-        <p class="post-body">This is geometric coherence. A long-armed crosshair with a tight -4 gap collapses into a solid plus that covers the very head you're trying to hit. So players who go long open up the center to preserve the sight picture, and players who go thick go short. The total ink on screen stays roughly constant.</p>
-        <p class="post-body">Nobody is tuning gap and size and thickness as independent sliders. They're tuning one thing: a shape that frames the target without occluding it. The parameters are just the shape's coordinates.</p>
+        <p class="post-body">Players with longer arms tend to use wider gaps; the correlation is moderate and approximately linear (<strong>r = 0.49</strong>). A corresponding negative correlation holds between size and thickness: larger crosshairs tend to be thinner.</p>
+        <p class="post-body">This pattern is consistent with maintaining a constant visual footprint. A long-armed crosshair with a tight -4 gap forms a dense mass that occludes the target; players using longer arms therefore widen the gap to preserve the sight picture, while players using thicker lines use shorter arms. The total screen coverage remains approximately constant.</p>
+        <p class="post-body">These parameters are therefore not tuned independently. Players appear to optimize a single property, a shape that frames the target without occluding it, of which gap, size, and thickness are interdependent coordinates.</p>
         <svg class="chart" data-chart="histograms" role="img" aria-label="Histograms of crosshair size, gap, and thickness distributions"></svg>
-        <p class="post-body">The distributions make the same point from another angle. Size clusters hard at 1.0. Gap clusters at -4. Thickness splits between 1.0 and 0 (hairline). The histograms have the silhouette of an answer key.</p>
+        <p class="post-body">The marginal distributions support this interpretation. Size is concentrated at 1.0 and gap at -4, while thickness is bimodal, splitting between 1.0 and 0 (hairline).</p>
 
-        <h2 class="post-section">V. The Extremes</h2>
-        <p class="post-body">Every dataset has a long tail, and this one's tail is excellent.</p>
-        <p class="post-body"><strong>The invisible club.</strong> Two players, awzek and SeRCEra, have fully configured crosshairs rendered at zero opacity. Their settings exist. Their crosshairs do not. They aim with nothing but memory and screen center.</p>
-        <p class="post-body"><strong>The dot club.</strong> 44 players run a crosshair with size 0, and 42 of them enable the center dot, meaning they aim with a single point. Jame, one of the most famous AWPers alive, is the club's marquee member. It makes a kind of sense for a sniper: when your primary weapon has its own scope, the crosshair is just for walking around.</p>
-        <p class="post-body"><strong>The letterbox.</strong> One player, Brooxsy, runs a crosshair size of 819.1. His arms span the entire monitor like sniper-film letterboxing. We have no explanation and we respect it.</p>
+        <h2 class="post-section">V. Outliers</h2>
+        <p class="post-body">The tail of the distribution contains several notable configurations.</p>
+        <p class="post-body"><strong>Zero-opacity configurations.</strong> Two players, awzek and SeRCEra, maintain fully specified crosshairs rendered at zero opacity, and therefore aim without a visible crosshair.</p>
+        <p class="post-body"><strong>Dot-only configurations.</strong> 44 players use a size of 0, and 42 of these enable the center dot, reducing the crosshair to a single point. This group includes the AWPer Jame, a configuration that is plausible for players whose primary weapon provides its own scope.</p>
+        <p class="post-body"><strong>Maximal arm length.</strong> One player, Brooxsy, uses a size of 819.1, producing arms that span the entire display.</p>
 
-        <h2 class="post-section">VI. So What Is the Best Crosshair?</h2>
-        <p class="post-body">The honest answer is that "best" hides two different questions, and the data answers both.</p>
-        <p class="post-body">If best means <em>what the professional scene converged on</em>, it's the consensus config: <strong>size 1, gap -4, thickness 1, full alpha, classic static, no dot, in cyan or green.</strong> This is the mode, the single most chosen crosshair in professional Counter-Strike, validated by hundreds of independent careers.</p>
-        <p class="post-body">If best means <em>the statistical center of all 1,650 crosshairs</em>, the answer is a real player. We computed which pro's crosshair sits closest to the center of the entire dataset, the medoid, and it belongs to <strong>Oczarka: gap -3.5, size 1.1, thickness 0.5, half outline, full alpha.</strong> Slightly softer than the mode in every direction. The average pro crosshair, made flesh.</p>
-        <p class="post-body">Pick either. The gap between them is half a unit here and there, which is precisely the point.</p>
+        <h2 class="post-section">VI. Defining the Best Configuration</h2>
+        <p class="post-body">The term "best" admits two distinct definitions, each answerable from the data.</p>
+        <p class="post-body">Under the first definition, <em>the configuration on which the professional population has converged,</em> the answer is the modal configuration: <strong>size 1, gap -4, thickness 1, full opacity, classic static style, no center dot, in cyan or green.</strong> This is the single most frequently selected configuration in the professional scene.</p>
+        <p class="post-body">Under the second definition, <em>the configuration closest to the center of the full distribution,</em> the answer is an actual player. Computing the medoid, the configuration with minimum aggregate distance to all others, identifies <strong>Oczarka: gap -3.5, size 1.1, thickness 0.5, half outline, full opacity.</strong> This configuration is marginally softer than the mode across every parameter.</p>
+        <p class="post-body">The two definitions yield configurations that differ only marginally, which is itself the central finding.</p>
 
-        <h2 class="post-section">Method</h2>
-        <p class="post-body">A claim like "statistically the best" is only worth as much as the pipeline behind it, so here is the whole thing, start to finish. Every number in this article comes out the other end of it, and you can run it yourself with <code class="post-inline">python -m scraper</code>.</p>
-        <p class="post-body">The raw material is procrosshairs.com, which tracks the active professional roster and the exact crosshair share code each player runs. A share code is the little <code class="post-inline">CSGO-XXXXX-...</code> string the game exports when you save a crosshair, and it round-trips losslessly back into every cvar. Get the codes, decode the codes, and you have ground truth instead of a survey.</p>
-        <p class="post-body">The hard part was getting all 1,650, not just the 100 the homepage renders. The site is an Astro app whose React island hydrates from a private JSON API, <code class="post-inline">GET /api/v1.2/crosshairs/{offset}</code>, paged 100 records at a time. Walk the offsets until a page comes back empty and you have the full roster. If that API ever moves, the scraper degrades gracefully and falls back to scraping player links straight out of the homepage HTML.</p>
-        <p class="post-body">Everything is fetched through a disk-backed, rate-limited cache: one request per second, single threaded, an honest user agent with my email in it, and robots.txt checked before the first request. Every response is written to disk keyed by its URL hash, so the pipeline is fully resumable. Kill it anywhere and a re-run picks up exactly where the cache ends without touching the network again.</p>
-        <p class="post-body">Decoding is where rigor matters most. Rather than regex the cvar strings, each code is handed to <code class="post-inline">csxhair</code>, which returns a typed <code class="post-inline">Crosshair</code> object, floats stay floats and booleans stay booleans, and those attributes are read directly into columns. Before any run touches the network, the decoder validates itself against two known-good codes, donk and ZywOo, with hand-checked expected values. If the library ever drifts, the run aborts instead of silently writing wrong data.</p>
-        <p class="post-body">From there it is bookkeeping done carefully: records are deduped by 64-bit Steam ID in rank order, codes that fail to decode are logged with a reason rather than dropped silently, and the survivors are written to CSV and JSON alongside a manifest recording exactly how many players were found, decoded, and skipped.</p>
-        <p class="post-body">This is what makes the headline defensible. The "best" crosshair here is not my taste and it is not a vote. It is the mode of a near-complete census of the people who play this game for a living, computed from lossless source data, reproducibly. The consensus config is the single most frequently chosen point in that census; the medoid, Oczarka, is the real player sitting closest to its center of mass. Both fall out of the data the moment you collect it honestly. That is the whole trick: the method is not clever, it is just careful, and careful is exactly what "statistically the best" is allowed to mean.</p>
-        <p class="post-body">The full pipeline is below, file by file.</p>
+        <h2 class="post-section">VII. Methods</h2>
+        <p class="post-body">The results above derive from a reproducible pipeline that retrieves, decodes, and aggregates the published share codes of the active professional roster; it can be executed with <code class="post-inline">python -m scraper</code>. The data source is procrosshairs.com, which maintains the active roster together with the share code each player uses. A share code is the <code class="post-inline">CSGO-XXXXX-...</code> string exported by the game when a crosshair is saved; it decodes losslessly into the underlying console variables, providing ground-truth configurations rather than self-reported values. Each stage of the pipeline is documented below.</p>
+
+        <h2 class="post-section">VII.1 Pipeline Orchestration</h2>
+        <p class="post-body">The entry point defines the processing order: it first validates the decoder against known configurations, then enumerates the roster and processes each record in turn, extracting the share code, decoding it, and deduplicating by 64-bit Steam ID in rank order. Records without an identifier or a decodable code are logged with an explicit reason rather than discarded silently. The surviving rows are written to disk together with a manifest summarizing the number of records found, decoded, and skipped.</p>
         <details class="code-drop">
           <summary>scraper/__main__.py</summary>
           <pre><code class="language-python">&quot;&quot;&quot;Pipeline: validate decoder -&gt; enumerate -&gt; extract -&gt; decode -&gt; dedupe -&gt; write.
@@ -154,6 +147,8 @@ def main():
 if __name__ == &quot;__main__&quot;:
     main()</code></pre>
         </details>
+        <h2 class="post-section">VII.2 Configuration</h2>
+        <p class="post-body">Operational parameters are centralized in a single module: the base URL, request user agent, rate limit, pagination size, and output paths. The user agent identifies the scraper and includes a contact address, consistent with standard conventions for automated retrieval.</p>
         <details class="code-drop">
           <summary>scraper/config.py</summary>
           <pre><code class="language-python">&quot;&quot;&quot;Central config for the procrosshairs.com scraper. Tweak everything here.&quot;&quot;&quot;
@@ -184,6 +179,8 @@ CSV_PATH = DATA_DIR / &quot;crosshairs.csv&quot;
 JSON_PATH = DATA_DIR / &quot;crosshairs.json&quot;
 MANIFEST_PATH = DATA_DIR / &quot;manifest.json&quot;</code></pre>
         </details>
+        <h2 class="post-section">VII.3 Polite, Cached Retrieval</h2>
+        <p class="post-body">All network access is mediated by a disk-backed, rate-limited fetcher. Requests are issued single-threaded at no more than one per second, and robots.txt is consulted before the first request to the host. Each response is written to disk keyed by the SHA-256 hash of its URL, so subsequent runs are served from the cache without contacting the network. The pipeline is therefore fully resumable: an interrupted run resumes from the point at which the cache ends.</p>
         <details class="code-drop">
           <summary>scraper/http_cache.py</summary>
           <pre><code class="language-python">&quot;&quot;&quot;Disk-cached, rate-limited HTTP fetcher.
@@ -275,6 +272,8 @@ class CachedFetcher:
             raise FetchError(f&quot;HTTP {resp.status_code} for {url}&quot;)
         return resp.content</code></pre>
         </details>
+        <h2 class="post-section">VII.4 Roster Enumeration</h2>
+        <p class="post-body">The complete roster is not present in the homepage markup, which embeds only the top 100 players. It is instead obtained from the site's JSON API, <code class="post-inline">GET /api/v1.2/crosshairs/{offset}</code>, which returns up to 100 records per offset; the pipeline walks successive offsets until an empty page is returned. Should the API become unavailable, the module falls back to parsing player links and crosshair codes from the homepage markup. The investigation that established this approach is documented within the module.</p>
         <details class="code-drop">
           <summary>scraper/discover.py</summary>
           <pre><code class="language-python">&quot;&quot;&quot;Player enumeration — THE FRAGILE PART. Read this before touching anything.
@@ -362,6 +361,8 @@ def _enumerate_via_homepage(fetcher: CachedFetcher) -&gt; list[dict]:
     log.info(&quot;homepage fallback -&gt; %d records&quot;, len(records))
     return records</code></pre>
         </details>
+        <h2 class="post-section">VII.5 Share-Code Extraction</h2>
+        <p class="post-body">Each record's share code is recovered first from the API's explicit code field and, failing that, from the JWT payload embedded in the associated image URL. Candidates are validated against the expected share-code format before being passed to the decoder.</p>
         <details class="code-drop">
           <summary>scraper/extract.py</summary>
           <pre><code class="language-python">&quot;&quot;&quot;Extract the CSGO share code from a raw player record.
@@ -412,6 +413,8 @@ def _code_from_jwt_url(url: str) -&gt; str | None:
     m = CODE_RE.search(code)
     return m.group(0) if m else None</code></pre>
         </details>
+        <h2 class="post-section">VII.6 Decoding and Validation</h2>
+        <p class="post-body">Share codes are decoded with the <code class="post-inline">csxhair</code> library, which returns a typed <code class="post-inline">Crosshair</code> object; its typed attributes are read directly into columns rather than parsed from the generated console-command strings, preserving the distinction between floating-point and boolean values. Prior to any network access, the decoder is validated against two configurations with hand-verified expected values (donk and ZywOo); if its output diverges from these references, the run aborts rather than producing incorrect data.</p>
         <details class="code-drop">
           <summary>scraper/decode.py</summary>
           <pre><code class="language-python">&quot;&quot;&quot;Decode share codes into typed cvar columns via csxhair.
@@ -488,6 +491,8 @@ def run_validation():
     assert (zywoo[&quot;alpha&quot;], zywoo[&quot;usealpha&quot;]) == (255, True), zywoo
     log.info(&quot;validation passed (donk, ZywOo)&quot;)</code></pre>
         </details>
+        <h2 class="post-section">VII.7 Serialization and Summary Statistics</h2>
+        <p class="post-body">The decoded rows are written to CSV and JSON, with boolean values serialized as true/false, and a manifest records the run timestamp, record counts, and the number of network versus cache requests. The module also emits the summary statistics, including the style and color distributions and the median gap and size, reported in the preceding sections.</p>
         <details class="code-drop">
           <summary>scraper/output.py</summary>
           <pre><code class="language-python">&quot;&quot;&quot;Dataset + manifest writers and end-of-run summary stats.&quot;&quot;&quot;
@@ -544,11 +549,10 @@ def print_summary(rows: list[dict]):
         </details>
 
         <h2 class="post-section">Conclusion</h2>
-        <p class="post-body">We went looking for 1,650 opinions and found one, expressed with minor regional accents.</p>
-        <p class="post-body">The best players in the world, across every team, role, and region, independently arrived at the same answer: a small, thin, static, fully opaque plus sign in green or cyan, arms pulled tight to the center. The settings menu offers millions of combinations. The professionals use a handful.</p>
-        <p class="post-body">There's something almost disappointing about it, and something clarifying. The crosshair was never the marginal advantage. It's infrastructure. The pros solved it, standardized it, and moved their attention to the ten thousand things that actually separate them, which is perhaps the most professional thing about them.</p>
-        <p class="post-body">So if you're reading this at 1 a.m. after a bad night of whiffed sprays, here's the data's advice: set size 1, gap -4, thickness 1, pick green or cyan, turn off the dynamic movement, and never open that menu again.</p>
-        <p class="post-body">The crosshair is solved. Your aim is your problem.</p>
+        <p class="post-body">An analysis anticipating substantial variation across 1,650 professional configurations instead finds strong convergence, with only minor regional variation.</p>
+        <p class="post-body">Across teams, roles, and regions, the professional population has independently arrived at a consistent configuration: a small, thin, static, fully opaque crosshair in green or cyan, with arms drawn tightly toward the center. Of the large configuration space the game permits, professionals occupy a narrow region.</p>
+        <p class="post-body">The practical implication is that the crosshair is not a meaningful source of competitive advantage but standardized infrastructure. The professional consensus is stable, and further individual tuning yields negligible returns.</p>
+        <p class="post-body">For players seeking a recommendation, the data support the modal configuration: size 1, gap -4, thickness 1, a green or cyan color, and a static rather than dynamic style.</p>
       </article>
     </main>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
