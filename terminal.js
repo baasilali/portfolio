@@ -12,7 +12,7 @@ const CONFIGS = {
     tree: {
       "2026": {
         "statistically-the-best-crosshair": { url: "./works/crosshair.html" },
-        "halftones-and-dithers": { url: "./works/halftones.html" },
+        "do-prime-numbers-have-a-pattern": { url: "./works/primes.html" },
       },
       "2025": {
         "the-perfect-pc": { url: "./works/perfect-pc.html" },
