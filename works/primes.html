@@ -73,7 +73,7 @@
 
         <figure class="viz post-figure" aria-label="Rotatable 3D point cloud of the first 1,600 primes plotted on a parametric spiral">
           <canvas id="hero" role="img"></canvas>
-          <div class="viz-hint">drag to rotate</div>
+          <div class="viz-hint">drag to rotate &middot; scroll to zoom &middot; hover a node</div>
           <div class="viz-eq">
             <div><span class="v">x = p&nbsp;sin&nbsp;p&nbsp;cos&nbsp;p</span></div>
             <div><span class="v">y = p&nbsp;sin&sup2;&nbsp;p</span></div>
@@ -201,10 +201,23 @@
           ];
         };
 
-        // Start tilted so the structure reads on load.
-        let R = mul(axisAngle(1, 0, 0, -0.5), axisAngle(0, 1, 0, 0.6));
+        // Final resting orientation the intro settles into.
+        const tiltTarget = mul(axisAngle(1, 0, 0, -0.5), axisAngle(0, 1, 0, 0.6));
+        let R = tiltTarget;
         const D = 2.9, F = 2.1;
-        let cw = 0, ch = 0, dpr = 1;
+        let cw = 0, ch = 0, dpr = 1, zoom = 1, mouse = null;
+
+        // Intro: the first KSHOWN primes laid out as a plain increasing chart,
+        // which then flies into the 3D spiral as the camera pulls back.
+        const KSHOWN = 8, INTRO_MS = 6200, ZOOM0 = 2.4;
+        const chart = pts.map((p, i) => {
+          if (i >= KSHOWN) return p;
+          return [(i / (KSHOWN - 1) - 0.5) * 1.55, (primes[i] / primes[KSHOWN - 1] - 0.5) * 1.1, 0];
+        });
+        const lerp = (a, b, t) => a + (b - a) * t;
+        const smooth = (t) => t * t * t * (t * (t * 6 - 15) + 10);
+        let intro = motion, introStart = performance.now();
+        const endIntro = () => { if (intro) { intro = false; R = tiltTarget; zoom = 1; } };
 
         const resize = () => {
           dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -214,29 +227,73 @@
         };
 
         let dragging = false, last = null;
-        canvas.addEventListener("pointerdown", (e) => { dragging = true; last = [e.clientX, e.clientY]; canvas.setPointerCapture(e.pointerId); });
+        canvas.addEventListener("pointerdown", (e) => { endIntro(); dragging = true; last = [e.clientX, e.clientY]; canvas.setPointerCapture(e.pointerId); });
         canvas.addEventListener("pointerup", () => (dragging = false));
         canvas.addEventListener("pointercancel", () => (dragging = false));
         canvas.addEventListener("pointermove", (e) => {
+          const rect = canvas.getBoundingClientRect();
+          mouse = [e.clientX - rect.left, e.clientY - rect.top];
           if (!dragging) return;
           const dx = e.clientX - last[0], dy = e.clientY - last[1];
           last = [e.clientX, e.clientY];
           const len = Math.hypot(dx, dy);
           if (len > 0) R = mul(axisAngle(dy / len, dx / len, 0, len * 0.01), R);
         });
+        canvas.addEventListener("pointerleave", () => (mouse = null));
+        canvas.addEventListener("wheel", (e) => {
+          e.preventDefault();
+          endIntro();
+          zoom = clamp(zoom * Math.exp(-e.deltaY * 0.0015), 0.6, 16);
+        }, { passive: false });
 
-        const buf = new Array(pts.length);
+        let buf = [];
         const draw = () => {
           if (canvas.clientWidth !== cw || canvas.clientHeight !== ch) resize();
-          if (!dragging && motion) R = mul(axisAngle(0.18, 1, 0, 0.0022), R);
+
+          // Resolve the per-frame state: during the intro everything is driven
+          // by a single eased clock; afterwards it is free rotation + user zoom.
+          let Reff = R, effZoom = zoom, count = pts.length, m = 1, axisA = 0;
+          if (intro) {
+            const t = clamp((performance.now() - introStart) / INTRO_MS, 0, 1);
+            effZoom = lerp(ZOOM0, 1, smooth(t));
+            m = smooth(clamp((t - 0.18) / 0.5, 0, 1));            // chart -> spiral
+            const tilt = smooth(clamp((t - 0.18) / 0.55, 0, 1));  // face-on -> tilted
+            const rc = clamp((t - 0.32) / 0.68, 0, 1);
+            count = Math.max(KSHOWN, Math.round(lerp(KSHOWN, pts.length, rc * rc)));
+            axisA = (1 - m) * 0.4;
+            Reff = mul(axisAngle(1, 0, 0, -0.5 * tilt), axisAngle(0, 1, 0, 0.6 * tilt));
+            if (t >= 1) { intro = false; R = tiltTarget; }
+          } else if (!dragging && motion) {
+            R = mul(axisAngle(0.18, 1, 0, 0.0022), R);
+            Reff = R;
+          }
+
           ctx.fillStyle = "#000";
           ctx.fillRect(0, 0, cw, ch);
-          const cx = cw / 2, cy = ch / 2, scale = Math.min(cw, ch) * 0.4;
-          for (let i = 0; i < pts.length; i++) {
-            const [x, y, z] = pts[i];
-            const rz = R[6] * x + R[7] * y + R[8] * z;
-            const persp = F / (D - rz);
-            buf[i] = [cx + (R[0] * x + R[1] * y + R[2] * z) * persp * scale, cy - (R[3] * x + R[4] * y + R[5] * z) * persp * scale, rz, persp, i];
+          const cx = cw / 2, cy = ch / 2, scale = Math.min(cw, ch) * 0.4 * effZoom;
+          const project = (x, y, z) => {
+            const rz = Reff[6] * x + Reff[7] * y + Reff[8] * z, persp = F / (D - rz);
+            return [cx + (Reff[0] * x + Reff[1] * y + Reff[2] * z) * persp * scale, cy - (Reff[3] * x + Reff[4] * y + Reff[5] * z) * persp * scale, rz, persp];
+          };
+
+          // Chart baseline + axis that morph away with the points.
+          if (axisA > 0) {
+            ctx.strokeStyle = `rgba(255,255,255,${axisA})`;
+            ctx.lineWidth = 1;
+            const yb = -0.62;
+            const ends = [project(-0.85, yb, 0), project(0.85, yb, 0), project(-0.78, yb, 0), project(-0.78, 0.62, 0)];
+            ctx.beginPath();
+            ctx.moveTo(ends[0][0], ends[0][1]); ctx.lineTo(ends[1][0], ends[1][1]);
+            ctx.moveTo(ends[2][0], ends[2][1]); ctx.lineTo(ends[3][0], ends[3][1]);
+            ctx.stroke();
+          }
+
+          buf = [];
+          for (let i = 0; i < count; i++) {
+            const c = chart[i], p = pts[i];
+            const x = m >= 1 ? p[0] : lerp(c[0], p[0], m), y = m >= 1 ? p[1] : lerp(c[1], p[1], m), z = m >= 1 ? p[2] : lerp(c[2], p[2], m);
+            const pr = project(x, y, z);
+            buf.push([pr[0], pr[1], pr[2], pr[3], i]);
           }
           buf.sort((a, b) => a[2] - b[2]);
           for (let k = 0; k < buf.length; k++) {
@@ -244,8 +301,48 @@
             const a = clamp(0.35 + (rz + 1) * 0.32, 0.2, 1);
             ctx.fillStyle = `hsla(${hue[i]}, 85%, 62%, ${a})`;
             ctx.beginPath();
-            ctx.arc(sx, sy, Math.max(0.7, 1.7 * persp), 0, 6.2832);
+            ctx.arc(sx, sy, Math.max(0.7, 1.7 * persp * Math.min(effZoom, 3)), 0, 6.2832);
             ctx.fill();
+          }
+
+          // Nearest node to the cursor (front-most wins on ties); disabled mid-intro.
+          let near = -1, nd = 16 * 16;
+          if (mouse && !intro) for (let k = buf.length - 1; k >= 0; k--) {
+            const dx = buf[k][0] - mouse[0], dy = buf[k][1] - mouse[1], d2 = dx * dx + dy * dy;
+            if (d2 < nd) { nd = d2; near = k; }
+          }
+          // Labels: every node once zoomed in (de-cluttered), plus the hovered node always.
+          if (effZoom > 2 || near >= 0) {
+            ctx.textBaseline = "middle";
+            ctx.shadowColor = "#000";
+            if (effZoom > 2) {
+              ctx.font = "11px 'JetBrains Mono', ui-monospace, monospace";
+              ctx.fillStyle = "rgba(255,255,255,0.82)";
+              ctx.shadowBlur = 4;
+              const taken = new Set();
+              for (let k = buf.length - 1, n = 0; k >= 0 && n < 160; k--) {
+                const [sx, sy, , , i] = buf[k];
+                if (sx < -10 || sx > cw + 10 || sy < 0 || sy > ch) continue;
+                const key = Math.round(sx / 46) + "," + Math.round(sy / 15);
+                if (taken.has(key)) continue;
+                taken.add(key); n++;
+                ctx.fillText(primes[i], sx + 5, sy);
+              }
+            }
+            if (near >= 0) {
+              const [sx, sy, , persp, i] = buf[near];
+              ctx.shadowBlur = 0;
+              ctx.strokeStyle = "#fff";
+              ctx.lineWidth = 1.4;
+              ctx.beginPath();
+              ctx.arc(sx, sy, Math.max(5, 3 * persp + 2), 0, 6.2832);
+              ctx.stroke();
+              ctx.shadowBlur = 5;
+              ctx.fillStyle = "#fff";
+              ctx.font = "13px 'JetBrains Mono', ui-monospace, monospace";
+              ctx.fillText(primes[i], sx + 9, sy);
+            }
+            ctx.shadowBlur = 0;
           }
           requestAnimationFrame(draw);
         };
