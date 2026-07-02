@@ -54,17 +54,6 @@ a:hover { text-decoration: underline; }
 
 article p + p { margin-top: 24px; }
 
-.home-art {
-  margin: 48px 0 0;
-  width: 100%;
-}
-.home-art img {
-  display: block;
-  width: 100%;
-  height: auto;
-  filter: invert(1);
-}
-
 .year {
   font-weight: 700;
   -webkit-text-stroke: 1px var(--ink);
