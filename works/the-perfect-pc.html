@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>baasil — the perfect pc</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Bitcount+Single&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../styles.css" />
+    <style>
+      .build { position: relative; height: 720vh; margin: 24px 0; }
+      .build-stage { position: sticky; top: 0; height: 100vh; width: 100vw; margin-left: calc(50% - 50vw); overflow: hidden; }
+      #gl { position: absolute; inset: 0; display: block; touch-action: pan-y; cursor: grab; }
+      #gl:active { cursor: grabbing; }
+
+      .hud { position: absolute; font-family: "JetBrains Mono", ui-monospace, monospace; color: #000; pointer-events: none; }
+      .hud-head { top: 26px; left: 32px; }
+      .hud-head .h1 { font-size: 22px; font-weight: 700; line-height: 26px; }
+      .hud-head .h2 { font-size: 12px; color: #555; margin-top: 8px; max-width: 30ch; }
+      .step { top: 26px; right: 32px; text-align: right; font-size: 12px; }
+      .step .idx { font-size: 11px; color: #888; }
+      .step .nm { font-size: 14px; }
+      .cal { position: absolute; font-size: 11px; line-height: 14px; opacity: 0; transition: opacity .35s; white-space: nowrap; }
+      .cal .nm { color: #000; } .cal .sb { color: #888; }
+      .cal::before { content: ""; position: absolute; top: 6px; height: 1px; background: #000; width: 0; transition: width .4s ease; }
+      .cal.L { left: 32px; text-align: right; padding-right: 8px; } .cal.L::before { right: -42px; }
+      .cal.R { right: 32px; text-align: left; padding-left: 8px; } .cal.R::before { left: -42px; }
+      .cal.on { opacity: 1; } .cal.on::before { width: 38px; }
+      .prog { bottom: 26px; right: 32px; display: flex; gap: 4px; align-items: flex-end; }
+      .prog i { display: block; width: 3px; height: 12px; background: rgba(0,0,0,0.25); }
+      .prog i.on { background: #000; height: 18px; }
+      .hint { bottom: 26px; left: 32px; font-size: 12px; color: #555; }
+      .loading { position: absolute; inset: 0; display: grid; place-items: center; font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 13px; color: #555; background: #fffcf7; transition: opacity .5s; }
+      .loading.off { opacity: 0; pointer-events: none; }
+      .viz-cap { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 13px; color: #555; margin: 0 0 32px; text-align: center; }
+    </style>
+    <script>document.documentElement.classList.add("js");</script>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <main>
+      <div class="wordmark">B^</div>
+      <nav>
+        <a href="../index.html">home</a>
+        <a href="../works.html">works</a>
+        <a href="../contact.html">contact</a>
+      </nav>
+
+      <article>
+        <h1 class="post-title">The perfect PC (2025)</h1>
+
+        <section class="build" id="build">
+          <div class="build-stage">
+            <canvas id="gl"></canvas>
+            <div class="loading" id="loading">loading models&hellip;</div>
+            <div class="hud hud-head">
+              <div class="h1">FormD T1</div>
+              <div class="h2">9.5L sandwich &middot; scroll to assemble</div>
+            </div>
+            <div class="hud step" id="step"><div class="idx">00 / 11</div><div class="nm">exploded</div></div>
+            <div class="hud hint">drag to rotate</div>
+            <div class="hud prog" id="prog"></div>
+            <div id="callouts"></div>
+          </div>
+        </section>
+
+        <p class="viz-cap">A 9.5-litre FormD T1, exploded along its sandwich axis. Scroll down and the parts seat in build order; the side panels close last.</p>
+
+        <p class="post-body">The FormD T1 is a sandwich-layout Mini-ITX case: a PCIe riser splits the interior straight down the middle, with the graphics card on one plane and the motherboard, cooler, RAM and power supply on the other. On its side it reads like a shoebox &mdash; and it swallows parts that ten years ago would have demanded a full tower.</p>
+        <p class="post-body">The constraint is thermal, not spatial. An AMD Ryzen 7 9800X3D and an RTX 5090 Founders Edition generate considerable heat inside a sealed 9.5-litre volume, so the build leans on a low-profile Alpenfohn Black Ridge cooler and two Phanteks T30 fans &mdash; the densest 120mm fans made &mdash; to move air. Everything else is chosen to disappear: a single Samsung 990 Pro, 96GB of G.Skill Flare X5, and a Corsair SF1000 in the SFX form factor.</p>
+        <p class="post-body">The diagram above is a real three.js scene. Each major component is an actual model derived from the manufacturers' STEP CAD files, laid out in the case's own coordinate frame; the motherboard and memory are stand-in slabs. Scroll position drives the assembly directly &mdash; every part is eased from its exploded offset back to its seated position, in the order you would physically build it.</p>
+      </article>
+    </main>
+
+    <script type="module">
+      import * as THREE from "three";
+      import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+      import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+
+      const DEBUG = new URLSearchParams(location.search).has("debug");
+      const deg = d => d * Math.PI / 180;
+
+      // ---------- coordinate system ----------
+      // origin: center of the central spine. units: mm.
+      // +X: motherboard side -> GPU side (thin sandwich axis). +Y: front -> rear
+      // (328mm long axis; mobo I/O at +Y). +Z: bottom -> top (fans exhaust at +Z).
+      // interior ~ 138(X) x 328(Y) x 240(Z).
+      const CASE = { x: 138, y: 328, z: 240 };
+
+      // dim = target extent per case axis. rot = extra euler(deg) correction applied
+      // AFTER proportion-based auto-orient. expl = exploded offset (fully-apart state).
+      const PARTS = [
+        { id: "mobo",    kind: "flat", color: 0x14251b, dim: { x: 6,  y: 170, z: 170 }, pos: { x: -7.5, y: 69,  z: -10 }, expl: { x: -150 }, seq: 0 },
+        { id: "cpu",     kind: "glb",  file: "9800x3d_cpu",   dim: { x: 9,  y: 42,  z: 42 },  pos: { x: -15, y: 90,  z: 0 },   expl: { x: -95 },  seq: 1, rot: [0, -90, 0] },
+        { id: "backpl",  kind: "flat", color: 0x3a3d42, dim: { x: 3,  y: 82,  z: 82 },  pos: { x: -3,  y: 90,  z: 0 },   expl: { x: 135 },  seq: 2 },
+        { id: "cooler",  kind: "glb",  file: "alpenfohn_br",  dim: { x: 47, y: 116, z: 100 }, pos: { x: -43, y: 90,  z: 0 },   expl: { x: -160, z: 25 }, seq: 3, rot: [-90, 0, 180] },
+        { id: "ram",     kind: "ram",  color: 0x1b1d22, dim: { x: 31, y: 7,   z: 120 }, pos: { x: -26, y: 25,  z: -10 }, expl: { z: 150 }, seq: 4 },
+        { id: "ssd",     kind: "flat", color: 0x202227, dim: { x: 4,  y: 80,  z: 22 },  pos: { x: -12.5, y: 30, z: -75 }, expl: { x: -120 }, seq: 5 },
+        { id: "psu",     kind: "glb",  file: "corsair_sf1000",dim: { x: 64, y: 100, z: 122 }, pos: { x: -33, y: -100,z: 25 },  expl: { y: -155 }, seq: 6 },
+        { id: "gpu",     kind: "glb",  file: "nvidia_5090",   dim: { x: 48, y: 300, z: 137 }, pos: { x: 28,  y: 10,  z: -20 },  expl: { x: 160 }, seq: 7, rot: [0, 180, 0] },
+        { id: "fans",    kind: "fans", file: "phanteks_t30",  dim: { x: 120,y: 120, z: 30  }, pos: { x: 0,   y: 0,   z: 110 }, expl: { z: 155 }, seq: 8,
+          instances: [{ y: -62 }, { y: 62 }] },
+        { id: "panelL",  kind: "panel",color: 0x1a1c20, dim: { x: 3, y: 328, z: 240 },  pos: { x: -67, y: 0, z: 0 },     expl: { x: -140 }, seq: 9 },
+        { id: "panelR",  kind: "panel",color: 0x1a1c20, dim: { x: 3, y: 328, z: 240 },  pos: { x: 67,  y: 0, z: 0 },     expl: { x: 140 },  seq: 9 },
+      ];
+
+      const STEPS = [
+        { nm: "MSI B650I",             side: "L" },
+        { nm: "Ryzen 7 9800X3D",       side: "L" },
+        { nm: "ThermalGrizzly Plate",  side: "L" },
+        { nm: "Alpenfohn Black Ridge", side: "L" },
+        { nm: "G.Skill Flare X5",      side: "L" },
+        { nm: "Samsung 990 Pro",       side: "L" },
+        { nm: "Corsair SF1000",        side: "L" },
+        { nm: "RTX 5090 FE",           side: "R" },
+        { nm: "Phanteks T30 x2",       side: "R" },
+        { nm: "FormD T1",              side: "R" },
+      ];
+
+      // ---------- renderer / scene ----------
+      const canvas = document.getElementById("gl");
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+      renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.05;
+
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0xfffcf7);
+      const pmrem = new THREE.PMREMGenerator(renderer);
+      scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+
+      const camera = new THREE.PerspectiveCamera(32, 1, 1, 8000);
+      camera.position.set(0, 0, 1200);
+      let sceneRadius = 320;
+
+      scene.add(new THREE.HemisphereLight(0xfffdf8, 0x9a9488, 0.5));
+      const key = new THREE.DirectionalLight(0xffffff, 1.7);
+      key.position.set(360, 660, 460);
+      key.castShadow = true;
+      key.shadow.mapSize.set(2048, 2048);
+      key.shadow.camera.near = 1; key.shadow.camera.far = 2200;
+      Object.assign(key.shadow.camera, { left: -460, right: 460, top: 460, bottom: -460 });
+      key.shadow.bias = -0.0003;
+      scene.add(key);
+      const rim = new THREE.DirectionalLight(0xffffff, 0.5);
+      rim.position.set(-420, 180, -360);
+      scene.add(rim);
+
+      const root = new THREE.Group();       // holds view rotation
+      root.rotation.set(-0.42, 0.6, 0);
+      scene.add(root);
+      const content = new THREE.Group();     // recentered to the assembly's bbox
+      // rest orientation: tip the case onto its long side ("hot-dog").
+      // case axes -> world: X(sandwich)->+Z toward viewer, Y(328 long)->+X, Z(240)->+Y up.
+      content.rotation.set(-Math.PI / 2, 0, -Math.PI / 2);
+      root.add(content);
+
+      // contact shadow (kept in root so the floor stays level while the case tips)
+      const ground = new THREE.Mesh(
+        new THREE.PlaneGeometry(2200, 2200),
+        new THREE.ShadowMaterial({ opacity: 0.16 })
+      );
+      ground.rotation.x = -Math.PI / 2;
+      ground.position.y = -196;
+      ground.receiveShadow = true;
+      root.add(ground);
+
+      // static chassis frame (never explodes)
+      const frameGeo = new THREE.BoxGeometry(CASE.x, CASE.y, CASE.z);
+      const frame = new THREE.LineSegments(
+        new THREE.EdgesGeometry(frameGeo),
+        new THREE.LineBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.22 })
+      );
+      content.add(frame);
+      if (DEBUG) content.add(new THREE.AxesHelper(200));
+
+      // ---------- material helpers ----------
+      const metal = new THREE.MeshStandardMaterial({ color: 0x2b2d31, metalness: 0.72, roughness: 0.42 });
+      const edgeMat = new THREE.LineBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.35 });
+
+      function flatMesh(dim, color, opacity) {
+        const g = new THREE.Group();
+        const geo = new THREE.BoxGeometry(dim.x, dim.y, dim.z);
+        const m = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({
+          color, metalness: 0.35, roughness: 0.6,
+          transparent: opacity != null, opacity: opacity == null ? 1 : opacity,
+        }));
+        m.castShadow = m.receiveShadow = true;
+        g.add(m, new THREE.LineSegments(new THREE.EdgesGeometry(geo), edgeMat));
+        return g;
+      }
+
+      // proportion-based auto-orient: rotate model so its extents match target dim ranks
+      function autoOrientQ(obj, dim) {
+        const s = new THREE.Vector3(); new THREE.Box3().setFromObject(obj).getSize(s);
+        const model = [s.x, s.y, s.z], target = [dim.x, dim.y, dim.z];
+        const mo = [0, 1, 2].sort((a, b) => model[b] - model[a]);
+        const to = [0, 1, 2].sort((a, b) => target[b] - target[a]);
+        const map = []; for (let k = 0; k < 3; k++) map[to[k]] = mo[k];
+        const e = [new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 1)];
+        const cols = [new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()];
+        for (let t = 0; t < 3; t++) cols[map[t]].copy(e[t]);
+        let m = new THREE.Matrix4().makeBasis(cols[0], cols[1], cols[2]);
+        if (m.determinant() < 0) { cols[0].multiplyScalar(-1); m = new THREE.Matrix4().makeBasis(cols[0], cols[1], cols[2]); }
+        return new THREE.Quaternion().setFromRotationMatrix(m);
+      }
+
+      function fitModel(raw, part) {
+        const obj = raw;
+        obj.traverse(o => { if (o.isMesh) { o.material = metal; o.castShadow = true; o.receiveShadow = true; } });
+        const c = new THREE.Vector3(); new THREE.Box3().setFromObject(obj).getCenter(c);
+        obj.position.sub(c);
+        const pivot = new THREE.Group(); pivot.add(obj);
+        if (!part.noAuto) pivot.quaternion.copy(autoOrientQ(obj, part.dim));
+        if (part.rot) pivot.quaternion.premultiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(deg(part.rot[0]), deg(part.rot[1]), deg(part.rot[2]))));
+        const size = new THREE.Vector3(); new THREE.Box3().setFromObject(pivot).getSize(size);
+        pivot.scale.setScalar(Math.max(part.dim.x, part.dim.y, part.dim.z) / Math.max(size.x, size.y, size.z));
+        const c2 = new THREE.Vector3(); new THREE.Box3().setFromObject(pivot).getCenter(c2);
+        pivot.position.sub(c2);
+        if (DEBUG) console.log(part.id, "raw", size.toArray().map(n => n.toFixed(0)));
+        return pivot;
+      }
+
+      // ---------- build ----------
+      const loader = new GLTFLoader();
+      const cache = {};
+      const fileFor = p => p.file;
+      const need = [...new Set(PARTS.filter(p => p.file).map(fileFor))];
+
+      Promise.all(need.map(f =>
+        loader.loadAsync(`../assets/${f}.glb`).then(g => { cache[f] = g.scene; }).catch(e => console.warn("missing", f, e))
+      )).then(build);
+
+      const byGroup = {};
+      function build() {
+        PARTS.forEach(part => {
+          const g = new THREE.Group();
+          g.userData = part;
+          if (part.kind === "glb") {
+            if (cache[part.file]) g.add(fitModel(cache[part.file].clone(true), part));
+            else g.add(flatMesh(part.dim, 0x555555));
+          } else if (part.kind === "fans") {
+            (part.instances || [{}]).forEach(off => {
+              const inst = cache[part.file] ? fitModel(cache[part.file].clone(true), part) : flatMesh(part.dim, 0x555555);
+              inst.position.set(off.x || 0, off.y || 0, off.z || 0);
+              g.add(inst);
+            });
+          } else if (part.kind === "ram") {
+            [-1, 1].forEach(k => { const s = flatMesh(part.dim, part.color); s.position.y += k * 5.5; g.add(s); });
+          } else if (part.kind === "panel") {
+            g.add(flatMesh(part.dim, part.color, 0.34));
+          } else {
+            g.add(flatMesh(part.dim, part.color));
+          }
+          content.add(g);
+          (byGroup[part.seq] ||= []).push(g);
+        });
+        document.getElementById("loading").classList.add("off");
+        frameScene();
+        if (DEBUG) Object.values(byGroup).flat().forEach(g => content.add(new THREE.Box3Helper(new THREE.Box3().setFromObject(g), 0xff4444)));
+      }
+
+      const partsBox = () => { const b = new THREE.Box3(); Object.values(byGroup).flat().forEach(g => b.expandByObject(g)); return b; };
+      const cornerRadius = b => {
+        let r = 0;
+        for (const x of [b.min.x, b.max.x]) for (const y of [b.min.y, b.max.y]) for (const z of [b.min.z, b.max.z]) r = Math.max(r, Math.hypot(x, y, z));
+        return r;
+      };
+      // center on the seated (assembled) state so it rotates in place; fit to exploded reach
+      function frameScene() {
+        const rot = root.rotation.clone();
+        root.rotation.set(0, 0, 0);
+        content.position.set(0, 0, 0);
+        apply(1);
+        const seated = partsBox();
+        if (seated.isEmpty()) { root.rotation.copy(rot); return; }
+        const center = seated.getCenter(new THREE.Vector3());
+        content.position.copy(center).multiplyScalar(-1);
+        ground.position.y = seated.min.y - center.y - 6; // floor just under the seated case
+        apply(0);
+        sceneRadius = cornerRadius(partsBox());
+        root.rotation.copy(rot);
+        fitCamera();
+        onScroll();
+      }
+      function fitCamera() {
+        let dist = sceneRadius / Math.sin(deg(camera.fov) / 2);
+        if (camera.aspect < 1) dist /= camera.aspect;
+        camera.position.set(0, 0, dist * 1.12);
+        camera.lookAt(0, 0, 0);
+      }
+
+      // ---------- callouts / progress ----------
+      const callouts = document.getElementById("callouts");
+      const lc = [], rc = [];
+      STEPS.forEach((st, i) => {
+        if (st.noCallout) return;
+        const el = document.createElement("div"); el.className = "cal " + st.side;
+        el.innerHTML = `<span class="nm">${st.nm}</span>`;
+        const col = st.side === "L" ? lc : rc; col.push(el);
+        el.style.top = (24 + col.length * 30) + "px"; st.cal = el; callouts.appendChild(el);
+      });
+      const prog = document.getElementById("prog");
+      const ticks = STEPS.map(() => { const t = document.createElement("i"); prog.appendChild(t); return t; });
+      const stepIdx = document.querySelector(".step .idx"), stepNm = document.querySelector(".step .nm");
+
+      const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+      const ease = t => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+      const N = STEPS.length, SPAN = 0.8, DUR = 0.24;
+
+      function apply(P) {
+        let cur = -1;
+        STEPS.forEach((st, i) => {
+          const local = ease(clamp((P - i * (SPAN / N)) / DUR, 0, 1)), f = 1 - local;
+          (byGroup[i] || []).forEach(g => {
+            const p = g.userData;
+            g.position.set(p.pos.x + (p.expl.x || 0) * f, p.pos.y + (p.expl.y || 0) * f, p.pos.z + (p.expl.z || 0) * f);
+          });
+          const on = local > 0.04;
+          if (st.cal) st.cal.classList.toggle("on", on);
+          ticks[i].classList.toggle("on", local > 0.5);
+          if (on) cur = i;
+        });
+        stepIdx.textContent = String(cur + 1).padStart(2, "0") + " / " + N;
+        stepNm.textContent = cur < 0 ? "exploded" : STEPS[cur].nm;
+      }
+
+      // ---------- scroll scrub ----------
+      const sec = document.getElementById("build");
+      let raf = 0;
+      const onScroll = () => { raf = 0; apply(clamp(-sec.getBoundingClientRect().top / (sec.offsetHeight - innerHeight), 0, 1)); };
+      addEventListener("scroll", () => { if (!raf) raf = requestAnimationFrame(onScroll); }, { passive: true });
+
+      // ---------- drag to rotate (page scroll drives assembly, so no wheel-zoom) ----------
+      let drag = false, px = 0, py = 0, idle = 0;
+      canvas.addEventListener("pointerdown", e => { drag = true; idle = 0; px = e.clientX; py = e.clientY; canvas.setPointerCapture(e.pointerId); });
+      canvas.addEventListener("pointermove", e => {
+        if (!drag) return;
+        root.rotation.y += (e.clientX - px) * 0.006;
+        root.rotation.x = clamp(root.rotation.x - (e.clientY - py) * 0.006, -1.4, 0.5);
+        px = e.clientX; py = e.clientY;
+      });
+      canvas.addEventListener("pointerup", () => { drag = false; });
+
+      function resize() {
+        const w = innerWidth, h = innerHeight;
+        renderer.setSize(w, h);
+        camera.aspect = w / h; camera.updateProjectionMatrix();
+        fitCamera();
+      }
+      addEventListener("resize", () => { resize(); onScroll(); });
+      resize();
+
+      (function render() {
+        if (!drag) { idle++; if (idle > 60) root.rotation.y += 0.0016; }
+        renderer.render(scene, camera);
+        requestAnimationFrame(render);
+      })();
+    </script>
+  </body>
+</html>

@@ -10,9 +10,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" />
     <link rel="stylesheet" href="../styles.css" />
     <style>
-      @media (prefers-reduced-motion: no-preference) {
-        .js .post-figure { opacity: 0; will-change: transform, opacity; }
-      }
       .chart { display: block; width: 100%; height: auto; margin: 32px 0; overflow: visible; }
       .chart text { font-family: "JetBrains Mono", ui-monospace, monospace; fill: var(--ink); }
       .chart g, .chart rect, .chart circle, .chart line { transform-box: fill-box; transform-origin: center; }
@@ -601,11 +598,6 @@ def print_summary(rows: list[dict]):
         while (v === 0) v = rand();
         return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
       };
-
-      // Hero figure: simple reveal.
-      document.querySelectorAll(".post-figure").forEach((f) =>
-        reveal(f, f, { from: { opacity: 0 }, opacity: [0, 1], translateY: [40, 0], scale: [0.97, 1], duration: 900, ease: "out(3)" })
-      );
 
       const builders = {
         // I. Consensus — waffle of 100, 29 cyan crosshairs = "nearly 1 in 3".
