@@ -16,6 +16,19 @@
       .loading { position: absolute; inset: 0; display: grid; place-items: center; font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 13px; color: #555; background: #fffcf7; transition: opacity .5s; }
       .loading.off { opacity: 0; pointer-events: none; }
       .viz-cap { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 13px; color: #555; margin: 0 0 32px; text-align: center; }
+
+      .chart { display: block; width: 100%; height: auto; margin: 32px 0; overflow: visible; }
+      .chart text { font-family: "JetBrains Mono", ui-monospace, monospace; fill: var(--ink); }
+      .chart g, .chart rect, .chart circle, .chart line, .chart path { transform-box: fill-box; transform-origin: center; }
+      .chart-cap { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 12px; fill: #555; }
+
+      .parts {
+        font-size: 14px; line-height: 22px; margin: 24px 0; padding: 10px 0;
+        border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink);
+        display: grid; grid-template-columns: 11ch 1fr; row-gap: 2px;
+      }
+      .parts dt { color: #555; }
+      .parts dd { margin: 0; }
     </style>
     <script>document.documentElement.classList.add("js");</script>
     <script type="importmap">
@@ -45,9 +58,56 @@
         </figure>
         <p class="viz-cap">A 9.5-litre ITX case, the FormD T1</p>
 
+        <p class="post-body">For my twelfth birthday, my father surprised me with an Alienware 17 R3: an i7-6820HK, a GTX 980M with 8GB of VRAM, and 32GB of RAM. At the time it was, quite literally, the best laptop money could buy. Out of gratitude to him I took care of that machine for nearly a decade, right up until its hardware finally began to show its age in modern titles.</p>
+        <p class="post-body">So when the time came to build a PC of my own, it had to be done right. There is a saying in business that money is usually wasted on the stupidest things &mdash; so when you get the chance to spend it on something genuinely good, it is almost refreshing.</p>
+        <p class="post-body">The parts list had to match my actual workload: heavy compute from building binaries for work, an unreasonable amount of Counter-Strike, and training custom models that now run in production.</p>
+        <p class="post-body">Before anything else, credit where it is due: this build is heavily inspired by Ali Syed of <a href="https://www.youtube.com/watch?v=8PDYJI0W6Gk">Optimum</a>, whose FormD T1 videos are the reference text for this entire genre of build.</p>
+
+        <h2 class="post-section">I. The Case</h2>
         <p class="post-body">The FormD T1 is a sandwich-layout Mini-ITX case: a PCIe riser splits the interior straight down the middle, with the graphics card on one plane and the motherboard, cooler, RAM and power supply on the other. On its side it reads like a shoebox &mdash; and it swallows parts that ten years ago would have demanded a full tower.</p>
         <p class="post-body">The constraint is thermal, not spatial. An AMD Ryzen 7 9800X3D and an RTX 5090 Founders Edition generate considerable heat inside a sealed 9.5-litre volume, so the build leans on a low-profile Alpenfohn Black Ridge cooler and two Phanteks T30 fans &mdash; the densest 120mm fans made &mdash; to move air. Everything else is chosen to disappear: a single Samsung 990 Pro, 96GB of G.Skill Flare X5, and a Corsair SF1000 in the SFX form factor.</p>
         <p class="post-body">The diagram above is a real three.js scene. Each major component is an actual model derived from the manufacturers' STEP CAD files, laid out in the case's own coordinate frame; the motherboard and memory are stand-in slabs. On load, every part eases from its exploded offset back to its seated position, in the order you would physically build it.</p>
+
+        <h2 class="post-section">II. The Parts</h2>
+        <dl class="parts">
+          <dt>case</dt>      <dd>FormD T1 (9.5L sandwich)</dd>
+          <dt>cpu</dt>       <dd>AMD Ryzen 7 9800X3D</dd>
+          <dt>gpu</dt>       <dd>NVIDIA RTX 5090 FE</dd>
+          <dt>mobo</dt>      <dd>MSI B650I Mini-ITX</dd>
+          <dt>ram</dt>       <dd>G.Skill Flare X5 96GB 6000 CL30</dd>
+          <dt>ssd</dt>       <dd>Samsung 990 Pro 2TB</dd>
+          <dt>psu</dt>       <dd>Corsair SF1000</dd>
+          <dt>cooler</dt>    <dd>Alpenfohn Black Ridge</dd>
+          <dt>backplate</dt> <dd>ThermalGrizzly</dd>
+          <dt>fans</dt>      <dd>Phanteks T30-120 &times;2</dd>
+        </dl>
+        <p class="post-body">A few of these deserve more than a line in a table.</p>
+        <p class="post-body"><strong>Alpenfohn Black Ridge.</strong> One of the only air coolers that fits the 43mm of clearance the T1 leaves above the socket while still adequately cooling a 9800X3D. I added a thin foam spacer to kill the turbulent whine of air being forced through its tightly packed fins. A quirk I found through loose testing: flipping the fan from exhaust to intake &mdash; pulling fresh air through the cooler rather than pushing it out &mdash; dropped CPU temperatures by almost 3&deg;C.</p>
+        <p class="post-body"><strong>Phanteks T30.</strong> Simply the most powerful 120mm fans on the market, and the only pair I trusted to move enough air through a case this dense.</p>
+        <p class="post-body"><strong>G.Skill Flare X5.</strong> 96GB of CL30 6000. Bought before ramageddon at $386 for the kit &mdash; a price that now reads like a typo.</p>
+        <p class="post-body"><strong>Ryzen 7 9800X3D.</strong> Built for CPU-bound games, and Counter-Strike is the most CPU-bound of them all: it averages nearly 600 fps at 1280&times;960.</p>
+        <p class="post-body"><strong>RTX 5090 FE.</strong> The king, and the centerpiece of the build. Equally at home training models and brute-forcing triple-A titles.</p>
+
+        <h2 class="post-section">III. Generational Performance</h2>
+        <p class="post-body">The 5090 is a strange product. Against the 4090 it is faster in everything, by a remarkably consistent margin:</p>
+        <svg class="chart" data-chart="fps5090" role="img" aria-label="Average fps of the RTX 5090 versus the RTX 4090 across twelve games at 4K"></svg>
+        <p class="post-body">Twenty-seven percent on average, at 4K high/max settings, with no game far from the trend line. Now compare that with the jump the 4090 made over the 3090:</p>
+        <svg class="chart" data-chart="fps4090" role="img" aria-label="Average fps of the RTX 4090 versus the RTX 3090 across twelve games at 4K"></svg>
+        <p class="post-body">Seventy-four percent. The previous generation nearly tripled the uplift this one delivers, and it did so while drawing less power. The 5090's extra frames are bought, watt for watt, with a bigger die and a bigger power budget &mdash; which matters a great deal when the whole machine lives in 9.5 litres.</p>
+
+        <h2 class="post-section">IV. The Undervolt</h2>
+        <p class="post-body">Here is the problem, in watts:</p>
+        <svg class="chart" data-chart="power" role="img" aria-label="Power draw of the RTX 5090 versus the RTX 4090 across twelve games at 4K"></svg>
+        <p class="post-body">Over 500W in most titles, peaking at 554W in God of War Ragnarok. Inside a sealed sandwich case that is not a number, it is a space heater. The fix is a voltage/frequency curve edited in Afterburner &mdash; the curve optimizer:</p>
+        <svg class="chart" data-chart="vf" role="img" aria-label="Edited voltage-frequency curve holding 200 MHz at idle and capping at 2800 MHz at 900 millivolts"></svg>
+        <p class="post-body">The card idles flat at 200 MHz until roughly 775mV, climbs steeply, and is capped at 2,800 MHz from 900mV onward. That single flat line is stock-level performance at a fraction of the stock voltage: lower power draw, lower temperatures, same frames.</p>
+        <p class="post-body">Notice the idle plateau in particular. Many guides on YouTube get this wrong and force the floor to 1,000+ MHz, which does nothing but burn watts while the card sits on the desktop. Getting the left side of the curve right matters as much as the cap.</p>
+
+        <h2 class="post-section">V. My Father</h2>
+        <p class="post-body">Looking back, the reason I have always loved engineering is my dad and that computer he bought me. I took the Alienware apart more times than I would like to admit, always carefully re-applying the warranty sticker afterward.</p>
+        <p class="post-body">I learned to split my first hard drive and run two operating systems on that laptop. I started my first business on that laptop. I submitted my last college final on that laptop. I played 2,500 hours of Counter-Strike on that laptop.</p>
+        <p class="post-body">My father has always been the greatest blessing in my life. And every time I look at this PC, I am reminded of him.</p>
+        <p class="post-body">Love you dad.</p>
       </article>
     </main>
 
@@ -312,6 +372,163 @@
         renderer.render(scene, camera);
         requestAnimationFrame(render);
       })();
+    </script>
+
+    <script type="module">
+      import { animate, onScroll, stagger, utils } from "../node_modules/animejs/dist/bundles/anime.esm.min.js";
+
+      const NS = "http://www.w3.org/2000/svg";
+      const motionOK = matchMedia("(prefers-reduced-motion: no-preference)").matches;
+      const INK = "#000";
+      const ACC = "#3b2ec0";
+
+      const make = (tag, attrs = {}) => {
+        const n = document.createElementNS(NS, tag);
+        for (const k in attrs) n.setAttribute(k, attrs[k]);
+        return n;
+      };
+      const text = (s, attrs) => { const t = make("text", attrs); t.textContent = s; return t; };
+      const add = (parent, ...kids) => (kids.forEach(k => parent.appendChild(k)), parent);
+
+      const reveal = (container, targets, props) => {
+        if (!motionOK || !targets.length) return;
+        const { from, ...to } = props;
+        if (from) utils.set(targets, from);
+        animate(targets, { ...to, autoplay: onScroll({ target: container, enter: "bottom-=40 top", repeat: false }) });
+      };
+
+      // benchmark data (12 games, 4K high/max) transcribed from Optimum's reviews
+      const GAMES = [
+        ["F1 24"], ["Horizon", "Zero Dawn"], ["Forza", "Horizon 5"], ["COD MW 3"],
+        ["Red Dead", "Redemption", "2"], ["God of War", "Ragnarok"], ["Shadow of", "the Tomb", "Raider"],
+        ["COD Black", "Ops 6"], ["Hellblade", "2"], ["STALKER 2"], ["Black Myth", "Wukong"], ["Cyberpunk", "2077"],
+      ];
+      const RENDER_GROUPS = [["native rendering", 0, 7], ["DLSS balanced", 8, 9], ["RT + DLSS", 10, 11]];
+
+      // dumbbell chart: one column per game, accent dot = newer card, muted dot = older
+      function dumbbell(svg, { metric, hi, lo, note }) {
+        const W = 600, H = 430, m = { l: 12, r: 12, t: 64, b: 96 };
+        const pw = W - m.l - m.r, ph = H - m.t - m.b;
+        svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+        const vLo = Math.min(...lo), vHi = Math.max(...hi);
+        const pad = (vHi - vLo) * 0.08;
+        const Y = v => m.t + ((vHi + pad - v) / (vHi - vLo + 2 * pad)) * ph;
+        const X = i => m.l + (i + 0.5) * (pw / hi.length);
+
+        add(svg,
+          text(metric, { x: m.l, y: 28, "font-size": 12 }),
+          make("line", { x1: 0, y1: 36, x2: W, y2: 36, stroke: INK, "stroke-opacity": 0.4 }));
+        note.forEach((ln, k) => {
+          const t = make("text", { x: W - m.r, y: 14 + k * 14, "text-anchor": "end", "font-size": 11 });
+          ln.forEach(([s, acc]) => {
+            const sp = make("tspan", acc ? { fill: ACC, "font-weight": 700 } : { "fill-opacity": 0.75 });
+            sp.textContent = s; t.appendChild(sp);
+          });
+          svg.appendChild(t);
+        });
+
+        const lines = [], hiDots = [], loDots = [], nums = [];
+        hi.forEach((hv, i) => {
+          const x = X(i), yh = Y(hv), yl = Y(lo[i]);
+          const ln = make("line", { x1: x, y1: yl, x2: x, y2: yh, stroke: ACC, "stroke-width": 3, "stroke-opacity": 0.55 });
+          ln.style.transformOrigin = "bottom";
+          const dh = make("circle", { cx: x, cy: yh, r: 4.5, fill: ACC });
+          const dl = make("circle", { cx: x, cy: yl, r: 4, fill: INK, "fill-opacity": 0.38 });
+          const nh = text(hv, { x, y: yh - 10, "text-anchor": "middle", "font-size": 10, "font-weight": 700, fill: ACC });
+          const nl = text(lo[i], { x, y: yl + 17, "text-anchor": "middle", "font-size": 10, "fill-opacity": 0.65 });
+          add(svg, ln, dh, dl, nh, nl);
+          lines.push(ln); hiDots.push(dh); loDots.push(dl); nums.push(nh, nl);
+
+          GAMES[i].forEach((word, k) =>
+            svg.appendChild(text(word, { x, y: H - m.b + 22 + k * 11, "text-anchor": "middle", "font-size": 8, "fill-opacity": 0.85 })));
+        });
+
+        RENDER_GROUPS.forEach(([nm, a, b]) => {
+          add(svg,
+            make("line", { x1: X(a) - 18, y1: H - 26, x2: X(b) + 18, y2: H - 26, stroke: INK, "stroke-opacity": 0.3 }),
+            text(nm, { x: (X(a) + X(b)) / 2, y: H - 10, "text-anchor": "middle", class: "chart-cap" }));
+        });
+
+        reveal(svg, lines, { from: { scaleY: 0 }, scaleY: [0, 1], duration: 620, ease: "out(3)", delay: stagger(45) });
+        reveal(svg, [...hiDots, ...loDots], { from: { opacity: 0, scale: 0 }, opacity: [0, 1], scale: [0, 1], duration: 480, ease: "out(3)", delay: stagger(22) });
+        reveal(svg, nums, { from: { opacity: 0 }, opacity: [0, 1], duration: 420, delay: stagger(22, { start: 250 }) });
+      }
+
+      const builders = {
+        fps5090(svg) {
+          dumbbell(svg, {
+            metric: "average fps (4K high / max)",
+            hi: [280, 208, 185, 185, 143, 198, 221, 154, 121, 104, 84, 115],
+            lo: [217, 165, 140, 158, 101, 143, 172, 121, 113, 96, 64, 92],
+            note: [[["5090", 1], [" is 27% faster", 0]], [["than 4090 on average", 0]]],
+          });
+        },
+        fps4090(svg) {
+          dumbbell(svg, {
+            metric: "average fps (4K high / max)",
+            hi: [217, 165, 140, 158, 101, 143, 172, 121, 113, 96, 64, 92],
+            lo: [126, 102, 74, 92, 65, 78, 93, 69, 72, 62, 28, 49],
+            note: [[["4090", 1], [" is 74% faster", 0]], [["than 3090 on average", 0]]],
+          });
+        },
+        power(svg) {
+          dumbbell(svg, {
+            metric: "power draw, watts (4K high / max)",
+            hi: [502, 467, 473, 489, 493, 554, 514, 465, 367, 341, 473, 482],
+            lo: [381, 356, 334, 327, 368, 411, 379, 316, 310, 283, 349, 370],
+            note: [[["5090", 1], [" draws 34% more", 0]], [["than 4090 on average", 0]]],
+          });
+        },
+
+        // edited voltage/frequency curve: 200 MHz idle floor, 2800 MHz cap at 900 mV
+        vf(svg) {
+          const W = 600, H = 360, m = { l: 54, r: 18, t: 24, b: 64 };
+          const pw = W - m.l - m.r, ph = H - m.t - m.b;
+          svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+          const pts = [
+            [700, 200], [765, 200], [775, 240], [790, 600], [800, 1000], [810, 1400],
+            [820, 1700], [830, 1900], [845, 2100], [860, 2350], [875, 2550], [890, 2720],
+            [900, 2800], [1250, 2800],
+          ];
+          const X = v => m.l + ((v - 700) / 550) * pw;
+          const Y = v => m.t + ((3000 - v) / 3000) * ph;
+          add(svg,
+            make("line", { x1: m.l, y1: m.t, x2: m.l, y2: H - m.b, stroke: INK }),
+            make("line", { x1: m.l, y1: H - m.b, x2: W - m.r, y2: H - m.b, stroke: INK }));
+          [700, 800, 900, 1000, 1100, 1200].forEach(v =>
+            svg.appendChild(text(v, { x: X(v), y: H - m.b + 18, "text-anchor": "middle", "font-size": 11 })));
+          [0, 1000, 2000, 3000].forEach(v =>
+            svg.appendChild(text(v, { x: m.l - 8, y: Y(v) + 4, "text-anchor": "end", "font-size": 11 })));
+          add(svg,
+            text("MHz", { x: m.l + 6, y: m.t + 4, "font-size": 11 }),
+            text("mV", { x: m.l + pw / 2, y: H - 24, "text-anchor": "middle", "font-size": 11 }));
+
+          let d = "";
+          pts.forEach(([x, y], i) => (d += (i ? "L" : "M") + X(x) + " " + Y(y) + " "));
+          const curve = make("path", { d, fill: "none", stroke: ACC, "stroke-width": 2.5 });
+          svg.appendChild(curve);
+          const marks = [[765, 200], [900, 2800]].map(([x, y]) => {
+            const c = make("circle", { cx: X(x), cy: Y(y), r: 4.5, fill: ACC });
+            svg.appendChild(c); return c;
+          });
+          const notes = [
+            text("200 MHz idle", { x: X(702), y: Y(200) - 10, "font-size": 9, "fill-opacity": 0.7 }),
+            text("capped: 2,800 MHz @ 900 mV", { x: X(930), y: Y(2800) + 22, "font-size": 10, "fill-opacity": 0.7 }),
+          ];
+          notes.forEach(n => svg.appendChild(n));
+          svg.appendChild(text("voltage/frequency curve after the undervolt", { x: W / 2, y: H - 4, "text-anchor": "middle", class: "chart-cap" }));
+
+          if (motionOK) {
+            const L = curve.getTotalLength();
+            utils.set(curve, { strokeDasharray: L, strokeDashoffset: L });
+            animate(curve, { strokeDashoffset: [L, 0], duration: 1300, ease: "inOut(2)", autoplay: onScroll({ target: svg, enter: "bottom-=40 top", repeat: false }) });
+          }
+          reveal(svg, marks, { from: { opacity: 0, scale: 0 }, opacity: [0, 1], scale: [0, 1], duration: 420, delay: stagger(180, { start: 700 }), ease: "out(3)" });
+          reveal(svg, notes, { from: { opacity: 0 }, opacity: [0, 1], duration: 500, delay: stagger(180, { start: 900 }) });
+        },
+      };
+
+      document.querySelectorAll(".chart").forEach(svg => builders[svg.dataset.chart]?.(svg));
     </script>
   </body>
 </html>
