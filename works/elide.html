@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>baasil — one runtime</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Bitcount+Single&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" />
+    <link rel="stylesheet" href="../styles.css" />
+    <style>
+      /* dek + subsection headings */
+      .post-dek {
+        font-family: "Times New Roman", Times, serif;
+        font-style: italic;
+        font-size: 18px;
+        line-height: 26px;
+        color: #333;
+        margin: 0 0 28px;
+      }
+      .post-subsection {
+        font-family: "Times New Roman", Times, serif;
+        font-weight: 700;
+        font-size: 20px;
+        line-height: 26px;
+        margin: 24px 0 10px;
+      }
+
+      /* animejs diagrams */
+      .chart { display: block; width: 100%; height: auto; margin: 28px 0 8px; overflow: visible; }
+      .chart text { font-family: "JetBrains Mono", ui-monospace, monospace; fill: var(--ink); }
+      .chart g, .chart rect, .chart circle, .chart line, .chart path { transform-box: fill-box; transform-origin: center; }
+      .chart .acc { fill: #3b2ec0; }
+      .chart .warn { fill: #b1442f; }
+      .chart .mut { fill: #555; }
+      .chart-cap { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 12px; fill: #555; }
+      .fig-cap {
+        font-family: "JetBrains Mono", ui-monospace, monospace;
+        font-size: 13px; line-height: 19px; color: #555;
+        margin: 0 0 32px; text-align: center;
+      }
+
+      /* tables */
+      .tbl-wrap { overflow-x: auto; margin: 24px 0 8px; }
+      .tbl { width: 100%; border-collapse: collapse; font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 12.5px; line-height: 17px; }
+      .tbl th, .tbl td { text-align: left; padding: 8px 10px; border-bottom: 1px solid rgba(0,0,0,.14); vertical-align: top; }
+      .tbl thead th { border-bottom: 1.5px solid var(--ink); font-weight: 700; white-space: nowrap; }
+      .tbl tbody td:first-child { white-space: nowrap; }
+      .tbl .elide { color: #3b2ec0; }
+
+      /* code block */
+      .code-block { border: 1px solid var(--ink); margin: 24px 0; }
+      .code-block .code-name {
+        font-family: "JetBrains Mono", ui-monospace, monospace;
+        font-size: 13px; line-height: 24px;
+        padding: 8px 12px; border-bottom: 1px solid var(--ink); color: #555;
+      }
+      .code-block .code-name::before { content: "› "; color: #3b2ec0; }
+      .code-block pre { margin: 0; }
+      .code-block pre code.hljs {
+        font-family: "JetBrains Mono", ui-monospace, monospace;
+        font-size: 13px; line-height: 19px;
+        padding: 12px; overflow-x: auto; background: transparent;
+      }
+
+      @media (prefers-reduced-motion: no-preference) {
+        .js .chart { min-height: 1px; }
+      }
+    </style>
+    <script>
+      document.documentElement.classList.add("js");
+    </script>
+  </head>
+  <body>
+    <main>
+      <div class="wordmark">B^</div>
+      <nav>
+        <a href="../index.html">home</a>
+        <a href="../works.html">works</a>
+        <a href="../contact.html">contact</a>
+      </nav>
+
+      <article>
+        <h1 class="post-title">One runtime (2026)</h1>
+        <p class="post-dek">Elide as a single native binary that unifies runtime, compiler, toolchain, and cross-language interoperability &mdash; and what that consolidation means for developers, organizations, and their customers.</p>
+
+        <h2 class="post-section">Abstract</h2>
+        <p class="post-body">The contemporary software stack is defined less by any single tool than by the seams between many. A typical polyglot project depends on a language runtime, a separate compiler or transpiler, one or more package managers, a formatter, a build orchestrator, and the configuration files that mediate among them. Each component is individually reasonable, and the aggregate is a system of considerable operational cost. This article examines Elide, a runtime built on GraalVM that consolidates these functions into one native binary. It argues that Elide's principal contribution is not a novel language or a faster interpreter in isolation, but the removal of the seams: the runtime, the toolchain, the compilers, and the interoperability layer are delivered as a single artifact that shares one process and one heap. The article characterizes the architecture that makes this possible, situates it against the accretion of tooling that defines modern development, and evaluates the consequences from three vantage points: the individual developer, the engineering organization, and the end customer.</p>
+
+        <h2 class="post-section">I. Introduction: The Accretion Problem</h2>
+        <p class="post-body">Software toolchains grow by accretion. A new capability arrives as a new tool, the tool arrives with its own configuration format, and the configuration accumulates faster than any single engineer can reason about it. A JavaScript project that began with a runtime now carries a transpiler, a bundler, a linter, a formatter, a test runner, and a package manager, each with a distinct version, a distinct configuration surface, and distinct failure modes. A JVM project layers a build system over a compiler over a dependency resolver, and the build system frequently becomes the most complex program in the repository. When a project spans several languages, which most non-trivial projects eventually do, the accretion compounds across ecosystems that do not share conventions, package formats, or process boundaries.</p>
+        <p class="post-body">The cost of this arrangement is usually described in terms of configuration, and configuration is real, but the deeper cost is architectural. Because each language ecosystem runs in its own process, communication between languages requires a boundary, and a boundary requires serialization, a protocol, and an operational surface to keep it alive. The canonical example is the microservice whose only purpose is to expose a library written in one language to an application written in another. Such a service exists not because the problem demands a network hop, but because the runtimes cannot share a heap. The accretion problem, then, is not merely that there are many tools. It is that the tools are separated by process boundaries, and those boundaries harden into architecture.</p>
+        <p class="post-body">Elide addresses the problem at its root. Rather than orchestrate a set of separate tools more cleverly, it delivers the runtime, the compilers, the formatters, the dependency resolver, and the interoperability layer as one binary, executing in one process. The remainder of this article describes how that consolidation is achieved and what follows from it.</p>
+
+        <h2 class="post-section">II. What Elide Is</h2>
+        <p class="post-body">Elide is a polyglot runtime and toolchain, distributed as a single native executable and built on GraalVM. In the terminology GraalVM inherits, Elide distinguishes between <em>host</em> code, meaning Elide's own implementation, and <em>guest</em> code, meaning the programs a developer runs on it. It executes JavaScript and Python as guest languages on Truffle, by way of GraalJs and GraalPy respectively, and it both runs and compiles Java and Kotlin. TypeScript is handled by type erasure: types are stripped and the source transpiled at native speed using OXC, the Rust-based Oxidation Compiler, with no <code class="post-inline">tsconfig.json</code> and no separate build step. A file handed to <code class="post-inline">elide</code> is dispatched by extension, so a <code class="post-inline">.ts</code>, <code class="post-inline">.js</code>, <code class="post-inline">.py</code>, or JVM source runs through one entrypoint.</p>
+        <p class="post-body">Three properties are inherited directly from the GraalVM foundation. The runtime is memory-safe, resting on JVM semantics and extending into native code through Rust, whose guarantees hold where the JVM's do not apply. It is high-performance, because GraalVM's just-in-time compilation extends to guest applications rather than stopping at the host. And it exhibits strong memory behavior, drawing on the mature garbage collectors of the GraalVM ecosystem. These are not aspirations layered on top of Elide; they are characteristics of the platform it is built upon.</p>
+        <p class="post-body">The scope of language and tool support is best stated concretely. The following table summarizes what the single binary provides today.</p>
+
+        <figure>
+          <div class="tbl-wrap">
+            <table class="tbl">
+              <thead>
+                <tr><th>Capability</th><th>Provided by Elide</th><th>Notes</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>JavaScript execution</td><td>GraalJs on Truffle</td><td>Node.js compatibility sufficient for most server programs</td></tr>
+                <tr><td>TypeScript execution</td><td>Type erasure via OXC</td><td>No <code class="post-inline">tsconfig.json</code>, no build step</td></tr>
+                <tr><td>Python execution</td><td>GraalPy on Truffle</td><td>Targets Python 3.12; bundled standard library; currently alpha</td></tr>
+                <tr><td>Java compile &amp; run</td><td>Embedded toolchain and JVM</td><td>Source up to JDK 25; runs on HotSpot or as guest</td></tr>
+                <tr><td>Kotlin compile &amp; run</td><td>Embedded toolchain</td><td>Up to Kotlin 2.3.x</td></tr>
+                <tr><td>Formatting</td><td>Google Java Format, ktfmt</td><td>Unified under <code class="post-inline">elide fmt</code></td></tr>
+                <tr><td>Dependencies</td><td>In-process resolvers</td><td>npm, PyPI, and Maven from one manifest</td></tr>
+                <tr><td>Packaging</td><td>JAR assembly, OCI images</td><td>Container images via Google Jib</td></tr>
+                <tr><td>Serving</td><td>Built-in HTTP and dev server</td><td><code class="post-inline">elide serve</code>, <code class="post-inline">elide dev</code></td></tr>
+                <tr><td>Agent integration</td><td>MCP server</td><td><code class="post-inline">elide mcp</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <figcaption class="fig-cap">One binary in place of node, python, a JDK, tsc, mvn, and a bundler.</figcaption>
+        </figure>
+
+        <p class="post-body">The claim implicit in the table is that a developer can compile Java, transpile TypeScript, resolve a Maven artifact, format a Kotlin file, and serve the result without installing <code class="post-inline">node</code>, <code class="post-inline">python</code>, a JDK, <code class="post-inline">tsc</code>, <code class="post-inline">mvn</code>, or a bundler. That claim is the thesis of the product, and its plausibility rests on the architecture described next.</p>
+
+        <h2 class="post-section">III. The Architecture of Consolidation</h2>
+        <p class="post-body">A single binary that behaves like a runtime, a compiler, and a package manager at once is not the natural output of a conventional build. Elide's construction is unusual and worth describing precisely, because the architecture is what makes the consolidation more than a bundling exercise.</p>
+        <p class="post-body">The shipped executable is a Rust program that wraps a GraalVM Native Image. The Rust layer is the command-line front end: it parses arguments, and then packs them into a Cap'n Proto message that it dispatches across a foreign-function boundary into the engine. The engine, produced by GraalVM Native Image, is the component that actually runs guest code and drives the toolchain. It presents a single dispatchable surface, entered through a small family of native methods, and it is designed to be driven either as a binary, when a developer types <code class="post-inline">elide</code>, or as an embedded library, when a host application links it directly.</p>
+        <p class="post-body">The build that produces this artifact is a three-phase sequence in which Native Image is sandwiched between two Rust compilations. In the first phase, the Rust workspace is compiled into a set of native libraries. In the second, Native Image consumes those libraries as link-time inputs and emits both a standalone executable and a static archive of its object files. In the third, the Rust entrypoint binary is compiled and statically linked against that archive, and it is this final binary that ships. The arrangement is unusual, but it is the mechanism by which a garbage-collected, JIT-capable engine and a native command-line front end become one statically linked program rather than two processes communicating over a socket.</p>
+        <p class="post-body">The diagram below sketches the runtime layering, from the command a developer types down to the languages and tools that execute.</p>
+
+        <svg class="chart" data-chart="arch" role="img" aria-label="Runtime layering: the typed elide command passes through a Rust CLI front end, then a Cap'n Proto invocation into the Elide engine, which hosts Truffle guest VMs and the JVM toolchain, all in one process and heap"></svg>
+        <p class="fig-cap">One statically linked binary: from the typed command down to the languages and tools that run inside a single heap.</p>
+
+        <p class="post-body">Two aspects of this design carry disproportionate weight. First, because the toolchain is compiled ahead of time into the native image, invoking a compiler does not boot a JVM. The <code class="post-inline">elide kotlinc</code> and <code class="post-inline">elide javac</code> commands begin executing immediately rather than paying the startup and warmup cost that stock <code class="post-inline">javac</code> and <code class="post-inline">kotlinc</code> incur on every invocation. Second, because every guest language executes on the same Truffle framework within the same engine, values do not need to be serialized to cross a language boundary. The shared object model is the technical fact underneath the interoperability described in the next section, and it is what distinguishes Elide's polyglot claim from the mere co-installation of several runtimes.</p>
+
+        <h2 class="post-section">IV. One Runtime, Many Languages</h2>
+        <p class="post-body">The phrase &ldquo;polyglot runtime&rdquo; is often used loosely to mean that several languages happen to be available. Elide's usage is stricter. Because JavaScript, TypeScript, and Python execute on Truffle within one engine, a value produced in one language is available to another as a native value of that language, on the same heap, without a serialization step or an intervening protocol. A Python function exported into the shared bindings arrives in JavaScript as an ordinary callable. A JavaScript expression evaluated from Python returns a native Python value.</p>
+        <p class="post-body">The interoperability is expressed through small, language-idiomatic surfaces rather than a foreign-function ceremony. From Python, a built-in <code class="post-inline">elide</code> module provides the entry points: <code class="post-inline">js(source)</code> evaluates a JavaScript string and returns its result as a Python value, while decorators publish Python callables under names that other languages can resolve.</p>
+
+        <div class="code-block">
+          <div class="code-name">interop.py</div>
+          <pre><code class="language-python"># Python -> JS and back, on one shared heap.
+from elide import bind, js, poly
+
+# Python -> JS: evaluate JavaScript and use the result back in Python.
+total = js("[1, 2, 3, 4].reduce((a, b) => a + b, 0)")
+print(f"js sum = {total}")
+
+# Python -> host: export functions for JavaScript or the host to call.
+@bind
+def add(a, b):
+    return a + b
+
+@poly(name="multiply")
+def mul(a, b):
+    return a * b</code></pre>
+        </div>
+
+        <p class="post-body">The architectural consequence is significant. A common pattern in production systems is the service whose sole responsibility is to expose a library written in one language to an application written in another, most often a Python library reached from a Node application over HTTP or a message queue. Under a shared-heap model, that service has no reason to exist. The library call becomes a function call. What was an operational surface, a deployment, a network hop, and a serialization format, collapses into an ordinary invocation within one process.</p>
+
+        <svg class="chart" data-chart="interop" role="img" aria-label="Above: a conventional design in which a Node application reaches a Python library through a separate service over HTTP, crossing a process boundary. Below: the Elide design in which JavaScript and Python share one heap and the call is an ordinary function call"></svg>
+        <p class="fig-cap">The bridge service exists only because two runtimes cannot share memory. On one heap, it collapses into a call.</p>
+
+        <p class="post-body">The elimination of such intermediary services is not a performance optimization at the margin; it is the removal of an architectural component that existed only because two runtimes could not share memory.</p>
+        <p class="post-body">The same principle extends to capabilities normally delivered as external dependencies. SQLite, for example, is a built-in module rather than a package to install and compile. A program imports <code class="post-inline">elide:sqlite</code> and proceeds, with no <code class="post-inline">npm install</code>, no native build, and no lockfile entry, because the driver ships inside the runtime. The pattern generalizes: functionality that would ordinarily arrive through the package manager and its attendant build steps is instead present in the binary, which shortens both the dependency graph and the surface on which builds fail.</p>
+
+        <h2 class="post-section">V. Modernizing the JVM Toolchain</h2>
+        <p class="post-body">The JVM ecosystem is the clearest illustration of the accretion problem, and therefore the clearest illustration of what consolidation buys. A conventional JVM build layers a build system over a compiler over a dependency resolver, and the build system, whether Gradle, Maven, or Bazel, frequently becomes the most complex and least understood program in the repository. Elide's approach is to make the runtime itself a complete JDK toolchain, so that it can stand in for the pieces individually or serve as the foundation an existing build sits upon.</p>
+        <p class="post-body">Because Elide ships a complete JDK toolchain, it can act as a <code class="post-inline">JAVA_HOME</code> for any existing build tool. This is deliberately unglamorous and deliberately important: a team need not migrate away from Gradle or Maven to benefit. Pointing an existing build at Elide's toolchain substitutes native-compiled, fast-starting compilers into a pipeline that otherwise remains unchanged. The startup cost that stock <code class="post-inline">javac</code> and <code class="post-inline">kotlinc</code> pay on every invocation, which compounds into minutes across a build that invokes the compiler dozens of times, is removed without a rewrite of the build definition.</p>
+        <p class="post-body">The more forward-looking contribution is a Kotlin ABI fast path, internally named Karbine, that addresses the structure of the build graph rather than the speed of a single compile. A dependent module does not require the full compiled output of the module it depends on; it requires only that module's public application binary interface. Karbine emits a Kotlin header jar carrying exactly that surface, the public and protected signatures, the metadata, the ABI-relevant inline bodies, the constant values, and the default-argument markers, and nothing a dependent does not need. The emitted jar is digest-stable, meaning that an unchanged public ABI produces a byte-identical jar regardless of changes to method bodies or incidental compiler state.</p>
+
+        <svg class="chart" data-chart="critpath" role="img" aria-label="Two build timelines. Conventionally, module B cannot begin until module A finishes both its frontend and code generation, so the critical path is the sum of both full compiles. With Karbine, B begins against A's header jar as soon as A's frontend resolves, overlapping A's code generation and shortening the critical path to frontend depth"></svg>
+        <p class="fig-cap">A dependent begins against the header jar as soon as the producer's frontend resolves &mdash; the critical path shortens from full-compile depth to frontend depth.</p>
+
+        <p class="post-body">Two consequences follow, and they are the reason the technique matters at scale. First, a dependent target can begin compiling against the header jar as soon as the producer's frontend resolves, rather than waiting for the producer's full code generation. The critical path of the build shortens from full-compile depth to frontend depth. Second, an edit confined to a method body yields a byte-identical header jar, so every dependent of that module is a cache hit with no compiler work at all. The honest scope of the saving is stated in the design itself: the technique trims lowering and code generation of non-inline bodies while leaving frontend and intermediate-representation costs in place, so the improvement is real rather than order-of-magnitude, and it is best measured on large module graphs where critical-path depth and dependent fan-out dominate. The distinction between a within-target speedup and a reduction in critical-path depth is precisely the distinction that matters for large organizations, and it is addressed directly rather than conflated.</p>
+
+        <h2 class="post-section">VI. Three Vantage Points</h2>
+        <p class="post-body">The value of consolidation is best understood by examining who benefits from it and how. Three vantage points are useful: the individual developer, the engineering organization, and the end customer whose experience is shaped by decisions made far upstream.</p>
+
+        <h3 class="post-subsection">The Individual Developer</h3>
+        <p class="post-body">For the individual developer, the immediate benefit is the collapse of setup and the disappearance of configuration files that exist only to mediate between tools. A TypeScript file with genuine type annotations runs directly, with no <code class="post-inline">package.json</code>, no <code class="post-inline">node_modules</code>, and no transpiler configuration. A Python script runs against a bundled standard library with nothing to provision. A Java or Kotlin file compiles through a native compiler that begins work immediately. The reduction in ceremony is not merely aesthetic. Each configuration file is a surface on which a project can break, a version that can drift, and a piece of knowledge a new contributor must acquire before becoming productive. Removing the file removes all three.</p>
+        <p class="post-body">A second benefit is the disappearance of the interpreter-management problem. A single binary executes several languages, so the daily work of selecting and switching between language runtimes, and reconciling their versions, is subsumed into one tool. The formatter is illustrative: <code class="post-inline">elide fmt</code> is a unified formatter for both Java and Kotlin, classifying each source by extension and routing it to Google Java Format or ktfmt as appropriate, so that a mixed project is formatted, or checked in continuous integration, by one command rather than two independently configured ones.</p>
+
+        <h3 class="post-subsection">The Engineering Organization</h3>
+        <p class="post-body">For the organization, the relevant unit is not the individual invocation but the aggregate, across many engineers, many builds, and a continuous-integration system that runs constantly. Here the benefits of consolidation compound. Native-compiled compilers remove startup cost from every build, and the saving accumulates across the organization's entire build volume. A single dependency manifest that resolves npm, PyPI, and Maven artifacts together, through in-process resolvers invoked by one <code class="post-inline">elide install</code>, removes the need to install and maintain three separate package managers in every build environment, while still writing conventional layouts so that existing tools continue to function. The Karbine header-jar path, wired into a build graph, shortens the critical path of large Kotlin builds and prunes dependent rebuilds that would otherwise occur.</p>
+        <p class="post-body">A less obvious organizational benefit is architectural simplification. Because languages share a heap, the intermediary services that exist only to bridge language boundaries can be removed from the system's topology. Every such removal eliminates a deployment, a monitoring surface, an on-call responsibility, and a class of failures. The reduction in operational surface is a direct consequence of the runtime's design rather than a discipline the organization must impose on itself.</p>
+        <p class="post-body">Finally, the runtime speaks the Model Context Protocol natively, through <code class="post-inline">elide mcp</code>, so that automated agents can build, run, and introspect a project through first-class tooling rather than by shelling out to a heterogeneous collection of external programs. As automated agents become a larger part of how organizations produce and maintain software, a runtime that presents a single, coherent, machine-drivable surface is materially easier to integrate than a stack assembled from many independently configured tools.</p>
+
+        <h3 class="post-subsection">The End Customer</h3>
+        <p class="post-body">The end customer never invokes <code class="post-inline">elide</code> and never reads a manifest, yet the customer's experience is shaped by the same properties. The most direct is startup latency. A runtime that begins executing in milliseconds rather than after JVM warmup changes what is feasible at the edges of a system: short-lived processes, functions invoked per request, and command-line tools that must feel instantaneous become practical on a JVM-family foundation that would otherwise be disqualified by cold-start cost. The customer experiences this as responsiveness, without any awareness of its cause.</p>
+        <p class="post-body">The second is reliability. Elide is memory-safe by construction, resting on JVM semantics and Rust's guarantees where it extends into native code, and it inherits mature garbage collection and just-in-time compilation from GraalVM. A system built on a memory-safe, well-collected foundation exhibits fewer of the failure modes that manifest to customers as crashes, corruption, or the security incidents that follow from memory-unsafe code. The third is the compounding effect of the organizational benefits above: an engineering organization that spends less effort maintaining its toolchain, and that operates a simpler system topology, has more capacity to direct at the product the customer actually uses. The benefit reaches the customer indirectly, but it reaches them.</p>
+
+        <h2 class="post-section">VII. On the Economics of Consolidation</h2>
+        <p class="post-body">It is worth stating plainly why consolidation, rather than better orchestration, is the more consequential approach. Orchestration accepts the boundaries between tools and invests in coordinating across them, and the investment is never finished, because each new tool adds a new boundary to coordinate. Consolidation removes the boundaries. The distinction is the difference between reducing the friction of a seam and eliminating the seam.</p>
+
+        <svg class="chart" data-chart="converge" role="img" aria-label="A column of separate conventional tools on the left, each connected by a line that converges into a single Elide binary on the right"></svg>
+        <p class="fig-cap">Every recurring tool, and the boundary around it, folds into one native binary.</p>
+
+        <p class="post-body">The following comparison makes the contrast concrete for a representative polyglot project, contrasting the conventional arrangement with the consolidated one.</p>
+
+        <figure>
+          <div class="tbl-wrap">
+            <table class="tbl">
+              <thead>
+                <tr><th>Concern</th><th>Conventional stack</th><th class="elide">Elide</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>JS / TS execution</td><td>Node or Bun, plus <code class="post-inline">tsc</code> and config</td><td class="elide">One binary, type erasure via OXC</td></tr>
+                <tr><td>Python execution</td><td>A provisioned CPython install</td><td class="elide">Bundled, targeting 3.12</td></tr>
+                <tr><td>Java and Kotlin</td><td>A JDK, plus <code class="post-inline">kotlinc</code>, plus JVM warmup per call</td><td class="elide">Native compilers, immediate start</td></tr>
+                <tr><td>Cross-language calls</td><td>A service, a protocol, serialization</td><td class="elide">A function call on a shared heap</td></tr>
+                <tr><td>Dependencies</td><td><code class="post-inline">npm</code>, <code class="post-inline">pip</code>, and <code class="post-inline">mvn</code> separately</td><td class="elide">One manifest, one <code class="post-inline">elide install</code></td></tr>
+                <tr><td>Formatting</td><td>A Java formatter and a Kotlin formatter</td><td class="elide"><code class="post-inline">elide fmt</code>, unified</td></tr>
+                <tr><td>Serving</td><td>An added web framework and server</td><td class="elide"><code class="post-inline">elide serve</code> and <code class="post-inline">elide dev</code>, built in</td></tr>
+                <tr><td>Distribution</td><td>Several runtimes and tools to install</td><td class="elide">One native binary</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <figcaption class="fig-cap">Each row on the left is a recurring cost; the right replaces it with one artifact.</figcaption>
+        </figure>
+
+        <p class="post-body">The economic argument is that each row of the left column carries a recurring cost, in installation, in configuration, in version drift, and in the surfaces on which builds and deployments fail, and that the right column replaces those recurring costs with a single artifact. The saving is not a one-time convenience at project setup. It is the removal of an ongoing maintenance burden that the conventional stack imposes for as long as the project lives.</p>
+
+        <h2 class="post-section">VIII. Limitations and Honesty</h2>
+        <p class="post-body">An account of this kind is only useful if it is candid about maturity. Python support is currently alpha and may change between releases; native module isolation is unavailable on macOS, some C extension modules may not work owing to a GraalPy limitation, and importing Python modules from JavaScript or TypeScript is not yet available in that direction. The Node.js compatibility surface is described as sufficient for most server programs rather than complete, and an application that depends on a specific core module should be verified against the current build before it is ported. The Karbine fast path, as noted in its own design, saves lowering and code generation rather than the entire compile, and it does not yet compose with plugin-provided intermediate-representation generation such as kotlinx.serialization's, so modules relying on such plugins fall back to a full compile. Additional web tooling, including npm dependency management, JavaScript bundling, CSS compilation, and Markdown rendering, is being ported and will arrive in subsequent releases rather than being present today.</p>
+        <p class="post-body">These limitations do not undermine the thesis; they locate it in time. The architecture that makes consolidation possible is in place, and the surface it exposes is widening release by release. The honest position is that Elide already delivers the consolidation it claims for a substantial and growing set of workflows, and that the boundary of what it covers is moving outward rather than fixed.</p>
+
+        <h2 class="post-section">IX. Conclusion</h2>
+        <p class="post-body">The defining difficulty of the modern development stack is not the absence of good tools but the abundance of them, separated by process boundaries that harden into architecture and by configuration that accumulates faster than it can be understood. Elide's response is to treat the seams themselves as the problem. By delivering the runtime, the compilers, the formatters, the dependency resolver, and the interoperability layer as one native binary executing in one process on one heap, it removes the boundaries rather than coordinating across them. For the individual developer, this appears as the disappearance of setup and configuration. For the organization, it appears as compounding savings in build time and a simpler system topology. For the customer, it appears as responsiveness and reliability whose causes lie far upstream.</p>
+        <p class="post-body">There is a reasonable case that the appropriate description of such a system is not &ldquo;a runtime&rdquo; among others but &ldquo;the runtime,&rdquo; a single foundation on which a project's languages, tools, and dependencies converge. Whether or not the phrase endures, the underlying claim is defensible on the evidence of the architecture: a system designed so that the boundaries between tools need not exist at all is a different kind of thing from a system that manages those boundaries well. Elide is an argument, expressed in a single binary, that the boundaries were never necessary in the first place.</p>
+
+        <p class="post-body" style="font-size: 15px; line-height: 22px; color: #555; margin-top: 40px;"><em>Notes. Architectural and capability claims in this article are drawn from Elide's feature specifications and engineering documentation, including the runtime, toolchain, engine, and CLI feature definitions, the Kotlin ABI fast path (&ldquo;Karbine&rdquo;) design, and the startup and build-flow documentation. Performance characterizations of native-compiled compilers and cross-language execution reflect previously measured and reproducible benchmarks reported in the hands-on tour of Elide; this article does not introduce new measurements.</em></p>
+      </article>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>
+      hljs.highlightAll();
+    </script>
+
+    <script type="module">
+      import { animate, onScroll, stagger, utils } from "../node_modules/animejs/dist/bundles/anime.esm.min.js";
+
+      const NS = "http://www.w3.org/2000/svg";
+      const motion = matchMedia("(prefers-reduced-motion: no-preference)").matches;
+      const INK = "#000";
+      const ACC = "#3b2ec0";
+      const WARN = "#b1442f";
+      const MUT = "#555";
+
+      const make = (tag, attrs = {}) => {
+        const n = document.createElementNS(NS, tag);
+        for (const k in attrs) n.setAttribute(k, attrs[k]);
+        return n;
+      };
+      const text = (s, attrs = {}) => {
+        const t = make("text", attrs);
+        t.textContent = s;
+        return t;
+      };
+      const add = (parent, ...kids) => (kids.forEach((k) => parent.appendChild(k)), parent);
+      // grouped element: <g> holding several children, so it reveals as one unit
+      const grp = (svg, ...kids) => { const g = make("g"); kids.forEach((k) => g.appendChild(k)); svg.appendChild(g); return g; };
+
+      const reveal = (container, targets, props) => {
+        if (!motion || !targets.length) return;
+        const { from, ...to } = props;
+        if (from) utils.set(targets, from);
+        animate(targets, { ...to, autoplay: onScroll({ target: container, enter: "bottom-=40 top", repeat: false }) });
+      };
+
+      // stroke-draw a set of line/path elements on scroll
+      const drawLines = (svg, els, opts = {}) => {
+        if (!motion || !els.length) return;
+        els.forEach((el) => {
+          const L = el.getTotalLength();
+          utils.set(el, { strokeDasharray: L, strokeDashoffset: L });
+        });
+        animate(els, {
+          strokeDashoffset: 0,
+          duration: opts.duration || 700,
+          ease: "inOut(2)",
+          delay: stagger(opts.stagger || 70, { start: opts.start || 0 }),
+          autoplay: onScroll({ target: svg, enter: "bottom-=40 top", repeat: false }),
+        });
+      };
+
+      // downward arrowhead centred at (x, y)
+      const arrowDown = (x, y, color) =>
+        make("path", { d: `M${x - 5} ${y - 6} L${x + 5} ${y - 6} L${x} ${y} Z`, fill: color });
+
+      /* ---------- III. Architecture stack ---------- */
+      const arch = (svg) => {
+        const W = 600, H = 412;
+        svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+        const box = (attrs) => make("rect", { rx: 2, fill: "none", "stroke-width": 1.5, ...attrs });
+
+        // top command
+        const gTop = grp(svg, text("elide <file | command>", { x: 300, y: 22, "text-anchor": "middle", "font-size": 15 }));
+
+        // connector 1
+        const l1 = make("line", { x1: 300, y1: 30, x2: 300, y2: 54, stroke: INK, "stroke-width": 1.5 });
+        svg.appendChild(l1);
+        const a1 = arrowDown(300, 56, INK); svg.appendChild(a1);
+
+        // rust cli
+        const gRust = grp(svg,
+          box({ x: 170, y: 58, width: 260, height: 48, stroke: INK }),
+          text("Rust CLI front-end", { x: 300, y: 80, "text-anchor": "middle", "font-size": 14 }),
+          text("argument parsing · invocation building", { x: 300, y: 96, "text-anchor": "middle", "font-size": 10.5, class: "mut" }));
+
+        // connector 2 (labelled)
+        const l2 = make("line", { x1: 300, y1: 106, x2: 300, y2: 142, stroke: INK, "stroke-width": 1.5 });
+        svg.appendChild(l2);
+        const a2 = arrowDown(300, 144, INK); svg.appendChild(a2);
+        const gLbl2 = grp(svg, text("Cap'n Proto invocation", { x: 312, y: 128, "font-size": 10.5, class: "mut" }));
+
+        // engine
+        const gEngine = grp(svg,
+          box({ x: 24, y: 146, width: 552, height: 196, stroke: ACC, "stroke-width": 1.75 }),
+          text("Elide Engine — Native Image", { x: 300, y: 170, "text-anchor": "middle", "font-size": 15, class: "acc" }),
+          text("single dispatch surface · two-phase entry", { x: 300, y: 187, "text-anchor": "middle", "font-size": 10.5, class: "mut" }),
+          make("line", { x1: 24, y1: 198, x2: 576, y2: 198, stroke: ACC, "stroke-opacity": 0.35 }),
+          make("line", { x1: 300, y1: 198, x2: 300, y2: 342, stroke: ACC, "stroke-opacity": 0.35 }),
+          text("Truffle guest VMs", { x: 40, y: 218, "font-size": 12, class: "acc" }),
+          text("JVM toolchain", { x: 316, y: 218, "font-size": 12, class: "acc" }));
+
+        // language chips: [x, name, lang, langColor]
+        const chip = (x, name, lang, col) => {
+          const g = grp(svg,
+            make("rect", { x, y: 236, width: 116, height: 72, rx: 2, fill: "rgba(59,46,192,0.05)", stroke: ACC, "stroke-width": 1.25 }),
+            text(name, { x: x + 58, y: 270, "text-anchor": "middle", "font-size": 13 }),
+            text(lang, { x: x + 58, y: 292, "text-anchor": "middle", "font-size": 11, style: `fill:${col}` }));
+          return g;
+        };
+        const chips = [
+          chip(34, "GraalJs", "JS / TS", "#b0810f"),
+          chip(166, "GraalPy", "Python", "#2f6ea3"),
+          chip(316, "javac", "Java", "#a8442a"),
+          chip(444, "kotlinc", "Kotlin", "#6a45a0"),
+        ];
+
+        // connector 3
+        const l3 = make("line", { x1: 300, y1: 342, x2: 300, y2: 366, stroke: INK, "stroke-width": 1.5 });
+        svg.appendChild(l3);
+        const a3 = arrowDown(300, 368, INK); svg.appendChild(a3);
+
+        // footer
+        const gFoot = grp(svg,
+          box({ x: 90, y: 370, width: 420, height: 34, stroke: INK }),
+          text("one process · one managed heap · shared object model", { x: 300, y: 391, "text-anchor": "middle", "font-size": 12 }));
+
+        reveal(svg, [gTop, gRust, gLbl2, gEngine, gFoot], { from: { opacity: 0, translateY: 12 }, opacity: [0, 1], translateY: [12, 0], duration: 560, ease: "out(3)", delay: stagger(110) });
+        reveal(svg, chips, { from: { opacity: 0, scale: 0.82 }, opacity: [0, 1], scale: [0.82, 1], duration: 480, ease: "out(3)", delay: stagger(90, { start: 520 }) });
+        reveal(svg, [a1, a2, a3], { from: { opacity: 0 }, opacity: [0, 1], duration: 300, delay: stagger(110, { start: 200 }) });
+        drawLines(svg, [l1, l2, l3], { duration: 420, stagger: 200 });
+      };
+
+      /* ---------- IV. Shared heap vs bridge service ---------- */
+      const interop = (svg) => {
+        const W = 600, H = 320;
+        svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+
+        // conventional (top)
+        const gConvLbl = grp(svg, text("conventional — an intermediary service", { x: 24, y: 20, "font-size": 12, class: "warn" }));
+        const gNode = grp(svg,
+          make("rect", { x: 40, y: 40, width: 170, height: 56, rx: 2, fill: "none", stroke: INK, "stroke-width": 1.5 }),
+          text("Node app", { x: 125, y: 73, "text-anchor": "middle", "font-size": 13 }));
+        const gPy = grp(svg,
+          make("rect", { x: 390, y: 40, width: 170, height: 56, rx: 2, fill: "none", stroke: INK, "stroke-width": 1.5 }),
+          text("Python library", { x: 475, y: 73, "text-anchor": "middle", "font-size": 13 }));
+        // boundary + wire
+        const gBound = grp(svg,
+          make("line", { x1: 300, y1: 26, x2: 300, y2: 110, stroke: WARN, "stroke-width": 1.25, "stroke-dasharray": "4 4" }),
+          text("process boundary", { x: 300, y: 124, "text-anchor": "middle", "font-size": 10, class: "warn" }),
+          text("a deployment · a protocol · a network hop", { x: 300, y: 140, "text-anchor": "middle", "font-size": 10.5, class: "mut" }));
+        const wire = make("line", { x1: 210, y1: 68, x2: 390, y2: 68, stroke: WARN, "stroke-width": 1.5 });
+        svg.appendChild(wire);
+        const gWireLbl = grp(svg, text("HTTP · serialize / deserialize", { x: 300, y: 60, "text-anchor": "middle", "font-size": 9, class: "warn" }));
+
+        // elide (bottom)
+        const gElideLbl = grp(svg, text("elide — one shared heap", { x: 24, y: 178, "font-size": 12, class: "acc" }));
+        const gShell = grp(svg,
+          make("rect", { x: 40, y: 190, width: 520, height: 110, rx: 2, fill: "rgba(59,46,192,0.05)", stroke: ACC, "stroke-width": 1.75 }),
+          text("one process · one managed heap · shared object model", { x: 300, y: 288, "text-anchor": "middle", "font-size": 11, class: "acc" }));
+        const gJs = grp(svg,
+          make("rect", { x: 70, y: 214, width: 180, height: 50, rx: 2, fill: "none", stroke: ACC, "stroke-width": 1.25 }),
+          text("JavaScript", { x: 160, y: 244, "text-anchor": "middle", "font-size": 13 }));
+        const gPy2 = grp(svg,
+          make("rect", { x: 350, y: 214, width: 180, height: 50, rx: 2, fill: "none", stroke: ACC, "stroke-width": 1.25 }),
+          text("Python", { x: 440, y: 244, "text-anchor": "middle", "font-size": 13 }));
+        const call = make("line", { x1: 250, y1: 239, x2: 350, y2: 239, stroke: ACC, "stroke-width": 1.5 });
+        svg.appendChild(call);
+        const gCallLbl = grp(svg, text("a function call", { x: 300, y: 232, "text-anchor": "middle", "font-size": 10.5, class: "acc" }));
+
+        reveal(svg, [gConvLbl, gNode, gPy, gWireLbl, gBound], { from: { opacity: 0, translateY: 10 }, opacity: [0, 1], translateY: [10, 0], duration: 520, ease: "out(3)", delay: stagger(90) });
+        reveal(svg, [gElideLbl, gShell, gJs, gPy2, gCallLbl], { from: { opacity: 0, translateY: 10 }, opacity: [0, 1], translateY: [10, 0], duration: 520, ease: "out(3)", delay: stagger(90, { start: 620 }) });
+        drawLines(svg, [wire], { duration: 500, start: 300 });
+        drawLines(svg, [call], { duration: 500, start: 1100 });
+      };
+
+      /* ---------- V. Karbine critical path ---------- */
+      const critpath = (svg) => {
+        const W = 600, H = 300;
+        svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+        const x0 = 74, unit = 46; // time -> x
+        const X = (t) => x0 + t * unit;
+
+        // one gantt bar; grows from its left edge
+        const bar = (x, w, y, kind, label) => {
+          const fill = kind === "fe" ? ACC : INK;
+          const op = kind === "fe" ? 1 : 0.28;
+          const r = make("rect", { x: X(x), y, width: w * unit, height: 20, rx: 2, fill, "fill-opacity": op });
+          r.style.transformOrigin = "left";
+          svg.appendChild(r);
+          const t = text(label, { x: X(x) + (w * unit) / 2, y: y + 14, "text-anchor": "middle", "font-size": 9.5, style: `fill:${kind === "fe" ? "#fff" : "#333"}` });
+          svg.appendChild(t);
+          return { r, t };
+        };
+
+        // ---- panel A: conventional ----
+        const gA = grp(svg, text("conventional — B waits for A's full compile", { x: 24, y: 18, "font-size": 12, class: "warn" }));
+        svg.appendChild(text("module A", { x: 66, y: 50, "text-anchor": "end", "font-size": 11, class: "mut" }));
+        svg.appendChild(text("module B", { x: 66, y: 82, "text-anchor": "end", "font-size": 11, class: "mut" }));
+        const aFe = bar(0, 2, 34, "fe", "frontend");
+        const aCg = bar(2, 3, 34, "cg", "codegen");
+        const bFe = bar(5, 2, 66, "fe", "frontend");
+        const bCg = bar(7, 3, 66, "cg", "codegen");
+        const aWaitLine = make("line", { x1: X(10), y1: 30, x2: X(10), y2: 96, stroke: WARN, "stroke-width": 1, "stroke-dasharray": "3 3" });
+        svg.appendChild(aWaitLine);
+        const gAcp = grp(svg, text("critical path = A frontend + A codegen + B frontend + B codegen", { x: x0, y: 112, "font-size": 10, class: "mut" }));
+        const barsA = [aFe.r, aCg.r, bFe.r, bCg.r];
+        const lblsA = [aFe.t, aCg.t, bFe.t, bCg.t];
+
+        // ---- panel B: Karbine ----
+        const gB = grp(svg, text("with Karbine — B starts against A's header jar", { x: 24, y: 158, "font-size": 12, class: "acc" }));
+        svg.appendChild(text("module A", { x: 66, y: 190, "text-anchor": "end", "font-size": 11, class: "mut" }));
+        svg.appendChild(text("module B", { x: 66, y: 222, "text-anchor": "end", "font-size": 11, class: "mut" }));
+        const kAFe = bar(0, 2, 174, "fe", "frontend");
+        const kACg = bar(2, 3, 174, "cg", "codegen");
+        const kBFe = bar(2, 2, 206, "fe", "frontend");
+        const kBCg = bar(4, 3, 206, "cg", "codegen");
+        // header-jar handoff at t=2
+        const hand = make("line", { x1: X(2), y1: 170, x2: X(2), y2: 232, stroke: ACC, "stroke-width": 1.25, "stroke-dasharray": "3 3" });
+        svg.appendChild(hand);
+        const gHand = grp(svg, text("header jar", { x: X(2) + 4, y: 246, "font-size": 9.5, class: "acc" }));
+        const kEnd = make("line", { x1: X(7), y1: 170, x2: X(7), y2: 232, stroke: ACC, "stroke-width": 1, "stroke-dasharray": "3 3" });
+        svg.appendChild(kEnd);
+        const gBcp = grp(svg, text("critical path shortens to frontend depth", { x: x0, y: 262, "font-size": 10, class: "mut" }));
+
+        // legend
+        const gLeg = grp(svg,
+          make("rect", { x: 380, y: 254, width: 12, height: 10, rx: 1, fill: ACC }),
+          text("frontend", { x: 396, y: 263, "font-size": 9.5, class: "mut" }),
+          make("rect", { x: 462, y: 254, width: 12, height: 10, rx: 1, fill: INK, "fill-opacity": 0.28 }),
+          text("codegen (non-inline)", { x: 478, y: 263, "font-size": 9.5, class: "mut" }));
+
+        const barsB = [kAFe.r, kACg.r, kBFe.r, kBCg.r];
+        const lblsB = [kAFe.t, kACg.t, kBFe.t, kBCg.t];
+
+        reveal(svg, [gA, gB], { from: { opacity: 0 }, opacity: [0, 1], duration: 400, delay: stagger(120) });
+        reveal(svg, [...barsA, ...barsB], { from: { scaleX: 0 }, scaleX: [0, 1], duration: 520, ease: "out(3)", delay: stagger(90) });
+        reveal(svg, [...lblsA, ...lblsB], { from: { opacity: 0 }, opacity: [0, 1], duration: 300, delay: stagger(90, { start: 260 }) });
+        reveal(svg, [gAcp, gBcp, gHand, gLeg], { from: { opacity: 0 }, opacity: [0, 1], duration: 400, delay: stagger(120, { start: 900 }) });
+        drawLines(svg, [aWaitLine, hand, kEnd], { duration: 500, start: 700, stagger: 120 });
+      };
+
+      /* ---------- VII. Accretion converges to one binary ---------- */
+      const converge = (svg) => {
+        const W = 600, H = 372;
+        svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+        const tools = ["node", "tsc", "python", "jdk", "kotlinc", "mvn", "npm / pip", "formatters", "bundler", "dev server"];
+        const n = tools.length, top = 30, gapY = (H - 70 - top) / (n - 1);
+        const bx = 430, by = 150, bw = 140, bh = 64;
+        const targetX = bx, targetY = by + bh / 2;
+
+        const chips = [], lines = [];
+        tools.forEach((name, i) => {
+          const cy = top + i * gapY;
+          const g = grp(svg,
+            make("rect", { x: 24, y: cy - 12, width: 130, height: 24, rx: 2, fill: "none", stroke: INK, "stroke-opacity": 0.4 }),
+            text(name, { x: 89, y: cy + 4, "text-anchor": "middle", "font-size": 11.5, class: "mut" }));
+          chips.push(g);
+          const ln = make("path", { d: `M154 ${cy} C 280 ${cy}, 320 ${targetY}, ${targetX} ${targetY}`, fill: "none", stroke: INK, "stroke-width": 1, "stroke-opacity": 0.3 });
+          svg.appendChild(ln);
+          lines.push(ln);
+        });
+
+        const gBin = grp(svg,
+          make("rect", { x: bx, y: by, width: bw, height: bh, rx: 2, fill: "rgba(59,46,192,0.06)", stroke: ACC, "stroke-width": 1.75 }),
+          text("elide", { x: bx + bw / 2, y: by + 32, "text-anchor": "middle", "font-size": 18, class: "acc" }),
+          text("one binary", { x: bx + bw / 2, y: by + 50, "text-anchor": "middle", "font-size": 10.5, class: "mut" }));
+
+        reveal(svg, chips, { from: { opacity: 0, translateX: -12 }, opacity: [0, 1], translateX: [-12, 0], duration: 460, ease: "out(3)", delay: stagger(70) });
+        drawLines(svg, lines, { duration: 640, stagger: 55, start: 400 });
+        reveal(svg, [gBin], { from: { opacity: 0, scale: 0.8 }, opacity: [0, 1], scale: [0.8, 1], duration: 520, ease: "out(4)", delay: 1100 });
+      };
+
+      const builders = { arch, interop, critpath, converge };
+      document.querySelectorAll(".chart").forEach((svg) => builders[svg.dataset.chart]?.(svg));
+    </script>
+  </body>
+</html>
