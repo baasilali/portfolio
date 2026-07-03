@@ -18,7 +18,7 @@ body {
   padding: 116px 24px 96px;
 }
 
-main { width: var(--measure); }
+main { width: 100%; max-width: var(--measure); }
 
 .wordmark {
   font-family: "Bitcount Single", system-ui, sans-serif;
@@ -43,7 +43,7 @@ a:hover { text-decoration: underline; }
 #terminal { margin-bottom: 44px; }
 #terminal .line { white-space: pre-wrap; }
 #terminal .line .prefix { color: var(--ink); }
-#terminal .line .cmd { color: #555; white-space: pre; }
+#terminal .line .cmd { color: #555; white-space: pre-wrap; }
 #terminal .line.output,
 #terminal .line.error { color: #555; }
 #terminal .caret {
@@ -129,4 +129,13 @@ article p + p { margin-top: 24px; }
   padding: 12px;
   overflow-x: auto;
   background: transparent;
+}
+
+/* below the design measure (49ch + side padding) the fixed-width rules must yield */
+@media (max-width: 640px) {
+  body { padding: 64px 20px 72px; }
+  .post-title { white-space: normal; }
+  .row { grid-template-columns: 72px 1fr; column-gap: 16px; }
+  .kv { grid-template-columns: max-content 24px 1fr; }
+  a { overflow-wrap: anywhere; }
 }
