@@ -30,7 +30,7 @@ const CONFIGS = {
       x: { url: "https://x.com/baasil" },
       linkedin: { url: "https://www.linkedin.com/in/baasilali" },
       github: { url: "https://github.com/baasilali" },
-      mail: { url: "mailto:baasil@elide.dev" },
+      mail: { url: "mailto:baasil.ali@gmail.com" },
     },
   },
 };
